@@ -1,70 +1,66 @@
 <?php
 
-namespace :namespace_vendor\:namespace_tool_name;
+namespace Opscale\NovaDynamicResources;
 
 use Laravel\Nova\Events\ServingNova;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\ServiceProvider;
-use :namespace_vendor\:namespace_tool_name\Http\Middleware\Authorize;
 use Laravel\Nova\Nova;
+use Opscale\NovaDynamicResources\Models\DynamicResource as Template;
+use Opscale\NovaDynamicResources\Nova\DynamicResource;
+use Opscale\NovaPackageTools\NovaPackage;
+use Opscale\NovaPackageTools\NovaPackageServiceProvider;
+use Spatie\LaravelPackageTools\Commands\InstallCommand;
+use Spatie\LaravelPackageTools\Package;
 
-class ToolServiceProvider extends ServiceProvider
+class ToolServiceProvider extends NovaPackageServiceProvider
 {
-    public function boot()
+    /**
+     * @phpstan-ignore solid.ocp.conditionalOverride
+     */
+    public function configurePackage(Package $package): void
     {
-        $this->loadRoutes();
-        /*$this->loadConfigs();
+        /** @var NovaPackage $package */
+        $package
+            ->name('nova-dynamic-resources')
+            ->hasConfigFile('nova-dynamic-resources')
+            ->discoversMigrations()
+            ->runsMigrations()
+            ->hasResources(DynamicResource::class)
+            ->hasInstallCommand(function (InstallCommand $installCommand): void {
+                $installCommand
+                    ->publishConfigFile()
+                    ->askToStarRepoOnGitHub('opscale-co/nova-dynamic-resources');
+            });
+    }
 
-        if ($this->app->runningInConsole()) {
-            $this->loadCommands();
-            $this->loadMigrations();
+    /**
+     * @phpstan-ignore solid.ocp.conditionalOverride
+     */
+    public function packageBooted(): void
+    {
+        parent::packageBooted();
+        Nova::serving(function (ServingNova $servingNova): void {
+            Nova::resources($this->generateResources());
+        });
+    }
+
+    private function generateResources(): array
+    {
+        $resources = Template::all();
+        $classes = [];
+        foreach ($resources as $resource) {
+            $class = get_class(eval("
+            return new class extends \Opscale\NovaDynamicResources\Nova\DynamicRecord{
+                public static \Opscale\NovaDynamicResources\Models\DynamicResource \$template;
+            };"));
+            $class::$template = $resource;
+            $binding = 'dynamic-' . $resource->uri_key;
+            $this->app->bindIf($binding, function ($app) use ($class): object {
+                return new $class;
+            });
+
+            $classes[] = $class;
         }
-            
-        Nova::serving(function (ServingNova $event) {
-            $this->loadResources();
-        });*/
+
+        return $classes;
     }
-
-    public function register()
-    {
-        //
-    }
-
-    /*protected function loadResources()
-    {
-        Nova::resources([]);
-    }
-
-    protected function loadRoutes()
-    {
-        if ($this->app->routesAreCached()) {
-            return;
-        }
-
-        Route::middleware(['nova', Authorize::class])
-                ->prefix('nova-vendor/:vendor/:package_name')
-                ->group(__DIR__.'/../routes/api.php');
-    }
-                
-    protected function loadConfigs()
-    {
-        $filename = ':package_name.php';
-        $this->publishes([
-            __DIR__."/../config/$filename" => config_path($filename),
-        ]);
-    }
-
-    protected function loadCommands()
-    {
-        $this->commands([]);
-    }
-
-    protected function loadMigrations()
-    {
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-
-        $this->publishesMigrations([
-            __DIR__.'/../database/migrations' => database_path('migrations'),
-        ]);
-    }*/
 }

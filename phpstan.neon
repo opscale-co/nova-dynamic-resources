@@ -1,0 +1,33 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/opscale-co/strict-rules/rules.clean.neon
+    - vendor/opscale-co/strict-rules/rules.ddd.neon
+    - vendor/opscale-co/strict-rules/rules.smells.neon
+    - vendor/opscale-co/strict-rules/rules.solid.neon
+parameters:
+    level: 9
+    phpVersion: 80200
+    paths:
+        - src
+    ignoreErrors:
+        -
+            message: '#.*#'
+            path: src/ToolServiceProvider.php
+        -
+            message: '#.*#'
+            path: src/Models/Rules/JsonSchemaRule.php
+        -
+            message: '#overrides a parent method but does not call parent::#'
+            paths:
+                - src/Nova/DynamicRecord.php
+                - src/Nova/Repeatables/Action.php
+                - src/Nova/Repeatables/Field.php
+        -
+            message: '#Call to function is_string\(\) with string will always evaluate to true#'
+            path: src/Nova/DynamicRecord.php
+        -
+            message: '#Right side of && is always true#'
+            path: src/Nova/DynamicRecord.php
+        -
+            message: '#exception imports are only allowed in logic layers#'
+            path: src/Nova/DynamicRecord.php

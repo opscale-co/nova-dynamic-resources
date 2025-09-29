@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "title": "Fields Schema",
+  "description": "Schema for validating dynamic resource fields configuration",
+  "items": {
+    "type": "object",
+    "required": ["label", "name", "type"],
+    "additionalProperties": false,
+    "properties": {
+      "label": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 255,
+        "description": "Human-readable label for the field"
+      },
+      "name": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 255,
+        "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$",
+        "description": "Field name (must be a valid identifier)"
+      },
+      "type": {
+        "type": "string",
+        "enum": [
+          "address",
+          "audio",
+          "city",
+          "color",
+          "country",
+          "date",
+          "description",
+          "document",
+          "email",
+          "file",
+          "gender",
+          "hash",
+          "image",
+          "ip",
+          "language",
+          "location",
+          "maritalStatus",
+          "moment",
+          "money",
+          "name",
+          "password",
+          "pdf",
+          "phone",
+          "post",
+          "postalCode",
+          "quantity",
+          "rating",
+          "region",
+          "slug",
+          "snippet",
+          "state",
+          "title",
+          "token",
+          "ulid",
+          "url",
+          "username",
+          "uuid",
+          "video"
+        ],
+        "description": "Business type that determines the Nova field type and validation"
+      },
+      "rules": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "Optional array of Laravel validation rules"
+      },
+      "config": {
+        "type": "object",
+        "description": "Optional configuration object for the Nova field"
+      }
+    }
+  }
+}
