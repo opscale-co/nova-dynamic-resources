@@ -18,9 +18,12 @@ Thanks for helping Opscale continue to scale! 🚀
 
 ## Description
 
-Config-based rendering for Nova resources
+Create Nova resources UI (tables and forms) based on dynamic configuration stored in the database.
 
-Add a screenshot of the tool here.
+> [!IMPORTANT]  
+> This package is experimental and it's not inteded to be used in production (yet)
+
+TODO: Screenshots
 
 ## Installation
 
@@ -52,7 +55,38 @@ public function tools()
 
 ## Usage
 
-Click on the "nova-dynamic-resources" menu item in your Nova app to see the tool provided by this package.
+### Creating Dynamic Resources
+
+1. Navigate to the "Dynamic Resources" menu item in your Nova app
+2. Create a new Dynamic Resource by defining:
+   - **Label**: The display name for your resource
+   - **Fields**: An array of field definitions using the repeater interface
+
+### Field Configuration
+
+Each field in your dynamic resource consists of:
+
+- **Label**: The display name for the field
+- **Name**: The database column name
+- **Type**: The business field type (see available types below)
+- **Required**: Whether the field is mandatory
+- **Validation Rules**: Additional Laravel validation rules
+- **Config**: Field-specific configuration options
+
+### Available Field Types
+
+Field types are based on business logic and can be found in the `config/nova-dynamic-resources.php` configuration file. Each type maps to a specific Nova field class with predefined behavior.
+
+You can add more field types by extending the configuration file. The available types include common business field patterns like text, email, phone, address, etc.
+
+### Field Configuration Options
+
+The **Config** section allows you to call specific methods on the Nova field instance. For example:
+- `required => true` is equivalent to calling `->required(true)` on the field
+- `placeholder => "Enter your name"` calls `->placeholder("Enter your name")`
+- `help => "This field is important"` calls `->help("This field is important")`
+
+This approach provides flexibility to configure Nova fields dynamically while maintaining type safety and IDE support.
 
 ## Testing
 
