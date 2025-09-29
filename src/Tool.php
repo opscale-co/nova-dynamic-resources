@@ -1,24 +1,24 @@
 <?php
 
-namespace :namespace_vendor\:namespace_tool_name;
+namespace Opscale\NovaDynamicResources;
 
-use Laravel\Nova\Tool as NovaTool;
-use Laravel\Nova\Nova;
-use Laravel\Nova\Menu\MenuSection;
 use Illuminate\Http\Request;
+use Laravel\Nova\Menu\MenuItem;
+use Laravel\Nova\Nova;
+use Laravel\Nova\Tool as NovaTool;
+use Opscale\NovaDynamicResources\Nova\DynamicResource;
 
 class Tool extends NovaTool
 {
-    public function boot()
+    final public function boot(): void
     {
-        Nova::script(':package_name', __DIR__.'/../dist/js/tool.js');
-        Nova::style(':package_name', __DIR__.'/../dist/css/tool.css');
+        parent::boot();
+        Nova::script('nova-dynamic-resources', __DIR__ . '/../dist/js/tool.js');
+        Nova::style('nova-dynamic-resources', __DIR__ . '/../dist/css/tool.css');
     }
 
-    public function menu(Request $request)
+    final public function menu(Request $request): MenuItem
     {
-        return MenuSection::make(':namespace_tool_name')
-            ->path(':package_name')
-            ->icon('server');
+        return MenuItem::resource(DynamicResource::class);
     }
 }

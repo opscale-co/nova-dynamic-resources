@@ -1,0 +1,16 @@
+{
+    "include": [
+        "src",
+        "tests"
+    ],
+    "exclude": [
+        "tests/fixtures",
+        "config"
+    ],
+    "scripts": {
+        "lint": {
+            "phpstan": ["./vendor/bin/phpstan", "analyse"]
+        }
+    },
+    "processTimeout": 120
+}

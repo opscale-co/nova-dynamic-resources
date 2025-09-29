@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(composer install:*)",
+      "Bash(npm install)",
+      "Bash(npm run production:*)",
+      "Bash(vendor/bin/phpunit:*)",
+      "Bash(composer:*)",
+      "Bash(vendor/bin/testbench workbench:build:*)",
+      "Bash(vendor/bin/testbench config:show:*)",
+      "Bash(vendor/bin/testbench tinker:*)",
+      "Bash(vendor/bin/phpstan analyse:*)",
+      "Bash(npm run check:*)",
+      "Bash(./vendor/bin/tlint --help)",
+      "Bash(php:*)",
+      "Bash(npm run lint)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
