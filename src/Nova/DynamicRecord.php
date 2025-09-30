@@ -10,6 +10,7 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
 use Opscale\NovaDynamicResources\Models\DynamicRecord as Model;
 use Opscale\NovaDynamicResources\Models\DynamicResource as Template;
+use Override;
 
 /**
  * @extends Resource<Model>
@@ -30,7 +31,8 @@ abstract class DynamicRecord extends Resource
     /**
      * Get the displayable singular label of the resource.
      */
-    final public static function singularLabel(): string
+    #[Override]
+    public static function singularLabel(): string
     {
         /** @var string $singular_label */
         $singular_label = static::$template->getAttribute('singular_label');
@@ -41,7 +43,8 @@ abstract class DynamicRecord extends Resource
     /**
      * Get the displayable label of the resource.
      */
-    final public static function label(): string
+    #[Override]
+    public static function label(): string
     {
         /** @var string $label */
         $label = static::$template->getAttribute('label');
@@ -52,7 +55,8 @@ abstract class DynamicRecord extends Resource
     /**
      * Get the URI key for the resource.
      */
-    final public static function uriKey(): string
+    #[Override]
+    public static function uriKey(): string
     {
         /** @var string $uri_key */
         $uri_key = static::$template->getAttribute('uri_key');
@@ -66,7 +70,8 @@ abstract class DynamicRecord extends Resource
      * @param  Builder<Model>  $query
      * @return Builder<Model>
      */
-    final public static function indexQuery(NovaRequest $request, $query)
+    #[Override]
+    public static function indexQuery(NovaRequest $request, $query)
     {
         return $query->where('resource_id', static::$template->id);
     }
@@ -74,7 +79,8 @@ abstract class DynamicRecord extends Resource
     /**
      * Get the value that should be displayed to represent the resource.
      */
-    final public function title(): string
+    #[Override]
+    public function title(): string
     {
         /** @var string $label */
         $label = static::$template->getAttribute('label');
@@ -88,7 +94,8 @@ abstract class DynamicRecord extends Resource
     /**
      * @return array<mixed>
      */
-    final public function fields(NovaRequest $request): array
+    #[Override]
+    public function fields(NovaRequest $request): array
     {
         $fields = [
             Hidden::make('Resource', 'resource_id')
@@ -112,7 +119,8 @@ abstract class DynamicRecord extends Resource
     /**
      * @return array<mixed>
      */
-    final public function actions(NovaRequest $request): array
+    #[Override]
+    public function actions(NovaRequest $request): array
     {
         $actions = [];
         /** @var array<array{fields: array{class: class-string, config?: array<string, mixed>}}>|null $templateActions */
@@ -130,7 +138,7 @@ abstract class DynamicRecord extends Resource
     /**
      * @param  array{fields: array{type: string, label: string, name: string, rules?: array<mixed>, config?: array<mixed>}}  $field
      */
-    final protected function parseField(array $field): mixed
+    private function parseField(array $field): mixed
     {
         /** @var array{field: class-string, rules?: array<mixed>, config?: array<mixed>}|null $component */
         $component = Config::get('nova-dynamic-resources.fields.' . $field['fields']['type'], null);
