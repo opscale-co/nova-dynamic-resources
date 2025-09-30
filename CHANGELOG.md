@@ -2,6 +2,11 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## 1.1.0 (2025-09-30)
+
+* Merge pull request #6 from opscale-co/develop ([54ed810](https://github.com/opscale-co/nova-dynamic-resources/commit/54ed810)), closes [#6](https://github.com/opscale-co/nova-dynamic-resources/issues/6)
+* feat(resources): allow methods override for dynamic content ([a33e262](https://github.com/opscale-co/nova-dynamic-resources/commit/a33e262))
+
 ## 1.0.0 (2025-09-29)
 
 * Initial commit ([1ace167](https://github.com/opscale-co/nova-dynamic-resources/commit/1ace167))
