@@ -11,6 +11,7 @@ use Laravel\Nova\Resource;
 use Opscale\NovaDynamicResources\Models\DynamicResource as Model;
 use Opscale\NovaDynamicResources\Nova\Repeatables\Action;
 use Opscale\NovaDynamicResources\Nova\Repeatables\Field;
+use Override;
 
 /**
  * @extends Resource<Model>
@@ -50,7 +51,8 @@ class DynamicResource extends Resource
     /**
      * Get the URI key for the resource.
      */
-    final public static function uriKey(): string
+    #[Override]
+    public static function uriKey(): string
     {
         return 'dynamic-resources';
     }
@@ -58,7 +60,8 @@ class DynamicResource extends Resource
     /**
      * Get the displayable label of the resource.
      */
-    final public static function label(): string
+    #[Override]
+    public static function label(): string
     {
         return 'Dynamic Resources';
     }
@@ -66,7 +69,8 @@ class DynamicResource extends Resource
     /**
      * Get the displayable singular label of the resource.
      */
-    final public static function singularLabel(): string
+    #[Override]
+    public static function singularLabel(): string
     {
         return 'Dynamic Resource';
     }
@@ -77,7 +81,8 @@ class DynamicResource extends Resource
     /**
      * @return array<mixed>
      */
-    final public function fields(NovaRequest $request): array
+    #[Override]
+    public function fields(NovaRequest $request): array
     {
         return [
             Text::make(_('Label'), 'label')
