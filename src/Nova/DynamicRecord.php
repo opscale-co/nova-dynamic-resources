@@ -3,13 +3,17 @@
 namespace Opscale\NovaDynamicResources\Nova;
 
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Config;
-use InvalidArgumentException;
+use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Hidden;
+use Laravel\Nova\Fields\KeyValue;
+use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
 use Opscale\NovaDynamicResources\Models\DynamicRecord as Model;
 use Opscale\NovaDynamicResources\Models\DynamicResource as Template;
+use Opscale\NovaDynamicResources\Services\Actions\RenderAction;
+use Opscale\NovaDynamicResources\Services\Actions\RenderField;
 use Override;
 
 /**
@@ -17,7 +21,7 @@ use Override;
  *
  * @property-read Template $template
  */
-abstract class DynamicRecord extends Resource
+class DynamicRecord extends Resource
 {
     public static Template $template;
 
@@ -35,7 +39,13 @@ abstract class DynamicRecord extends Resource
     public static function singularLabel(): string
     {
         /** @var string $singular_label */
-        $singular_label = static::$template->getAttribute('singular_label');
+        $singular_label = null;
+
+        if (isset(static::$template)) {
+            $singular_label = static::$template->getAttribute('singular_label');
+        } else {
+            $singular_label = 'Dynamic Record';
+        }
 
         return $singular_label;
     }
@@ -47,7 +57,13 @@ abstract class DynamicRecord extends Resource
     public static function label(): string
     {
         /** @var string $label */
-        $label = static::$template->getAttribute('label');
+        $label = null;
+
+        if (isset(static::$template)) {
+            $label = static::$template->getAttribute('label');
+        } else {
+            $label = 'Dynamic Records';
+        }
 
         return $label;
     }
@@ -59,7 +75,13 @@ abstract class DynamicRecord extends Resource
     public static function uriKey(): string
     {
         /** @var string $uri_key */
-        $uri_key = static::$template->getAttribute('uri_key');
+        $uri_key = null;
+
+        if (isset(static::$template)) {
+            $uri_key = static::$template->getAttribute('uri_key');
+        } else {
+            $uri_key = 'dynamic-records';
+        }
 
         return $uri_key;
     }
@@ -73,19 +95,56 @@ abstract class DynamicRecord extends Resource
     #[Override]
     public static function indexQuery(NovaRequest $request, $query)
     {
-        return $query->where('resource_id', static::$template->id);
+        if (isset(static::$template)) {
+            return $query->where('resource_id', static::$template->id);
+        } else {
+            return $query;
+        }
     }
 
     /**
      * Get the value that should be displayed to represent the resource.
      */
-    #[Override]
-    public function title(): string
+    final public function title(): string
     {
         /** @var string $label */
-        $label = static::$template->getAttribute('label');
+        $title = $this->model()->data[
+            $this->model()->resource->title
+        ];
 
-        return $label;
+        return $title;
+    }
+
+    /**
+     * Get the fields displayed by the resource.
+     */
+    /**
+     * @return array<mixed>
+     */
+    #[Override]
+    public function fieldsForIndex(NovaRequest $request): array
+    {
+        if (static::uriKey() === 'dynamic-records') {
+            return [
+                'resource' => BelongsTo::make(_('Resource'), 'resource', DynamicResource::class)
+                    ->sortable()
+                    ->filterable(),
+
+                'title' => Text::make(_('Title'), function () {
+                    return $this->title();
+                }),
+
+                'data' => KeyValue::make(_('Data'), 'data')
+                    ->keyLabel('Field')
+                    ->valueLabel('Value'),
+
+                'created_at' => DateTime::make(_('Created At'), 'created_at')
+                    ->sortable()
+                    ->filterable(),
+            ];
+        } else {
+            return $this->fields($request);
+        }
     }
 
     /**
@@ -97,17 +156,27 @@ abstract class DynamicRecord extends Resource
     #[Override]
     public function fields(NovaRequest $request): array
     {
+        if (! isset(static::$template)) {
+            return [];
+        }
+
+        $resource = static::$template;
         $fields = [
             Hidden::make('Resource', 'resource_id')
-                ->default(static::$template->id)
+                ->default($resource->id)
                 ->rules('required'),
         ];
 
-        /** @var array<array{fields: array{type: string, label: string, name: string, rules?: array<mixed>, config?: array<mixed>}}> $templateFields */
-        $templateFields = static::$template->getAttribute('fields');
+        $templateFields = $resource->fields;
 
         foreach ($templateFields as $templateField) {
-            $fields[] = $this->parseField($templateField);
+            $fields[] = RenderField::run(
+                type: $templateField->type,
+                label: $templateField->label,
+                name: $templateField->name,
+                rules: $templateField->rules ?? [],
+                config: $templateField->config ?? []
+            );
         }
 
         return $fields;
@@ -122,69 +191,21 @@ abstract class DynamicRecord extends Resource
     #[Override]
     public function actions(NovaRequest $request): array
     {
-        $actions = [];
-        /** @var array<array{fields: array{class: class-string, config?: array<string, mixed>}}>|null $templateActions */
-        $templateActions = static::$template->getAttribute('actions');
+        $resource = $this->model()->resource;
+        if ($resource === null) {
+            return [];
+        }
 
-        if ($templateActions !== null) {
-            foreach ($templateActions as $templateAction) {
-                $actions[] = $this->parseAction($templateAction);
-            }
+        $actions = [];
+
+        $templateActions = $resource->actions;
+        foreach ($templateActions as $templateAction) {
+            $actions[] = RenderAction::run(
+                class: $templateAction->class,
+                config: $templateAction->config ?? []
+            );
         }
 
         return $actions;
-    }
-
-    /**
-     * @param  array{fields: array{type: string, label: string, name: string, rules?: array<mixed>, config?: array<mixed>}}  $field
-     */
-    private function parseField(array $field): mixed
-    {
-        /** @var array{field: class-string, rules?: array<mixed>, config?: array<mixed>}|null $component */
-        $component = Config::get('nova-dynamic-resources.fields.' . $field['fields']['type'], null);
-
-        if ($component === null) {
-            throw new InvalidArgumentException('Invalid field type: ' . $field['fields']['type']);
-        }
-
-        /** @var array<mixed> $rules */
-        $rules = array_merge($component['rules'] ?? [], $field['fields']['rules'] ?? []);
-        /** @var array<string, mixed> $config */
-        $config = array_merge($component['config'] ?? [], $field['fields']['config'] ?? []);
-
-        $fieldClass = $component['field'];
-        $instance = $fieldClass::make(
-            $field['fields']['label'],
-            'data->' . $field['fields']['name'],
-        )->rules($rules);
-
-        if (! empty($config)) {
-            foreach ($config as $method => $parameters) {
-                if (is_string($method) && method_exists($instance, $method)) {
-                    $instance = is_array($parameters) ? $instance->{$method}(...$parameters) : $instance->{$method}($parameters);
-                }
-            }
-        }
-
-        return $instance;
-    }
-
-    /**
-     * @param  array{fields: array{class: class-string, config?: array<string, mixed>}}  $action
-     */
-    private function parseAction(array $action): mixed
-    {
-        $actionClass = $action['fields']['class'];
-        $instance = new $actionClass;
-
-        if (! empty($action['fields']['config']) && is_array($action['fields']['config'])) {
-            foreach ($action['fields']['config'] as $method => $parameters) {
-                if (is_string($method) && method_exists($instance, $method)) {
-                    $instance = is_array($parameters) ? $instance->{$method}(...$parameters) : $instance->{$method}($parameters);
-                }
-            }
-        }
-
-        return $instance;
     }
 }

@@ -5,14 +5,55 @@ namespace Opscale\NovaDynamicResources\Models;
 use Enigma\ValidatorTrait;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Opscale\NovaDynamicResources\Models\Rules\JsonSchemaRule;
+use Opscale\NovaDynamicResources\Models\Repositories\DynamicResourceRepository;
 
 class DynamicResource extends Model
 {
+    use DynamicResourceRepository;
     use HasUlids;
     use SoftDeletes;
     use ValidatorTrait;
+
+    /**
+     * The validation rules for the model.
+     *
+     * @var array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
+     */
+    public array $validationRules = [
+        'label' => [
+            'required',
+            'string',
+            'min:1',
+            'max:255',
+        ],
+        'singular_label' => [
+            'nullable',
+            'string',
+            'min:1',
+            'max:255',
+        ],
+        'uri_key' => [
+            'nullable',
+            'string',
+            'min:1',
+            'max:255',
+            'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
+            'unique:dynamic_resources,uri_key',
+        ],
+        'title' => [
+            'required',
+            'string',
+            'min:1',
+            'max:255',
+        ],
+        'base_class' => [
+            'nullable',
+            'string',
+            'max:255',
+        ],
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -23,61 +64,32 @@ class DynamicResource extends Model
         'singular_label',
         'label',
         'uri_key',
-        'fields',
-        'actions',
+        'title',
+        'base_class',
     ];
-
-    /**
-     * The validation rules for the model.
-     *
-     * @return array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
-     */
-    final public function validationRules(): array
-    {
-        return [
-            'singular_label' => [
-                'required',
-                'string',
-                'min:1',
-                'max:255',
-            ],
-            'label' => [
-                'required',
-                'string',
-                'min:1',
-                'max:255',
-            ],
-            'uri_key' => [
-                'required',
-                'string',
-                'min:1',
-                'max:255',
-                'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
-                'unique:dynamic_resources,uri_key',
-            ],
-            'fields' => [
-                'required',
-                JsonSchemaRule::make('fields'),
-            ],
-            'actions' => [
-                'nullable',
-                JsonSchemaRule::make('actions'),
-            ],
-        ];
-    }
 
     /**
      * The attributes that should be cast.
      *
-     * @return array<string, string>
-     *
-     * @phpstan-ignore solid.lsp.parentCall
+     * @var array<string, string>
      */
-    final protected function casts(): array
+    protected $casts = [
+        'metadata' => 'array',
+    ];
+
+    /**
+     * Get the fields for the resource.
+     */
+    public function fields(): HasMany
     {
-        return [
-            'fields' => 'array',
-            'actions' => 'array',
-        ];
+        return $this->hasMany(DynamicField::class, 'resource_id');
+    }
+
+    /**
+     * Get the actions for the resource.
+     */
+    public function actions(): HasMany
+    {
+        return $this->hasMany(DynamicAction::class, 'resource_id');
     }
 }

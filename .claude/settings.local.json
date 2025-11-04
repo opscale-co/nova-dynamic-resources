@@ -13,7 +13,9 @@
       "Bash(npm run check:*)",
       "Bash(./vendor/bin/tlint --help)",
       "Bash(php:*)",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "WebFetch(domain:nova.laravel.com)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

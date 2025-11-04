@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c374de655df82bc5d42b215c9b5f8fba",
+    "content-hash": "c34e7428c18623013aa1ca6cef7c291a",
     "packages": [
         {
             "name": "brick/math",
@@ -1054,6 +1054,52 @@
             "time": "2025-08-22T14:27:06+00:00"
         },
         {
+            "name": "illuminate/json-schema",
+            "version": "v12.36.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/illuminate/json-schema.git",
+                "reference": "0af51b60057e43f577805d13d7436fb6231db829"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/illuminate/json-schema/zipball/0af51b60057e43f577805d13d7436fb6231db829",
+                "reference": "0af51b60057e43f577805d13d7436fb6231db829",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "12.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Illuminate\\JsonSchema\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "The Illuminate Json Schema package.",
+            "homepage": "https://laravel.com",
+            "support": {
+                "issues": "https://github.com/laravel/framework/issues",
+                "source": "https://github.com/laravel/framework"
+            },
+            "time": "2025-09-29T09:49:12+00:00"
+        },
+        {
             "name": "laravel/framework",
             "version": "v11.46.0",
             "source": {
@@ -1267,6 +1313,79 @@
                 "source": "https://github.com/laravel/framework"
             },
             "time": "2025-09-08T21:54:34+00:00"
+        },
+        {
+            "name": "laravel/mcp",
+            "version": "v0.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/mcp.git",
+                "reference": "dc722a4c388f172365dec70461f0413ac366f360"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/mcp/zipball/dc722a4c388f172365dec70461f0413ac366f360",
+                "reference": "dc722a4c388f172365dec70461f0413ac366f360",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "illuminate/console": "^10.49.0|^11.45.3|^12.28.1",
+                "illuminate/container": "^10.49.0|^11.45.3|^12.28.1",
+                "illuminate/contracts": "^10.49.0|^11.45.3|^12.28.1",
+                "illuminate/http": "^10.49.0|^11.45.3|^12.28.1",
+                "illuminate/json-schema": "^12.28.1",
+                "illuminate/routing": "^10.49.0|^11.45.3|^12.28.1",
+                "illuminate/support": "^10.49.0|^11.45.3|^12.28.1",
+                "illuminate/validation": "^10.49.0|^11.45.3|^12.28.1",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "laravel/pint": "1.20.0",
+                "orchestra/testbench": "^8.36.0|^9.15.0|^10.6.0",
+                "pestphp/pest": "^2.36.0|^3.8.4|^4.1.0",
+                "phpstan/phpstan": "^2.1.27",
+                "rector/rector": "^2.2.4"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "Mcp": "Laravel\\Mcp\\Server\\Facades\\Mcp"
+                    },
+                    "providers": [
+                        "Laravel\\Mcp\\Server\\McpServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Mcp\\": "src/",
+                    "Laravel\\Mcp\\Server\\": "src/Server/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "Rapidly build MCP servers for your Laravel applications.",
+            "homepage": "https://github.com/laravel/mcp",
+            "keywords": [
+                "laravel",
+                "mcp"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/mcp/issues",
+                "source": "https://github.com/laravel/mcp"
+            },
+            "time": "2025-10-29T14:26:01+00:00"
         },
         {
             "name": "laravel/prompts",
@@ -2532,6 +2651,72 @@
                 }
             ],
             "time": "2025-05-08T08:14:37+00:00"
+        },
+        {
+            "name": "opscale-co/nova-catalogs",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/opscale-co/nova-catalogs.git",
+                "reference": "eaf030236ecf607af87378c3cd4f196495630769"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/opscale-co/nova-catalogs/zipball/eaf030236ecf607af87378c3cd4f196495630769",
+                "reference": "eaf030236ecf607af87378c3cd4f196495630769",
+                "shasum": ""
+            },
+            "require": {
+                "lorisleiva/laravel-actions": "*",
+                "opscale-co/nova-package-tools": "^1.0",
+                "php": ">=8.2",
+                "theriddleofenigma/laravel-model-validation": "*"
+            },
+            "require-dev": {
+                "laravel/nova": "^5.7",
+                "laravel/nova-devtool": "^1.0",
+                "phpunit/phpunit": "^10.5",
+                "tightenco/duster": "^2.7"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Opscale\\NovaCatalogs\\ToolServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Opscale\\NovaCatalogs\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Opscale",
+                    "email": "development@opscale.co",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A simple repository for managing catalogs in your Nova app",
+            "homepage": "https://github.com/opscale-co/nova-catalogs",
+            "keywords": [
+                "catalog",
+                "laravel",
+                "nova",
+                "opscale",
+                "package",
+                "tool"
+            ],
+            "support": {
+                "issues": "https://github.com/opscale-co/nova-catalogs/issues",
+                "source": "https://github.com/opscale-co/nova-catalogs/tree/v1.2.0"
+            },
+            "time": "2025-10-22T16:33:41+00:00"
         },
         {
             "name": "opscale-co/nova-package-tools",
@@ -6787,17 +6972,17 @@
         },
         {
             "name": "laravel/nova",
-            "version": "5.7.5",
+            "version": "5.7.6",
             "source": {
                 "type": "git",
                 "url": "git@github.com:laravel/nova.git",
-                "reference": "7e9937b5f7447bcd0c52abaed44c3961c4a790f0"
+                "reference": "40b3aeffcaa4f295a8136aad744895e6e8f64ae4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://nova.laravel.com/dist/laravel/nova/laravel-nova-7e9937b5f7447bcd0c52abaed44c3961c4a790f0-zip-696677.zip",
-                "reference": "7e9937b5f7447bcd0c52abaed44c3961c4a790f0",
-                "shasum": "5988533137431173f553db23e7e3bd310ded313e"
+                "url": "https://nova.laravel.com/dist/laravel/nova/laravel-nova-40b3aeffcaa4f295a8136aad744895e6e8f64ae4-zip-293061.zip",
+                "reference": "40b3aeffcaa4f295a8136aad744895e6e8f64ae4",
+                "shasum": "a89416fe9ff4be5e085e16942805199ba995ad26"
             },
             "require": {
                 "brick/money": "^0.8|^0.9|^0.10",
@@ -6962,10 +7147,10 @@
                 "laravel"
             ],
             "support": {
-                "source": "https://github.com/laravel/nova/tree/v5.7.5",
+                "source": "https://github.com/laravel/nova/tree/v5.7.6",
                 "issues": "https://github.com/laravel/nova/issues"
             },
-            "time": "2025-07-31T13:20:04+00:00"
+            "time": "2025-10-19T03:38:32+00:00"
         },
         {
             "name": "laravel/nova-devtool",
@@ -10230,12 +10415,12 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.2"
+        "php": "^8.2"
     },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"
