@@ -6,11 +6,12 @@ use Enigma\ValidatorTrait;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Opscale\NovaDynamicResources\Casts\AsDynamicData;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DynamicRecord extends Model
+class DynamicAction extends Model
 {
     use HasUlids;
+    use SoftDeletes;
     use ValidatorTrait;
 
     /**
@@ -21,11 +22,21 @@ class DynamicRecord extends Model
     public array $validationRules = [
         'resource_id' => [
             'required',
-            'string',
+            'ulid',
             'exists:dynamic_resources,id',
         ],
-        'data' => [
+        'class' => [
             'required',
+            'string',
+            'max:255',
+        ],
+        'label' => [
+            'required',
+            'string',
+            'max:255',
+        ],
+        'config' => [
+            'nullable',
             'array',
         ],
         'metadata' => [
@@ -35,47 +46,33 @@ class DynamicRecord extends Model
     ];
 
     /**
-     * The relationships that should always be loaded.
-     *
-     * @var array<int, string>
-     */
-    protected $with = [
-        'resource',
-    ];
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
     protected $fillable = [
         'resource_id',
-        'data',
+        'class',
+        'label',
+        'config',
         'metadata',
     ];
 
     /**
-     * Get the dynamic resource that this record belongs to.
-     *
-     * @return BelongsTo<DynamicResource, $this>
-     */
-    final public function resource(): BelongsTo
-    {
-        return $this->belongsTo(DynamicResource::class, 'resource_id', 'id');
-    }
-
-    /**
      * The attributes that should be cast.
      *
-     * @return array<string, string>
-     *
-     * @phpstan-ignore solid.lsp.parentCall
+     * @var array<string, string>
      */
-    final protected function casts(): array
+    protected $casts = [
+        'config' => 'array',
+        'metadata' => 'array',
+    ];
+
+    /**
+     * Get the resource that owns the action.
+     */
+    public function resource(): BelongsTo
     {
-        return [
-            'data' => AsDynamicData::class,
-            'metadata' => 'array',
-        ];
+        return $this->belongsTo(DynamicResource::class, 'resource_id');
     }
 }

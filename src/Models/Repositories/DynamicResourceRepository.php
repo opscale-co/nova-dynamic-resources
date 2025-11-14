@@ -1,0 +1,26 @@
+<?php
+
+namespace Opscale\NovaDynamicResources\Models\Repositories;
+
+use Illuminate\Support\Str;
+
+trait DynamicResourceRepository
+{
+    /**
+     * Boot the DynamicResourceRepository trait.
+     */
+    public static function bootDynamicResourceRepository(): void
+    {
+        static::creating(function ($model): void {
+            // Auto-populate singular_label if not set
+            if (empty($model->singular_label) && ! empty($model->label)) {
+                $model->singular_label = Str::singular($model->label);
+            }
+
+            // Auto-populate uri_key if not set
+            if (empty($model->uri_key) && ! empty($model->label)) {
+                $model->uri_key = Str::slug($model->label);
+            }
+        });
+    }
+}

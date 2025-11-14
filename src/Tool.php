@@ -3,9 +3,11 @@
 namespace Opscale\NovaDynamicResources;
 
 use Illuminate\Http\Request;
+use Laravel\Nova\Menu\MenuGroup;
 use Laravel\Nova\Menu\MenuItem;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Tool as NovaTool;
+use Opscale\NovaDynamicResources\Nova\DynamicRecord;
 use Opscale\NovaDynamicResources\Nova\DynamicResource;
 
 class Tool extends NovaTool
@@ -17,8 +19,11 @@ class Tool extends NovaTool
         Nova::style('nova-dynamic-resources', __DIR__ . '/../dist/css/tool.css');
     }
 
-    final public function menu(Request $request): MenuItem
+    final public function menu(Request $request): MenuGroup
     {
-        return MenuItem::resource(DynamicResource::class);
+        return MenuGroup::make('Dynamic Resources', [
+            MenuItem::resource(DynamicResource::class),
+            MenuItem::resource(DynamicRecord::class),
+        ])->collapsable();
     }
 }

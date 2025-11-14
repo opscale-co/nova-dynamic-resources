@@ -12,11 +12,14 @@ return new class extends Migration
             $table->ulid('id')->primary();
             $table->string('singular_label');
             $table->string('label');
-            $table->string('uri_key')->index();
-            $table->json('fields');
-            $table->json('actions')->nullable();
+            $table->string('uri_key');
+            $table->string('title');
+            $table->string('base_class')->nullable();
+            $table->json('metadata')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unique('uri_key');
         });
     }
 

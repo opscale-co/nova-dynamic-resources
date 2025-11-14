@@ -5,6 +5,9 @@ namespace Opscale\NovaDynamicResources;
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
 use Opscale\NovaDynamicResources\Models\DynamicResource as Template;
+use Opscale\NovaDynamicResources\Nova\DynamicAction;
+use Opscale\NovaDynamicResources\Nova\DynamicField;
+use Opscale\NovaDynamicResources\Nova\DynamicRecord;
 use Opscale\NovaDynamicResources\Nova\DynamicResource;
 use Opscale\NovaPackageTools\NovaPackage;
 use Opscale\NovaPackageTools\NovaPackageServiceProvider;
@@ -24,7 +27,12 @@ class ToolServiceProvider extends NovaPackageServiceProvider
             ->hasConfigFile('nova-dynamic-resources')
             ->discoversMigrations()
             ->runsMigrations()
-            ->hasResources(DynamicResource::class)
+            ->hasResources([
+                DynamicResource::class,
+                DynamicField::class,
+                DynamicAction::class,
+                DynamicRecord::class,
+            ])
             ->hasInstallCommand(function (InstallCommand $installCommand): void {
                 $installCommand
                     ->publishConfigFile()
@@ -48,10 +56,18 @@ class ToolServiceProvider extends NovaPackageServiceProvider
         $resources = Template::all();
         $classes = [];
         foreach ($resources as $resource) {
+            $baseClass = null;
+            if ($resource->base_class && class_exists($resource->base_class)) {
+                $baseClass = $resource->base_class;
+            } else {
+                $baseClass = DynamicRecord::class;
+            }
+
+            $templateClass = Template::class;
             $class = get_class(eval("
-            return new class extends \Opscale\NovaDynamicResources\Nova\DynamicRecord{
-                public static \Opscale\NovaDynamicResources\Models\DynamicResource \$template;
-            };"));
+                return new class extends {$baseClass} {
+                    public static {$templateClass} \$template;
+                };"));
             $class::$template = $resource;
             $binding = 'dynamic-' . $resource->uri_key;
             $this->app->bindIf($binding, function ($app) use ($class): object {

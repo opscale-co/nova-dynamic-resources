@@ -26,5 +26,10 @@ class DatabaseSeeder extends Seeder
 
         // Create additional test users
         User::factory()->count(8)->create();
+
+        // Seed dynamic resources
+        $this->call([
+            DynamicResourceSeeder::class,
+        ]);
     }
 }

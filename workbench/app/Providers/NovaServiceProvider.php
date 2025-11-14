@@ -2,6 +2,7 @@
 
 namespace Workbench\App\Providers;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Fortify\Features;
 use Laravel\Nova\DevTool\DevTool as Nova;
@@ -11,13 +12,22 @@ use Opscale\NovaDynamicResources\Tool;
 class NovaServiceProvider extends NovaApplicationServiceProvider
 {
     /**
+     * The tool instance.
+     */
+    protected Tool $tool;
+
+    /**
      * Bootstrap any application services.
      */
     public function boot(): void
     {
         parent::boot();
 
-        //
+        $this->tool = new Tool;
+
+        Nova::mainMenu(function (Request $request) {
+            return [$this->tool->menu($request)];
+        });
     }
 
     /**
@@ -28,7 +38,7 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     public function tools(): array
     {
         return [
-            new Tool,
+            $this->tool,
         ];
     }
 
