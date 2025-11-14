@@ -30,7 +30,7 @@ return new class extends Migration
                 ->onUpdate('cascade');
 
             // Indexes for better performance
-            $table->unique(['resource_id', 'name']);
+            //$table->unique(['resource_id', 'name']);
         });
     }
 

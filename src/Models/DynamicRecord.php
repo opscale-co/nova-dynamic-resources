@@ -6,7 +6,7 @@ use Enigma\ValidatorTrait;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Config;
+use Opscale\NovaDynamicResources\Casts\AsDynamicData;
 
 class DynamicRecord extends Model
 {
@@ -34,6 +34,11 @@ class DynamicRecord extends Model
         ],
     ];
 
+    /**
+     * The relationships that should always be loaded.
+     *
+     * @var array<int, string>
+     */
     protected $with = [
         'resource',
     ];
@@ -68,29 +73,9 @@ class DynamicRecord extends Model
      */
     final protected function casts(): array
     {
-        $casts = [
-            'data' => 'array',
+        return [
+            'data' => AsDynamicData::class,
             'metadata' => 'array',
         ];
-
-        // Add dynamic casts for data fields based on resource configuration
-        $resource = $this->resource;
-        if ($resource !== null) {
-            $fields = $resource->fields;
-
-            foreach ($fields as $field) {
-                $fieldType = $field->type;
-                $fieldName = $field->name;
-
-                /** @var array{cast?: string}|null $fieldConfig */
-                $fieldConfig = Config::get('nova-dynamic-resources.fields.' . $fieldType, null);
-
-                if ($fieldConfig !== null && isset($fieldConfig['cast'])) {
-                    $casts[$fieldName] = $fieldConfig['cast'];
-                }
-            }
-        }
-
-        return $casts;
     }
 }

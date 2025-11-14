@@ -69,6 +69,16 @@ class DynamicResource extends Model
     ];
 
     /**
+     * The relationships that should always be loaded.
+     *
+     * @var array<int, string>
+     */
+    protected $with = [
+        'fields',
+        'actions',
+    ];
+
+    /**
      * The attributes that should be cast.
      *
      * @var array<string, string>

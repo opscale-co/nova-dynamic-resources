@@ -12,6 +12,7 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
 use Opscale\NovaDynamicResources\Models\DynamicRecord as Model;
 use Opscale\NovaDynamicResources\Models\DynamicResource as Template;
+use Opscale\NovaDynamicResources\Nova\Actions\ViewRecord;
 use Opscale\NovaDynamicResources\Services\Actions\RenderAction;
 use Opscale\NovaDynamicResources\Services\Actions\RenderField;
 use Override;
@@ -191,6 +192,13 @@ class DynamicRecord extends Resource
     #[Override]
     public function actions(NovaRequest $request): array
     {
+        // Add inline action when viewing all dynamic records
+        if (static::uriKey() === 'dynamic-records') {
+            return [
+                ViewRecord::make()->showInline(),
+            ];
+        }
+
         $resource = $this->model()->resource;
         if ($resource === null) {
             return [];

@@ -1,8 +1,5 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Opscale\NovaDynamicResources\Http\Controllers\ToolController;
-
 /*
 |--------------------------------------------------------------------------
 | Tool API Routes
@@ -13,5 +10,3 @@ use Opscale\NovaDynamicResources\Http\Controllers\ToolController;
 | by your tool's "Authorize" middleware by default. Now, go build!
 |
 */
-
-Route::get('test-case', [ToolController::class, 'index']);

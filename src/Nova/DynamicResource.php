@@ -12,9 +12,12 @@ use Laravel\Nova\Nova;
 use Laravel\Nova\Resource;
 use Laravel\Nova\Tabs\Tab;
 use Opscale\NovaDynamicResources\Models\DynamicResource as Model;
+use Opscale\NovaDynamicResources\Nova\Actions\CreateRecord;
 use Opscale\NovaDynamicResources\Nova\Repeatables\Action;
 use Opscale\NovaDynamicResources\Nova\Repeatables\Field;
 use Override;
+use ReflectionClass;
+use ReflectionException;
 
 /**
  * @extends Resource<Model>
@@ -81,9 +84,22 @@ class DynamicResource extends Resource
         $baseClasses = [];
 
         foreach (Nova::$resources as $resource) {
-            if (get_parent_class($resource) === DynamicRecord::class) {
-                $baseClasses[$resource] = class_basename($resource);
+            // Skip if parent class is not DynamicRecord
+            if (get_parent_class($resource) !== DynamicRecord::class) {
+                continue;
             }
+
+            // Skip anonymous classes
+            try {
+                $reflection = new ReflectionClass($resource);
+                if ($reflection->isAnonymous()) {
+                    continue;
+                }
+            } catch (ReflectionException $e) {
+                continue;
+            }
+
+            $baseClasses[$resource] = class_basename($resource);
         }
 
         return $baseClasses;
@@ -116,10 +132,6 @@ class DynamicResource extends Resource
                         ->creationRules(fn (): array => $this->model()?->validationRules['uri_key'])
                         ->hideWhenCreating(),
 
-                    Text::make(_('Title'), 'title')
-                        ->rules(fn (): array => $this->model()?->validationRules['title'])
-                        ->help('Define the property to be used as title.'),
-
                     Select::make(_('Base Class'), 'base_class')
                         ->options($baseClasses)
                         ->displayUsingLabels()
@@ -136,11 +148,16 @@ class DynamicResource extends Resource
                         ])
                         ->asHasMany(DynamicField::class),
 
+                    Text::make(_('Title'), 'title')
+                        ->rules(fn (): array => $this->model()?->validationRules['title'])
+                        ->help('Define the property to be used as title.'),
+
                     Repeater::make(_('Actions'), 'actions')
                         ->repeatables([
                             Action::make(),
                         ])
-                        ->asHasMany(DynamicAction::class),
+                        ->asHasMany(DynamicAction::class)
+                        ->hideWhenCreating(),
                 ]),
 
                 Tab::make('Fields', [
@@ -151,6 +168,19 @@ class DynamicResource extends Resource
                     'actions' => HasMany::make(__('Actions'), 'actions', DynamicAction::class),
                 ]),
             ]),
+        ];
+    }
+
+    /**
+     * Get the actions available for the resource.
+     *
+     * @return array<int, \Laravel\Nova\Actions\Action>
+     */
+    #[Override]
+    public function actions(NovaRequest $request): array
+    {
+        return [
+            CreateRecord::make()->showInline(),
         ];
     }
 }
