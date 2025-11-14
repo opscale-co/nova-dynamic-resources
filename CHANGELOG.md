@@ -2,6 +2,18 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## 1.2.0 (2025-11-14)
+
+* Merge branch 'main' into develop ([ba9e178](https://github.com/opscale-co/nova-dynamic-resources/commit/ba9e178))
+* Merge pull request #7 from opscale-co/develop ([b64141a](https://github.com/opscale-co/nova-dynamic-resources/commit/b64141a)), closes [#7](https://github.com/opscale-co/nova-dynamic-resources/issues/7)
+* perf(project): enhanced data structure and parsing process ([29858d7](https://github.com/opscale-co/nova-dynamic-resources/commit/29858d7))
+* feat(project): first working version ([3010a2e](https://github.com/opscale-co/nova-dynamic-resources/commit/3010a2e))
+
+
+### BREAKING CHANGE
+
+* Fields and actions are now stored in separate tables instead of json fields
+
 ## 1.1.0 (2025-09-30)
 
 * Merge pull request #6 from opscale-co/develop ([54ed810](https://github.com/opscale-co/nova-dynamic-resources/commit/54ed810)), closes [#6](https://github.com/opscale-co/nova-dynamic-resources/issues/6)
