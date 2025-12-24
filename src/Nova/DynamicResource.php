@@ -114,8 +114,6 @@ class DynamicResource extends Resource
     #[Override]
     public function fields(NovaRequest $request): array
     {
-        $baseClasses = static::getAvailableBaseClasses();
-
         return [
             Tab::group(fields: [
                 Tab::make(__('Resource'), [
@@ -148,6 +146,8 @@ class DynamicResource extends Resource
 
     final protected function defaultFields(NovaRequest $request): array
     {
+        $baseClasses = static::getAvailableBaseClasses();
+
         return [
             'label' => Text::make(__('Label'), 'label')
                 ->rules(fn (): array => $this->model()?->validationRules['label'])
