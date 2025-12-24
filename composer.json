@@ -79,5 +79,6 @@
       "Composer\\Config::disableProcessTimeout",
       "@php vendor/bin/testbench serve --ansi"
     ]
-  }
+  },
+  "version": "1.1.0"
 }
