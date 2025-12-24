@@ -15,7 +15,6 @@ use Opscale\NovaDynamicResources\Models\DynamicResource as Model;
 use Opscale\NovaDynamicResources\Nova\Actions\CreateRecord;
 use Opscale\NovaDynamicResources\Nova\Repeatables\Action;
 use Opscale\NovaDynamicResources\Nova\Repeatables\Field;
-use Override;
 use ReflectionClass;
 use ReflectionException;
 
@@ -50,8 +49,7 @@ class DynamicResource extends Resource
     /**
      * Get the URI key for the resource.
      */
-    #[Override]
-    public static function uriKey(): string
+    final public static function uriKey(): string
     {
         return __('dynamic-resources');
     }
@@ -59,8 +57,7 @@ class DynamicResource extends Resource
     /**
      * Get the displayable label of the resource.
      */
-    #[Override]
-    public static function label(): string
+    final public static function label(): string
     {
         return __('Dynamic Resources');
     }
@@ -68,8 +65,7 @@ class DynamicResource extends Resource
     /**
      * Get the displayable singular label of the resource.
      */
-    #[Override]
-    public static function singularLabel(): string
+    final public static function singularLabel(): string
     {
         return __('Dynamic Resource');
     }
@@ -111,53 +107,14 @@ class DynamicResource extends Resource
     /**
      * @return array<mixed>
      */
-    #[Override]
-    public function fields(NovaRequest $request): array
+    final public function fields(NovaRequest $request): array
     {
         $baseClasses = static::getAvailableBaseClasses();
 
         return [
             Tab::group(fields: [
                 Tab::make(__('Resource'), [
-                    Text::make(__('Label'), 'label')
-                        ->rules(fn (): array => $this->model()?->validationRules['label'])
-                        ->help(__('Use a plural label for your resource.')),
-
-                    Text::make(__('Singular Label'), 'singular_label')
-                        ->rules(fn (): array => $this->model()?->validationRules['singular_label'])
-                        ->hideWhenCreating(),
-
-                    Slug::make(__('URI Key'), 'uri_key')
-                        ->from('label')
-                        ->creationRules(fn (): array => $this->model()?->validationRules['uri_key'])
-                        ->hideWhenCreating(),
-
-                    Select::make(__('Base Class'), 'base_class')
-                        ->options($baseClasses)
-                        ->displayUsingLabels()
-                        ->searchable()
-                        ->rules(fn (): array => $this->model()?->validationRules['base_class'])
-                        ->hideFromIndex()
-                        ->canSee(function (NovaRequest $request) use ($baseClasses): bool {
-                            return count($baseClasses) > 1;
-                        }),
-
-                    Repeater::make(__('Fields'), 'fields')
-                        ->repeatables([
-                            Field::make(),
-                        ])
-                        ->asHasMany(DynamicField::class),
-
-                    Text::make(__('Title'), 'title')
-                        ->rules(fn (): array => $this->model()?->validationRules['title'])
-                        ->help(__('Define the property to be used as title.')),
-
-                    Repeater::make(__('Actions'), 'actions')
-                        ->repeatables([
-                            Action::make(),
-                        ])
-                        ->asHasMany(DynamicAction::class)
-                        ->hideWhenCreating(),
+                    ...array_values($this->defaultFields($request)),
                 ]),
 
                 Tab::make(__('Fields'), [
@@ -176,11 +133,55 @@ class DynamicResource extends Resource
      *
      * @return array<int, \Laravel\Nova\Actions\Action>
      */
-    #[Override]
-    public function actions(NovaRequest $request): array
+    final public function actions(NovaRequest $request): array
     {
         return [
             CreateRecord::make()->showInline(),
+        ];
+    }
+
+    final protected function defaultFields(NovaRequest $request): array
+    {
+        return [
+            'label' => Text::make(__('Label'), 'label')
+                ->rules(fn (): array => $this->model()?->validationRules['label'])
+                ->help(__('Use a plural label for your resource.')),
+
+            'singular_label' => Text::make(__('Singular Label'), 'singular_label')
+                ->rules(fn (): array => $this->model()?->validationRules['singular_label'])
+                ->hideWhenCreating(),
+
+            'uri_key' => Slug::make(__('URI Key'), 'uri_key')
+                ->from('label')
+                ->creationRules(fn (): array => $this->model()?->validationRules['uri_key'])
+                ->hideWhenCreating(),
+
+            'base_class' => Select::make(__('Base Class'), 'base_class')
+                ->options($baseClasses)
+                ->displayUsingLabels()
+                ->searchable()
+                ->rules(fn (): array => $this->model()?->validationRules['base_class'])
+                ->hideFromIndex()
+                ->canSee(function (NovaRequest $request) use ($baseClasses): bool {
+                    return count($baseClasses) > 1;
+                }),
+
+            'fields' => Repeater::make(__('Fields'), 'fields')
+                ->repeatables([
+                    Field::make(),
+                ])
+                ->asHasMany(DynamicField::class),
+
+            'title' => Text::make(__('Title'), 'title')
+                ->rules(fn (): array => $this->model()?->validationRules['title'])
+                ->help(__('Define the property to be used as title.')),
+
+            'actions' => Repeater::make(__('Actions'), 'actions')
+                ->repeatables([
+                    Action::make(),
+                ])
+                ->asHasMany(DynamicAction::class)
+                ->hideWhenCreating(),
         ];
     }
 }
