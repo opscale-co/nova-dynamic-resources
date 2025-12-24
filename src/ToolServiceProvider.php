@@ -25,6 +25,7 @@ class ToolServiceProvider extends NovaPackageServiceProvider
         $package
             ->name('nova-dynamic-resources')
             ->hasConfigFile('nova-dynamic-resources')
+            ->hasTranslations()
             ->discoversMigrations()
             ->runsMigrations()
             ->hasResources([

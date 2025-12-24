@@ -27,7 +27,7 @@
   ],
   "require": {
     "php": "^8.2",
-    "lorisleiva/laravel-actions": "^2.9",
+    "opscale-co/actions": "^1.0",
     "opscale-co/nova-catalogs": "^1.2",
     "opscale-co/nova-package-tools": "^1.0",
     "theriddleofenigma/laravel-model-validation": "^1.6"
@@ -77,7 +77,6 @@
     "build": "@php vendor/bin/testbench workbench:build --ansi",
     "serve": [
       "Composer\\Config::disableProcessTimeout",
-      "@build",
       "@php vendor/bin/testbench serve --ansi"
     ]
   },

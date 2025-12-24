@@ -45,7 +45,7 @@ class DynamicRecord extends Resource
         if (isset(static::$template)) {
             $singular_label = static::$template->getAttribute('singular_label');
         } else {
-            $singular_label = 'Dynamic Record';
+            $singular_label = __('Dynamic Record');
         }
 
         return $singular_label;
@@ -63,7 +63,7 @@ class DynamicRecord extends Resource
         if (isset(static::$template)) {
             $label = static::$template->getAttribute('label');
         } else {
-            $label = 'Dynamic Records';
+            $label = __('Dynamic Records');
         }
 
         return $label;
@@ -81,7 +81,7 @@ class DynamicRecord extends Resource
         if (isset(static::$template)) {
             $uri_key = static::$template->getAttribute('uri_key');
         } else {
-            $uri_key = 'dynamic-records';
+            $uri_key = __('dynamic-records');
         }
 
         return $uri_key;
@@ -125,21 +125,21 @@ class DynamicRecord extends Resource
     #[Override]
     public function fieldsForIndex(NovaRequest $request): array
     {
-        if (static::uriKey() === 'dynamic-records') {
+        if (static::uriKey() === __('dynamic-records')) {
             return [
-                'resource' => BelongsTo::make(_('Resource'), 'resource', DynamicResource::class)
+                'resource' => BelongsTo::make(__('Resource'), 'resource', DynamicResource::class)
                     ->sortable()
                     ->filterable(),
 
-                'title' => Text::make(_('Title'), function () {
+                'title' => Text::make(__('Title'), function () {
                     return $this->title();
                 }),
 
-                'data' => KeyValue::make(_('Data'), 'data')
-                    ->keyLabel('Field')
-                    ->valueLabel('Value'),
+                'data' => KeyValue::make(__('Data'), 'data')
+                    ->keyLabel(__('Field'))
+                    ->valueLabel(__('Value')),
 
-                'created_at' => DateTime::make(_('Created At'), 'created_at')
+                'created_at' => DateTime::make(__('Created At'), 'created_at')
                     ->sortable()
                     ->filterable(),
             ];
@@ -171,13 +171,14 @@ class DynamicRecord extends Resource
         $templateFields = $resource->fields;
 
         foreach ($templateFields as $templateField) {
-            $fields[] = RenderField::run(
-                type: $templateField->type,
-                label: $templateField->label,
-                name: $templateField->name,
-                rules: $templateField->rules ?? [],
-                config: $templateField->config ?? []
-            );
+            $result = RenderField::run([
+                'type' => $templateField->type,
+                'label' => $templateField->label,
+                'name' => $templateField->name,
+                'rules' => $templateField->rules ?? [],
+                'config' => $templateField->config ?? [],
+            ]);
+            $fields[] = $result['instance'];
         }
 
         return $fields;
@@ -193,9 +194,12 @@ class DynamicRecord extends Resource
     public function actions(NovaRequest $request): array
     {
         // Add inline action when viewing all dynamic records
-        if (static::uriKey() === 'dynamic-records') {
+        if (static::uriKey() === __('dynamic-records')) {
             return [
-                ViewRecord::make()->showInline(),
+                ViewRecord::make()
+                    ->showOnIndex()
+                    ->showInline()
+                    ->withoutConfirmation(),
             ];
         }
 
@@ -208,10 +212,11 @@ class DynamicRecord extends Resource
 
         $templateActions = $resource->actions;
         foreach ($templateActions as $templateAction) {
-            $actions[] = RenderAction::run(
-                class: $templateAction->class,
-                config: $templateAction->config ?? []
-            );
+            $result = RenderAction::run([
+                'class' => $templateAction->class,
+                'config' => $templateAction->config ?? [],
+            ]);
+            $actions[] = $result['instance'];
         }
 
         return $actions;

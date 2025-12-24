@@ -18,12 +18,12 @@ Thanks for helping Opscale continue to scale! 🚀
 
 ## Description
 
-Create Nova resources UI (tables and forms) based on dynamic configuration stored in the database.
+Create Nova resources UI (tables and forms) based on dynamic configuration stored in the database. Perfect for quick prototyping when you need to rapidly create and iterate on data structures without writing code.
 
 > [!IMPORTANT]  
 > This package is experimental and it's not inteded to be used in production (yet)
 
-TODO: Screenshots
+![Demo](https://raw.githubusercontent.com/opscale-co/nova-dynamic-resources/refs/heads/main/screenshots/nova-dynamic-resources.gif)
 
 ## Installation
 
@@ -61,6 +61,7 @@ public function tools()
 2. Create a new Dynamic Resource by defining:
    - **Label**: The display name for your resource
    - **Fields**: An array of field definitions using the repeater interface
+   - **Title**: The field to be used as the descriptor for the record
 
 ### Field Configuration
 
@@ -72,12 +73,13 @@ Each field in your dynamic resource consists of:
 - **Required**: Whether the field is mandatory
 - **Validation Rules**: Additional Laravel validation rules
 - **Config**: Field-specific configuration options
+- **Hooks**: Action classes that process config values before applying them to fields
 
 ### Available Field Types
 
 Field types are based on business logic and can be found in the `config/nova-dynamic-resources.php` configuration file. Each type maps to a specific Nova field class with predefined behavior.
 
-You can add more field types by extending the configuration file. The available types include common business field patterns like text, email, phone, address, etc.
+You can add more field types by extending the configuration file. The available types include common business field patterns like text, email, phone, address, etc. Business types are used instead of technical field types because they carry implicit validation rules and configuration - for example, an "email" type automatically includes email format validation, while a "phone" type includes phone number pattern validation.
 
 ### Field Configuration Options
 
@@ -87,6 +89,27 @@ The **Config** section allows you to call specific methods on the Nova field ins
 - `help => "This field is important"` calls `->help("This field is important")`
 
 This approach provides flexibility to configure Nova fields dynamically while maintaining type safety and IDE support.
+
+### Field Hooks Options
+
+The **Hooks** section allows you to intercept and transform config values before they are applied to the field. Hooks are action classes that extend `Opscale\Actions\Action` and process the config value dynamically.
+
+For example, when a field type has:
+```php
+'config' => [
+    'options' => 'gender',
+],
+'hooks' => [
+    'options' => \Opscale\NovaDynamicResources\Services\Actions\SelectOptions::class,
+]
+```
+
+The `SelectOptions` hook will be called with the value `'gender'` and will fetch the actual options from a catalog, returning them to be passed to the `->options()` method on the field.
+
+This is useful for:
+- Fetching dynamic data from the database (e.g., select options from catalogs)
+- Transforming values before applying them to fields
+- Running custom logic based on field configuration
 
 ## Testing
 
