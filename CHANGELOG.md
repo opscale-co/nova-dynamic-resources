@@ -2,6 +2,11 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## <small>1.2.4 (2025-12-24)</small>
+
+* Merge pull request #11 from opscale-co/develop ([bc176b0](https://github.com/opscale-co/nova-dynamic-resources/commit/bc176b0)), closes [#11](https://github.com/opscale-co/nova-dynamic-resources/issues/11)
+* fix(dynamicresource): fix missing $baseClasses ([3fac032](https://github.com/opscale-co/nova-dynamic-resources/commit/3fac032))
+
 ## <small>1.2.3 (2025-12-24)</small>
 
 * Merge pull request #10 from opscale-co/develop ([1407b59](https://github.com/opscale-co/nova-dynamic-resources/commit/1407b59)), closes [#10](https://github.com/opscale-co/nova-dynamic-resources/issues/10)
