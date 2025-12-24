@@ -2,6 +2,11 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## <small>1.2.2 (2025-12-24)</small>
+
+* Merge pull request #9 from opscale-co/develop ([81ad841](https://github.com/opscale-co/nova-dynamic-resources/commit/81ad841)), closes [#9](https://github.com/opscale-co/nova-dynamic-resources/issues/9)
+* refactor(dynamicresource): changed fields definition ([f196c8b](https://github.com/opscale-co/nova-dynamic-resources/commit/f196c8b))
+
 ## <small>1.2.1 (2025-12-24)</small>
 
 * Merge branch 'develop' of https://github.com/opscale-co/nova-dynamic-resources into develop ([57f7807](https://github.com/opscale-co/nova-dynamic-resources/commit/57f7807))
