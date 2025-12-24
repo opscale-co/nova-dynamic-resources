@@ -2,6 +2,12 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## <small>1.2.1 (2025-12-24)</small>
+
+* Merge branch 'develop' of https://github.com/opscale-co/nova-dynamic-resources into develop ([57f7807](https://github.com/opscale-co/nova-dynamic-resources/commit/57f7807))
+* Merge pull request #8 from opscale-co/develop ([9acf241](https://github.com/opscale-co/nova-dynamic-resources/commit/9acf241)), closes [#8](https://github.com/opscale-co/nova-dynamic-resources/issues/8)
+* perf(project): implemented Opscale actions ([eae0e2c](https://github.com/opscale-co/nova-dynamic-resources/commit/eae0e2c))
+
 ## 1.2.0 (2025-11-14)
 
 * Merge branch 'main' into develop ([ba9e178](https://github.com/opscale-co/nova-dynamic-resources/commit/ba9e178))
