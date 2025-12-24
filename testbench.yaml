@@ -18,7 +18,6 @@ workbench:
     - create-sqlite-db
     - db:wipe
     - migrate:refresh
-    - 'db:seed --class="Workbench\Database\Seeders\DatabaseSeeder"'
     - nova-dynamic-resources:install --no-interaction
   assets:
     - nova-assets

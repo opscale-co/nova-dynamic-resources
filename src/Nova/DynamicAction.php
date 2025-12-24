@@ -51,7 +51,7 @@ class DynamicAction extends Resource
     #[Override]
     public static function uriKey(): string
     {
-        return 'dynamic-actions';
+        return __('dynamic-actions');
     }
 
     /**
@@ -60,7 +60,7 @@ class DynamicAction extends Resource
     #[Override]
     public static function label(): string
     {
-        return _('Dynamic Actions');
+        return __('Dynamic Actions');
     }
 
     /**
@@ -69,7 +69,7 @@ class DynamicAction extends Resource
     #[Override]
     public static function singularLabel(): string
     {
-        return _('Dynamic Action');
+        return __('Dynamic Action');
     }
 
     /**
@@ -82,21 +82,21 @@ class DynamicAction extends Resource
         $model = new Model;
 
         return [
-            'class' => Text::make(_('Class'), 'class')
+            'class' => Text::make(__('Class'), 'class')
                 ->rules($model->validationRules['class']),
 
-            'label' => Text::make(_('Label'), 'label')
+            'label' => Text::make(__('Label'), 'label')
                 ->rules($model->validationRules['label']),
 
-            'config' => KeyValue::make(_('Config'), 'config')
-                ->keyLabel(_('Key'))
-                ->valueLabel(_('Value'))
+            'config' => KeyValue::make(__('Config'), 'config')
+                ->keyLabel(__('Key'))
+                ->valueLabel(__('Value'))
                 ->nullable()
                 ->hideWhenCreating(),
 
-            'metadata' => KeyValue::make(_('Metadata'), 'metadata')
-                ->keyLabel(_('Key'))
-                ->valueLabel(_('Value'))
+            'metadata' => KeyValue::make(__('Metadata'), 'metadata')
+                ->keyLabel(__('Key'))
+                ->valueLabel(__('Value'))
                 ->nullable()
                 ->hideWhenCreating(),
         ];
@@ -111,7 +111,7 @@ class DynamicAction extends Resource
     public function fields(NovaRequest $request): array
     {
         return [
-            BelongsTo::make(_('Resource'), 'resource', DynamicResource::class)
+            BelongsTo::make(__('Resource'), 'resource', DynamicResource::class)
                 ->sortable()
                 ->filterable(),
 

@@ -118,21 +118,21 @@ class DynamicResource extends Resource
 
         return [
             Tab::group(fields: [
-                Tab::make('Resource', [
-                    Text::make(_('Label'), 'label')
+                Tab::make(__('Resource'), [
+                    Text::make(__('Label'), 'label')
                         ->rules(fn (): array => $this->model()?->validationRules['label'])
-                        ->help('Use a plural label for your resource.'),
+                        ->help(__('Use a plural label for your resource.')),
 
-                    Text::make(_('Singular Label'), 'singular_label')
+                    Text::make(__('Singular Label'), 'singular_label')
                         ->rules(fn (): array => $this->model()?->validationRules['singular_label'])
                         ->hideWhenCreating(),
 
-                    Slug::make(_('URI Key'), 'uri_key')
+                    Slug::make(__('URI Key'), 'uri_key')
                         ->from('label')
                         ->creationRules(fn (): array => $this->model()?->validationRules['uri_key'])
                         ->hideWhenCreating(),
 
-                    Select::make(_('Base Class'), 'base_class')
+                    Select::make(__('Base Class'), 'base_class')
                         ->options($baseClasses)
                         ->displayUsingLabels()
                         ->searchable()
@@ -142,17 +142,17 @@ class DynamicResource extends Resource
                             return count($baseClasses) > 1;
                         }),
 
-                    Repeater::make(_('Fields'), 'fields')
+                    Repeater::make(__('Fields'), 'fields')
                         ->repeatables([
                             Field::make(),
                         ])
                         ->asHasMany(DynamicField::class),
 
-                    Text::make(_('Title'), 'title')
+                    Text::make(__('Title'), 'title')
                         ->rules(fn (): array => $this->model()?->validationRules['title'])
-                        ->help('Define the property to be used as title.'),
+                        ->help(__('Define the property to be used as title.')),
 
-                    Repeater::make(_('Actions'), 'actions')
+                    Repeater::make(__('Actions'), 'actions')
                         ->repeatables([
                             Action::make(),
                         ])
@@ -160,11 +160,11 @@ class DynamicResource extends Resource
                         ->hideWhenCreating(),
                 ]),
 
-                Tab::make('Fields', [
+                Tab::make(__('Fields'), [
                     'fields' => HasMany::make(__('Fields'), 'fields', DynamicField::class),
                 ]),
 
-                Tab::make('Actions', [
+                Tab::make(__('Actions'), [
                     'actions' => HasMany::make(__('Actions'), 'actions', DynamicAction::class),
                 ]),
             ]),

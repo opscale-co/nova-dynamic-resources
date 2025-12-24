@@ -3,59 +3,83 @@
 namespace Opscale\NovaDynamicResources\Nova\Actions;
 
 use Illuminate\Support\Collection;
-use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Actions\ActionResponse;
 use Laravel\Nova\Fields\ActionFields;
-use Laravel\Nova\Http\Requests\NovaRequest;
+use Opscale\Actions\Action;
 use Opscale\NovaDynamicResources\Models\DynamicResource;
+use Override;
 
 class CreateRecord extends Action
 {
     /**
      * Indicates if this action is available on the resource index.
      */
-    public $showOnIndex = true;
+    public bool $showOnIndex = true;
 
     /**
      * Indicates if this action is available on the resource detail.
      */
-    public $showOnDetail = true;
+    public bool $showOnDetail = true;
 
     /**
      * Indicates if this action is available on the table row.
      */
-    public $showInline = true;
+    public bool $showInline = true;
 
     /**
      * Indicates if the action should be shown without confirmation.
      */
-    public $withoutConfirmation = true;
+    public bool $withoutConfirmation = true;
+
+    #[Override]
+    public function identifier(): string
+    {
+        return 'create-record';
+    }
+
+    #[Override]
+    public function name(): string
+    {
+        return __('Create Record');
+    }
+
+    #[Override]
+    public function description(): string
+    {
+        return __('Navigates to the create page for a new record in the selected dynamic resource');
+    }
+
+    #[Override]
+    public function parameters(): array
+    {
+        return [];
+    }
 
     /**
-     * The displayable name of the action.
+     * Execute the action.
+     *
+     * @param  array<string, mixed>  $attributes
+     * @return array{success: bool, message: string}
      */
-    public $name = 'Create Record';
+    #[Override]
+    public function handle(array $attributes = []): array
+    {
+        return [
+            'success' => true,
+            'message' => __('Navigating to create record page'),
+        ];
+    }
 
     /**
-     * Perform the action on the given models.
+     * Execute the action as a Nova action.
      *
      * @param  Collection<int, DynamicResource>  $models
      */
-    public function handle(ActionFields $fields, Collection $models): mixed
+    public function asNovaAction(ActionFields $fields, Collection $models): ActionResponse
     {
         $resource = $models->first();
         $uriKey = $resource->uri_key;
 
-        return ActionResponse::visit("/resources/{$uriKey}/new");
-    }
-
-    /**
-     * Get the fields available on the action.
-     *
-     * @return array<int, \Laravel\Nova\Fields\Field>
-     */
-    public function fields(NovaRequest $request): array
-    {
-        return [];
+        return $this->visit("/resources/{$uriKey}/new");
     }
 }

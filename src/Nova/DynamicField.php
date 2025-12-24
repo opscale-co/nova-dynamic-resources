@@ -86,45 +86,45 @@ class DynamicField extends Resource
         $model = new Model;
 
         return [
-            'type' => Select::make(_('Type'), 'type')
+            'type' => Select::make(__('Type'), 'type')
                 ->options(static::getBusinessTypeOptions())
                 ->displayUsingLabels()
                 ->searchable()
                 ->rules($model->validationRules['type']),
 
-            'label' => Text::make(_('Label'), 'label')
+            'label' => Text::make(__('Label'), 'label')
                 ->rules($model->validationRules['label']),
 
-            'name' => Slug::make(_('Name'), 'name')
+            'name' => Slug::make(__('Name'), 'name')
                 ->from('label')
                 ->separator('_')
                 ->creationRules('nullable')
                 ->updateRules($model->validationRules['name']),
 
-            'required' => Boolean::make(_('Required'), 'required')
+            'required' => Boolean::make(__('Required'), 'required')
                 ->rules($model->validationRules['required']),
 
-            'rules' => KeyValue::make(_('Validation Rules'), 'rules')
-                ->keyLabel(_('Rule'))
-                ->valueLabel(_('Value'))
+            'rules' => KeyValue::make(__('Validation Rules'), 'rules')
+                ->keyLabel(__('Rule'))
+                ->valueLabel(__('Value'))
                 ->nullable()
                 ->hideWhenCreating(),
 
-            'config' => KeyValue::make(_('Config'), 'config')
-                ->keyLabel(_('Method'))
-                ->valueLabel(_('Parameters'))
+            'config' => KeyValue::make(__('Config'), 'config')
+                ->keyLabel(__('Method'))
+                ->valueLabel(__('Parameters'))
                 ->nullable()
                 ->hideWhenCreating(),
 
-            'hooks' => KeyValue::make(_('Hooks'), 'hooks')
-                ->keyLabel(_('Hook'))
-                ->valueLabel(_('Parameters'))
+            'hooks' => KeyValue::make(__('Hooks'), 'hooks')
+                ->keyLabel(__('Hook'))
+                ->valueLabel(__('Parameters'))
                 ->nullable()
                 ->hideWhenCreating(),
 
-            'metadata' => KeyValue::make(_('Metadata'), 'metadata')
-                ->keyLabel(_('Key'))
-                ->valueLabel(_('Value'))
+            'metadata' => KeyValue::make(__('Metadata'), 'metadata')
+                ->keyLabel(__('Key'))
+                ->valueLabel(__('Value'))
                 ->nullable()
                 ->exceptOnForms(),
         ];
@@ -157,7 +157,7 @@ class DynamicField extends Resource
     public function fields(NovaRequest $request): array
     {
         return [
-            BelongsTo::make(_('Resource'), 'resource', DynamicResource::class)
+            BelongsTo::make(__('Resource'), 'resource', DynamicResource::class)
                 ->sortable()
                 ->filterable(),
 
