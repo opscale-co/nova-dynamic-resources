@@ -29,13 +29,13 @@ class DynamicResource extends Model
             'max:255',
         ],
         'singular_label' => [
-            'nullable',
+            'required',
             'string',
             'min:1',
             'max:255',
         ],
         'uri_key' => [
-            'nullable',
+            'required',
             'string',
             'min:1',
             'max:255',
@@ -43,7 +43,7 @@ class DynamicResource extends Model
             'unique:dynamic_resources,uri_key',
         ],
         'title' => [
-            'required',
+            'nullable',
             'string',
             'min:1',
             'max:255',

@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('singular_label');
             $table->string('label');
             $table->string('uri_key');
-            $table->string('title');
+            $table->string('title')->nullable();
             $table->string('base_class')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
