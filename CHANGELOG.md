@@ -2,6 +2,11 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## 1.3.0 (2026-01-05)
+
+* Merge pull request #12 from opscale-co/develop ([8ba257c](https://github.com/opscale-co/nova-dynamic-resources/commit/8ba257c)), closes [#12](https://github.com/opscale-co/nova-dynamic-resources/issues/12)
+* feat(dynamicrecord): smart getter and setter ([433b3b3](https://github.com/opscale-co/nova-dynamic-resources/commit/433b3b3))
+
 ## <small>1.2.4 (2025-12-24)</small>
 
 * Merge pull request #11 from opscale-co/develop ([bc176b0](https://github.com/opscale-co/nova-dynamic-resources/commit/bc176b0)), closes [#11](https://github.com/opscale-co/nova-dynamic-resources/issues/11)
