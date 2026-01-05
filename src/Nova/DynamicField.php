@@ -86,12 +86,6 @@ class DynamicField extends Resource
         $model = new Model;
 
         return [
-            'type' => Select::make(__('Type'), 'type')
-                ->options(static::getBusinessTypeOptions())
-                ->displayUsingLabels()
-                ->searchable()
-                ->rules($model->validationRules['type']),
-
             'label' => Text::make(__('Label'), 'label')
                 ->rules($model->validationRules['label']),
 
@@ -99,7 +93,14 @@ class DynamicField extends Resource
                 ->from('label')
                 ->separator('_')
                 ->creationRules('nullable')
-                ->updateRules($model->validationRules['name']),
+                ->updateRules($model->validationRules['name'])
+                ->hideFromIndex(),
+
+            'type' => Select::make(__('Type'), 'type')
+                ->options(static::getBusinessTypeOptions())
+                ->displayUsingLabels()
+                ->searchable()
+                ->rules($model->validationRules['type']),
 
             'required' => Boolean::make(__('Required'), 'required')
                 ->rules($model->validationRules['required']),
@@ -125,8 +126,7 @@ class DynamicField extends Resource
             'metadata' => KeyValue::make(__('Metadata'), 'metadata')
                 ->keyLabel(__('Key'))
                 ->valueLabel(__('Value'))
-                ->nullable()
-                ->exceptOnForms(),
+                ->onlyOnDetail(),
         ];
     }
 
@@ -159,9 +159,10 @@ class DynamicField extends Resource
         return [
             BelongsTo::make(__('Resource'), 'resource', DynamicResource::class)
                 ->sortable()
-                ->filterable(),
+                ->filterable()
+                ->onlyOnForms(),
 
-            ...static::defaultFields(),
+            ...array_values(static::defaultFields()),
         ];
     }
 }

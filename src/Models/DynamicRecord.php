@@ -78,4 +78,69 @@ class DynamicRecord extends Model
             'metadata' => 'array',
         ];
     }
+
+    /**
+     * Check if the model has a given attribute.
+     */
+    protected function hasAttribute(string $key): bool
+    {
+        return in_array($key, $this->fillable, true)
+            || array_key_exists($key, $this->attributes)
+            || $this->hasGetMutator($key)
+            || $this->hasCast($key);
+    }
+
+    /**
+     * Get an attribute from the model, checking data and metadata.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
+    public function __get($key)
+    {
+        $value = parent::__get($key);
+
+        if ($value !== null) {
+            return $value;
+        }
+
+        if (isset($this->data[$key])) {
+            return $this->data[$key];
+        }
+
+        if (isset($this->metadata[$key])) {
+            return $this->metadata[$key];
+        }
+
+        return $value;
+    }
+
+    /**
+     * Set an attribute on the model, storing in data or metadata if applicable.
+     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @return void
+     */
+    public function __set($key, $value)
+    {
+        if ($this->hasAttribute($key) || $this->isRelation($key) || $this->hasSetMutator($key)) {
+            parent::__set($key, $value);
+
+            return;
+        }
+
+        $data = $this->data ?? [];
+        $metadata = $this->metadata ?? [];
+
+        if (array_key_exists($key, $metadata)) {
+            $metadata[$key] = $value;
+            $this->attributes['metadata'] = $metadata;
+
+            return;
+        }
+
+        $data[$key] = $value;
+        $this->attributes['data'] = $data;
+    }
 }

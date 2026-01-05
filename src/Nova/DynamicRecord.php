@@ -109,9 +109,13 @@ class DynamicRecord extends Resource
     final public function title(): string
     {
         /** @var string $label */
-        $title = $this->model()->data[
-            $this->model()->resource->title
-        ];
+        if (isset($this->model()->resource->title)) {
+            $title = $this->model()->data[
+                $this->model()->resource->title
+            ];
+        } else {
+            $title = $this->model()->id;
+        }
 
         return $title;
     }
@@ -125,7 +129,7 @@ class DynamicRecord extends Resource
     #[Override]
     public function fieldsForIndex(NovaRequest $request): array
     {
-        if (static::uriKey() === __('dynamic-records')) {
+        if (! isset(static::$template)) {
             return [
                 'resource' => BelongsTo::make(__('Resource'), 'resource', DynamicResource::class)
                     ->sortable()
@@ -194,7 +198,7 @@ class DynamicRecord extends Resource
     public function actions(NovaRequest $request): array
     {
         // Add inline action when viewing all dynamic records
-        if (static::uriKey() === __('dynamic-records')) {
+        if (! isset(static::$template)) {
             return [
                 ViewRecord::make()
                     ->showOnIndex()

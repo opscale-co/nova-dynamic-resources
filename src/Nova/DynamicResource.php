@@ -121,11 +121,11 @@ class DynamicResource extends Resource
                 ]),
 
                 Tab::make(__('Fields'), [
-                    'fields' => HasMany::make(__('Fields'), 'fields', DynamicField::class),
+                    HasMany::make(__('Fields'), 'fields', DynamicField::class),
                 ]),
 
                 Tab::make(__('Actions'), [
-                    'actions' => HasMany::make(__('Actions'), 'actions', DynamicAction::class),
+                    HasMany::make(__('Actions'), 'actions', DynamicAction::class),
                 ]),
             ]),
         ];
@@ -144,17 +144,17 @@ class DynamicResource extends Resource
         ];
     }
 
-    final protected function defaultFields(NovaRequest $request): array
+    #[Override]
+    protected function defaultFields(NovaRequest $request): array
     {
         $baseClasses = static::getAvailableBaseClasses();
 
         return [
+            'singular_label' => Text::make(__('Singular Label'), 'singular_label')
+                ->rules(fn (): array => $this->model()?->validationRules['singular_label']),
+
             'label' => Text::make(__('Label'), 'label')
                 ->rules(fn (): array => $this->model()?->validationRules['label'])
-                ->help(__('Use a plural label for your resource.')),
-
-            'singular_label' => Text::make(__('Singular Label'), 'singular_label')
-                ->rules(fn (): array => $this->model()?->validationRules['singular_label'])
                 ->hideWhenCreating(),
 
             'uri_key' => Slug::make(__('URI Key'), 'uri_key')
@@ -176,11 +176,14 @@ class DynamicResource extends Resource
                 ->repeatables([
                     Field::make(),
                 ])
-                ->asHasMany(DynamicField::class),
+                ->asHasMany(DynamicField::class)
+                ->required(),
 
             'title' => Text::make(__('Title'), 'title')
+                ->nullable()
                 ->rules(fn (): array => $this->model()?->validationRules['title'])
-                ->help(__('Define the property to be used as title.')),
+                ->help(__('Define the property to be used as title.'))
+                ->hideWhenCreating(),
 
             'actions' => Repeater::make(__('Actions'), 'actions')
                 ->repeatables([
