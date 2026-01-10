@@ -88,6 +88,43 @@ class DynamicResource extends Model
     ];
 
     /**
+     * Get an attribute from the model, checking metadata for appended attributes.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
+    public function getAttribute($key)
+    {
+        if (in_array($key, $this->appends, true)) {
+            $metadata = $this->getRawMetadata();
+
+            return $metadata[$key] ?? null;
+        }
+
+        return parent::getAttribute($key);
+    }
+
+    /**
+     * Set an attribute on the model, storing appended attributes in metadata.
+     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @return mixed
+     */
+    public function setAttribute($key, $value)
+    {
+        if (in_array($key, $this->appends, true)) {
+            $metadata = $this->getRawMetadata();
+            $metadata[$key] = $value;
+            $this->attributes['metadata'] = json_encode($metadata);
+
+            return $this;
+        }
+
+        return parent::setAttribute($key, $value);
+    }
+
+    /**
      * Get the fields for the resource.
      */
     public function fields(): HasMany
@@ -101,5 +138,25 @@ class DynamicResource extends Model
     public function actions(): HasMany
     {
         return $this->hasMany(DynamicAction::class, 'resource_id');
+    }
+
+    /**
+     * Get raw metadata without triggering casts.
+     *
+     * @return array<string, mixed>
+     */
+    protected function getRawMetadata(): array
+    {
+        $raw = $this->attributes['metadata'] ?? null;
+
+        if ($raw === null) {
+            return [];
+        }
+
+        if (is_array($raw)) {
+            return $raw;
+        }
+
+        return json_decode($raw, true) ?? [];
     }
 }
