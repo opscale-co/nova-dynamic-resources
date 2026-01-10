@@ -65,6 +65,76 @@ class DynamicRecord extends Model
     }
 
     /**
+     * Check if the key is a base database attribute.
+     *
+     * @param  string  $key
+     */
+    public function isBaseAttribute($key): bool
+    {
+        return in_array($key, [
+            $this->getKeyName(),
+            $this->getCreatedAtColumn(),
+            $this->getUpdatedAtColumn(),
+            'resource_id',
+            'data',
+            'metadata',
+        ], true);
+    }
+
+    /**
+     * Get an attribute from the model, checking data or metadata based on appends.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
+    public function getAttribute($key)
+    {
+        if ($this->isBaseAttribute($key) ||
+            $this->isRelation($key) ||
+            $this->hasGetMutator($key)) {
+            return parent::getAttribute($key);
+        }
+
+        if (in_array($key, $this->appends, true)) {
+            $metadata = $this->getRawMetadata();
+
+            return $metadata[$key] ?? null;
+        } else {
+            $data = $this->getRawData();
+
+            return $data[$key] ?? null;
+        }
+    }
+
+    /**
+     * Set an attribute on the model, storing in data or metadata based on appends.
+     *
+     * @param  string  $key
+     * @param  mixed  $value
+     * @return mixed
+     */
+    public function setAttribute($key, $value)
+    {
+        if ($this->isBaseAttribute($key) ||
+            $this->isRelation($key) ||
+            $this->hasSetMutator($key)) {
+            return parent::setAttribute($key, $value);
+        }
+
+        if (in_array($key, $this->appends, true)) {
+            $metadata = $this->getRawMetadata();
+            $metadata[$key] = $value;
+            $this->attributes['metadata'] = json_encode($metadata);
+        } else {
+            $data = $this->getRawData();
+            $data[$key] = $value;
+            $this->attributes['data'] = json_encode($data);
+        }
+
+        return $this;
+    }
+
+    /**
      * The attributes that should be cast.
      *
      * @return array<string, string>
@@ -80,67 +150,42 @@ class DynamicRecord extends Model
     }
 
     /**
-     * Check if the model has a given attribute.
+     * Get raw data without triggering casts.
+     *
+     * @return array<string, mixed>
      */
-    protected function hasAttribute(string $key): bool
+    protected function getRawData(): array
     {
-        return in_array($key, $this->fillable, true)
-            || array_key_exists($key, $this->attributes)
-            || $this->hasGetMutator($key)
-            || $this->hasCast($key);
+        $raw = $this->attributes['data'] ?? null;
+
+        if ($raw === null) {
+            return [];
+        }
+
+        if (is_array($raw)) {
+            return $raw;
+        }
+
+        return json_decode($raw, true) ?? [];
     }
 
     /**
-     * Get an attribute from the model, checking data and metadata.
+     * Get raw metadata without triggering casts.
      *
-     * @param  string  $key
-     * @return mixed
+     * @return array<string, mixed>
      */
-    public function __get($key)
+    protected function getRawMetadata(): array
     {
-        $value = parent::__get($key);
+        $raw = $this->attributes['metadata'] ?? null;
 
-        if ($value !== null) {
-            return $value;
+        if ($raw === null) {
+            return [];
         }
 
-        if (isset($this->data[$key])) {
-            return $this->data[$key];
+        if (is_array($raw)) {
+            return $raw;
         }
 
-        if (isset($this->metadata[$key])) {
-            return $this->metadata[$key];
-        }
-
-        return $value;
-    }
-
-    /**
-     * Set an attribute on the model, storing in data or metadata if applicable.
-     *
-     * @param  string  $key
-     * @param  mixed  $value
-     * @return void
-     */
-    public function __set($key, $value)
-    {
-        if ($this->hasAttribute($key) || $this->isRelation($key) || $this->hasSetMutator($key)) {
-            parent::__set($key, $value);
-
-            return;
-        }
-
-        $data = $this->data ?? [];
-        $metadata = $this->metadata ?? [];
-
-        if (array_key_exists($key, $metadata)) {
-            $metadata[$key] = $value;
-            $this->attributes['metadata'] = $metadata;
-
-            return;
-        }
-
-        $data[$key] = $value;
-        $this->attributes['data'] = $data;
+        return json_decode($raw, true) ?? [];
     }
 }

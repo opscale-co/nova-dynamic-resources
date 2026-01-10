@@ -102,7 +102,7 @@ class RenderField extends Action
         $fieldClass = $component['field'];
         $instance = $fieldClass::make(
             $label,
-            'data->' . $name,
+            $name,
         )->rules($mergedRules);
 
         if (! empty($mergedConfig)) {
