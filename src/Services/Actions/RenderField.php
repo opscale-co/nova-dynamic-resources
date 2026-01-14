@@ -50,6 +50,12 @@ class RenderField extends Action
                 'rules' => ['required', 'string'],
             ],
             [
+                'name' => 'required',
+                'description' => 'Whether the field is required',
+                'type' => 'boolean',
+                'rules' => ['required', 'boolean'],
+            ],
+            [
                 'name' => 'rules',
                 'description' => 'Validation rules for the field',
                 'type' => 'array',
@@ -67,7 +73,7 @@ class RenderField extends Action
     /**
      * Render a Nova field from a field configuration.
      *
-     * @param  array{type?: string, label?: string, name?: string, rules?: array<mixed>, config?: array<string, mixed>}  $attributes
+     * @param  array{type?: string, label?: string, name?: string, required?: bool, rules?: array<mixed>, config?: array<string, mixed>}  $attributes
      *
      * @throws InvalidArgumentException
      */
@@ -100,10 +106,15 @@ class RenderField extends Action
         $hooks = $component['hooks'] ?? [];
 
         $fieldClass = $component['field'];
+
         $instance = $fieldClass::make(
             $label,
             $name,
         )->rules($mergedRules);
+
+        if (($validatedData['required'])) {
+            $instance->required();
+        }
 
         if (! empty($mergedConfig)) {
             foreach ($mergedConfig as $method => $parameters) {

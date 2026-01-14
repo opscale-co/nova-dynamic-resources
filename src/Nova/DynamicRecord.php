@@ -179,6 +179,7 @@ class DynamicRecord extends Resource
                 'type' => $templateField->type,
                 'label' => $templateField->label,
                 'name' => $templateField->name,
+                'required' => $templateField->required,
                 'rules' => $templateField->rules ?? [],
                 'config' => $templateField->config ?? [],
             ]);
