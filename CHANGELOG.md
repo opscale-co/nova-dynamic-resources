@@ -2,6 +2,19 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## 1.4.0 (2026-01-16)
+
+* Merge pull request #13 from opscale-co/develop ([da4e07f](https://github.com/opscale-co/nova-dynamic-resources/commit/da4e07f)), closes [#13](https://github.com/opscale-co/nova-dynamic-resources/issues/13)
+* refactor(project): added support for dynamic content for existing models ([09a335c](https://github.com/opscale-co/nova-dynamic-resources/commit/09a335c))
+* fix(dynamicrecord): fixed required ruled not being applied ([d866e3c](https://github.com/opscale-co/nova-dynamic-resources/commit/d866e3c))
+* feat(dynamicrecord): added dynamic access as attribute ([a2c2bde](https://github.com/opscale-co/nova-dynamic-resources/commit/a2c2bde))
+* feat(project): added attribute access for metadata properties for DynamicResource and DynamicField ([24d235d](https://github.com/opscale-co/nova-dynamic-resources/commit/24d235d))
+
+
+### BREAKING CHANGE
+
+* Classnames were changed
+
 ## 1.3.0 (2026-01-05)
 
 * Merge pull request #12 from opscale-co/develop ([8ba257c](https://github.com/opscale-co/nova-dynamic-resources/commit/8ba257c)), closes [#12](https://github.com/opscale-co/nova-dynamic-resources/issues/12)
