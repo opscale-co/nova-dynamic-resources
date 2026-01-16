@@ -7,18 +7,18 @@ use Laravel\Nova\Fields\KeyValue;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
-use Opscale\NovaDynamicResources\Models\DynamicAction as Model;
+use Opscale\NovaDynamicResources\Models\Action as Model;
 use Override;
 
 /**
  * @extends Resource<Model>
  */
-class DynamicAction extends Resource
+class Action extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
-     * @var class-string<\Opscale\NovaDynamicResources\Models\DynamicAction>
+     * @var class-string<\Opscale\NovaDynamicResources\Models\Action>
      */
     public static $model = Model::class;
 
@@ -51,7 +51,7 @@ class DynamicAction extends Resource
     #[Override]
     public static function uriKey(): string
     {
-        return __('dynamic-actions');
+        return __('actions');
     }
 
     /**
@@ -60,7 +60,7 @@ class DynamicAction extends Resource
     #[Override]
     public static function label(): string
     {
-        return __('Dynamic Actions');
+        return __('Actions');
     }
 
     /**
@@ -69,7 +69,7 @@ class DynamicAction extends Resource
     #[Override]
     public static function singularLabel(): string
     {
-        return __('Dynamic Action');
+        return __('Action');
     }
 
     /**
@@ -111,7 +111,7 @@ class DynamicAction extends Resource
     public function fields(NovaRequest $request): array
     {
         return [
-            BelongsTo::make(__('Resource'), 'resource', DynamicResource::class)
+            BelongsTo::make(__('Template'), 'template', Template::class)
                 ->sortable()
                 ->filterable(),
 

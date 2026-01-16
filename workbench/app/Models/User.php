@@ -7,6 +7,7 @@ use Enigma\ValidatorTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Opscale\NovaDynamicResources\Models\Concerns\HasDynamicTemplate;
 use Workbench\Database\Factories\UserFactory;
 
 /**
@@ -16,13 +17,14 @@ use Workbench\Database\Factories\UserFactory;
  * @property \Illuminate\Support\Carbon|null $email_verified_at
  * @property string $password
  * @property string|null $remember_token
+ * @property array|null $data
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  */
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, ValidatorTrait;
+    use HasDynamicTemplate, HasFactory, Notifiable, ValidatorTrait;
 
     /**
      * @var array<string, list<string>>
@@ -42,6 +44,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'data',
     ];
 
     /**

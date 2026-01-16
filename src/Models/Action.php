@@ -7,11 +7,9 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Opscale\NovaDynamicResources\Models\Repositories\DynamicFieldRepository;
 
-class DynamicField extends Model
+class Action extends Model
 {
-    use DynamicFieldRepository;
     use HasUlids;
     use SoftDeletes;
     use ValidatorTrait;
@@ -22,12 +20,12 @@ class DynamicField extends Model
      * @var array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
      */
     public array $validationRules = [
-        'resource_id' => [
+        'template_id' => [
             'required',
             'ulid',
-            'exists:dynamic_resources,id',
+            'exists:dynamic_resources_templates,id',
         ],
-        'type' => [
+        'class' => [
             'required',
             'string',
             'max:255',
@@ -37,24 +35,7 @@ class DynamicField extends Model
             'string',
             'max:255',
         ],
-        'name' => [
-            'required',
-            'string',
-            'max:255',
-        ],
-        'required' => [
-            'required',
-            'boolean',
-        ],
-        'rules' => [
-            'nullable',
-            'array',
-        ],
         'config' => [
-            'nullable',
-            'array',
-        ],
-        'hooks' => [
             'nullable',
             'array',
         ],
@@ -65,19 +46,22 @@ class DynamicField extends Model
     ];
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'dynamic_resources_actions';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
     protected $fillable = [
-        'resource_id',
-        'type',
+        'template_id',
+        'class',
         'label',
-        'name',
-        'required',
-        'rules',
         'config',
-        'hooks',
         'metadata',
     ];
 
@@ -87,17 +71,17 @@ class DynamicField extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'rules' => 'array',
         'config' => 'array',
-        'hooks' => 'array',
         'metadata' => 'array',
     ];
 
     /**
-     * Get the resource that owns the field.
+     * Get the template that owns this action.
+     *
+     * @return BelongsTo<Template, $this>
      */
-    public function resource(): BelongsTo
+    public function template(): BelongsTo
     {
-        return $this->belongsTo(DynamicResource::class, 'resource_id');
+        return $this->belongsTo(Template::class);
     }
 }

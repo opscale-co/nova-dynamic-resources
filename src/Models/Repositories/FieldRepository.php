@@ -4,12 +4,12 @@ namespace Opscale\NovaDynamicResources\Models\Repositories;
 
 use Illuminate\Support\Str;
 
-trait DynamicFieldRepository
+trait FieldRepository
 {
     /**
-     * Boot the DynamicFieldRepository trait.
+     * Boot the FieldRepository trait.
      */
-    public static function bootDynamicFieldRepository(): void
+    public static function bootFieldRepository(): void
     {
         static::creating(function ($model): void {
             // Auto-populate name if not set

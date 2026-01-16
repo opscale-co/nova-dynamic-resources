@@ -7,13 +7,15 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Opscale\NovaDynamicResources\Models\Repositories\DynamicResourceRepository;
+use Opscale\NovaDynamicResources\Models\Concerns\HasDynamicData;
+use Opscale\NovaDynamicResources\Models\Repositories\TemplateRepository;
 
-class DynamicResource extends Model
+class Template extends Model
 {
-    use DynamicResourceRepository;
+    use HasDynamicData;
     use HasUlids;
     use SoftDeletes;
+    use TemplateRepository;
     use ValidatorTrait;
 
     /**
@@ -40,10 +42,10 @@ class DynamicResource extends Model
             'min:1',
             'max:255',
             'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
-            'unique:dynamic_resources,uri_key',
+            'unique:dynamic_resources_templates,uri_key',
         ],
         'title' => [
-            'nullable',
+            'required',
             'string',
             'min:1',
             'max:255',
@@ -54,6 +56,13 @@ class DynamicResource extends Model
             'max:255',
         ],
     ];
+
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'dynamic_resources_templates';
 
     /**
      * The attributes that are mass assignable.
@@ -79,27 +88,26 @@ class DynamicResource extends Model
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
+     * Get the attribute name for dynamic data storage.
      */
-    protected $casts = [
-        'metadata' => 'array',
-    ];
-
-    /**
-     * Get the fields for the resource.
-     */
-    public function fields(): HasMany
+    public function getDynamicProperty(): string
     {
-        return $this->hasMany(DynamicField::class, 'resource_id');
+        return 'metadata';
     }
 
     /**
-     * Get the actions for the resource.
+     * Get the fields for the template.
+     */
+    public function fields(): HasMany
+    {
+        return $this->hasMany(Field::class);
+    }
+
+    /**
+     * Get the actions for the template.
      */
     public function actions(): HasMany
     {
-        return $this->hasMany(DynamicAction::class, 'resource_id');
+        return $this->hasMany(Action::class);
     }
 }

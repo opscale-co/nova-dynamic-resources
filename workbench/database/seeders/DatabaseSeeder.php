@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
 
         // Seed dynamic resources
         $this->call([
-            DynamicResourceSeeder::class,
+            TemplateSeeder::class,
         ]);
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-namespace Opscale\NovaDynamicResources\Nova\Actions;
+namespace Opscale\NovaDynamicResources\Services\Actions;
 
 use Illuminate\Support\Collection;
 use Laravel\Nova\Actions\ActionResponse;
 use Laravel\Nova\Fields\ActionFields;
 use Opscale\Actions\Action;
-use Opscale\NovaDynamicResources\Models\DynamicResource;
+use Opscale\NovaDynamicResources\Models\Template;
 use Override;
 
 class CreateRecord extends Action
@@ -73,7 +73,7 @@ class CreateRecord extends Action
     /**
      * Execute the action as a Nova action.
      *
-     * @param  Collection<int, DynamicResource>  $models
+     * @param  Collection<int, Template>  $models
      */
     public function asNovaAction(ActionFields $fields, Collection $models): ActionResponse
     {

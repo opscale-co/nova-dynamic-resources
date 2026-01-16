@@ -8,13 +8,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('dynamic_resources', function (Blueprint $table) {
+        Schema::create('dynamic_resources_templates', function (Blueprint $table) {
             $table->ulid('id')->primary();
+            $table->string('base_class')->nullable();
             $table->string('singular_label');
             $table->string('label');
             $table->string('uri_key');
             $table->string('title')->nullable();
-            $table->string('base_class')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -25,6 +25,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('dynamic_resources');
+        Schema::dropIfExists('dynamic_resources_templates');
     }
 };

@@ -63,6 +63,97 @@ public function tools()
    - **Fields**: An array of field definitions using the repeater interface
    - **Title**: The field to be used as the descriptor for the record
 
+### Adding Dynamic Fields to Existing Models
+
+You can also add dynamic fields to your existing models. This is useful when you want to extend your models with configurable fields without modifying the database schema.
+
+#### 1. Database Migration
+
+Your table requires a `data` column with JSON type to store the dynamic field values:
+
+```php
+Schema::table('users', function (Blueprint $table) {
+    $table->json('data')->nullable();
+});
+```
+
+#### 2. Model Setup
+
+Add the `HasDynamicTemplate` trait to your model:
+
+```php
+use Opscale\NovaDynamicResources\Models\Concerns\HasDynamicTemplate;
+
+class User extends Authenticatable
+{
+    use HasDynamicTemplate;
+
+    // ...
+}
+```
+
+The `HasDynamicTemplate` trait provides:
+- A `template()` relationship to access the model's template configuration
+- A `fields()` relationship to access the template's fields
+- Dynamic data storage and retrieval via the `data` JSON column
+- Automatic eager loading of template and fields
+
+#### 3. Create a Template
+
+Create a template in the database with `base_class` set to your model's fully qualified class name:
+
+```php
+use Opscale\NovaDynamicResources\Models\Template;
+
+Template::create([
+    'base_class' => \App\Models\User::class,
+    'singular_label' => 'User',
+    'label' => 'Users',
+    'uri_key' => 'users',
+    'title' => 'name',
+]);
+```
+
+#### 4. Nova Resource Integration
+
+To render the dynamic fields in your Nova resource, add the following snippet to your `fields()` method:
+
+```php
+use Opscale\NovaDynamicResources\Services\Actions\RenderField;
+
+public function fields(NovaRequest $request): array
+{
+    $fields = [
+        // Your static fields...
+        ID::make()->sortable(),
+        Text::make('Name'),
+        Text::make('Email'),
+    ];
+
+    // Render dynamic fields from template
+    $dynamicFields = $this->resource->template?->fields ?? [];
+    foreach ($dynamicFields as $dynamicField) {
+        $result = RenderField::run([
+            'type' => $dynamicField->type,
+            'label' => $dynamicField->label,
+            'name' => $dynamicField->name,
+            'required' => $dynamicField->required,
+            'rules' => $dynamicField->rules ?? [],
+            'config' => $dynamicField->config ?? [],
+        ]);
+        $fields[] = $result['instance'];
+    }
+
+    return $fields;
+}
+```
+
+This snippet:
+1. Accesses the model's template through the `HasDynamicTemplate` relationship
+2. Iterates over each field defined in the template
+3. Uses `RenderField` to create the appropriate Nova field instance based on the field type
+4. Appends the dynamic fields to your existing static fields
+
 ### Field Configuration
 
 Each field in your dynamic resource consists of:

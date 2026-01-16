@@ -4,8 +4,8 @@ namespace Opscale\NovaDynamicResources\Nova\Repeatables;
 
 use Laravel\Nova\Fields\Repeater\Repeatable;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Opscale\NovaDynamicResources\Models\DynamicAction as Model;
-use Opscale\NovaDynamicResources\Nova\DynamicAction as Resource;
+use Opscale\NovaDynamicResources\Models\Action as Model;
+use Opscale\NovaDynamicResources\Nova\Action as Resource;
 use Override;
 
 class Action extends Repeatable

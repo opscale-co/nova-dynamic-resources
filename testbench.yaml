@@ -1,5 +1,8 @@
 laravel: '@testbench'
 
+migrations:
+  - workbench/database/migrations
+
 providers:
   - Laravel\Nova\NovaCoreServiceProvider
   - Laravel\Nova\NovaServiceProvider

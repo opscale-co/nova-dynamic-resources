@@ -10,26 +10,26 @@ use Laravel\Nova\Fields\KeyValue;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
-use Opscale\NovaDynamicResources\Models\DynamicRecord as Model;
-use Opscale\NovaDynamicResources\Models\DynamicResource as Template;
-use Opscale\NovaDynamicResources\Nova\Actions\ViewRecord;
+use Opscale\NovaDynamicResources\Models\Record as Model;
+use Opscale\NovaDynamicResources\Models\Template as TemplateModel;
 use Opscale\NovaDynamicResources\Services\Actions\RenderAction;
 use Opscale\NovaDynamicResources\Services\Actions\RenderField;
+use Opscale\NovaDynamicResources\Services\Actions\ViewRecord;
 use Override;
 
 /**
  * @extends Resource<Model>
  *
- * @property-read Template $template
+ * @property-read TemplateModel $template
  */
-class DynamicRecord extends Resource
+class Record extends Resource
 {
-    public static Template $template;
+    public static TemplateModel $template;
 
     /**
      * The model the resource corresponds to.
      *
-     * @var class-string<\Opscale\NovaDynamicResources\Models\DynamicRecord>
+     * @var class-string<\Opscale\NovaDynamicResources\Models\Record>
      */
     public static $model = Model::class;
 
@@ -45,7 +45,7 @@ class DynamicRecord extends Resource
         if (isset(static::$template)) {
             $singular_label = static::$template->getAttribute('singular_label');
         } else {
-            $singular_label = __('Dynamic Record');
+            $singular_label = __('Record');
         }
 
         return $singular_label;
@@ -63,7 +63,7 @@ class DynamicRecord extends Resource
         if (isset(static::$template)) {
             $label = static::$template->getAttribute('label');
         } else {
-            $label = __('Dynamic Records');
+            $label = __('Records');
         }
 
         return $label;
@@ -81,7 +81,7 @@ class DynamicRecord extends Resource
         if (isset(static::$template)) {
             $uri_key = static::$template->getAttribute('uri_key');
         } else {
-            $uri_key = __('dynamic-records');
+            $uri_key = __('records');
         }
 
         return $uri_key;
@@ -97,7 +97,7 @@ class DynamicRecord extends Resource
     public static function indexQuery(NovaRequest $request, $query)
     {
         if (isset(static::$template)) {
-            return $query->where('resource_id', static::$template->id);
+            return $query->where('template_id', static::$template->id);
         } else {
             return $query;
         }
@@ -109,9 +109,9 @@ class DynamicRecord extends Resource
     final public function title(): string
     {
         /** @var string $label */
-        if (isset($this->model()->resource->title)) {
+        if (isset($this->model()->template->title)) {
             $title = $this->model()->data[
-                $this->model()->resource->title
+                $this->model()->template->title
             ];
         } else {
             $title = $this->model()->id;
@@ -131,7 +131,7 @@ class DynamicRecord extends Resource
     {
         if (! isset(static::$template)) {
             return [
-                'resource' => BelongsTo::make(__('Resource'), 'resource', DynamicResource::class)
+                'template' => BelongsTo::make(__('Template'), 'template', Template::class)
                     ->sortable()
                     ->filterable(),
 
@@ -165,20 +165,21 @@ class DynamicRecord extends Resource
             return [];
         }
 
-        $resource = static::$template;
+        $template = static::$template;
         $fields = [
-            Hidden::make('Resource', 'resource_id')
-                ->default($resource->id)
+            Hidden::make('Template', 'template_id')
+                ->default($template->id)
                 ->rules('required'),
         ];
 
-        $templateFields = $resource->fields;
+        $templateFields = $template->fields;
 
         foreach ($templateFields as $templateField) {
             $result = RenderField::run([
                 'type' => $templateField->type,
                 'label' => $templateField->label,
                 'name' => $templateField->name,
+                'required' => $templateField->required,
                 'rules' => $templateField->rules ?? [],
                 'config' => $templateField->config ?? [],
             ]);
@@ -197,7 +198,7 @@ class DynamicRecord extends Resource
     #[Override]
     public function actions(NovaRequest $request): array
     {
-        // Add inline action when viewing all dynamic records
+        // Add inline action when viewing all records
         if (! isset(static::$template)) {
             return [
                 ViewRecord::make()
@@ -207,14 +208,14 @@ class DynamicRecord extends Resource
             ];
         }
 
-        $resource = $this->model()->resource;
-        if ($resource === null) {
+        $template = $this->model()->template;
+        if ($template === null) {
             return [];
         }
 
         $actions = [];
 
-        $templateActions = $resource->actions;
+        $templateActions = $template->actions;
         foreach ($templateActions as $templateAction) {
             $result = RenderAction::run([
                 'class' => $templateAction->class,

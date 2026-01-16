@@ -11,18 +11,18 @@ use Laravel\Nova\Fields\Slug;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
-use Opscale\NovaDynamicResources\Models\DynamicField as Model;
+use Opscale\NovaDynamicResources\Models\Field as Model;
 use Override;
 
 /**
  * @extends Resource<Model>
  */
-class DynamicField extends Resource
+class Field extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
-     * @var class-string<\Opscale\NovaDynamicResources\Models\DynamicField>
+     * @var class-string<\Opscale\NovaDynamicResources\Models\Field>
      */
     public static $model = Model::class;
 
@@ -55,7 +55,7 @@ class DynamicField extends Resource
     #[Override]
     public static function uriKey(): string
     {
-        return __('dynamic-fields');
+        return __('fields');
     }
 
     /**
@@ -64,7 +64,7 @@ class DynamicField extends Resource
     #[Override]
     public static function label(): string
     {
-        return __('Dynamic Fields');
+        return __('Fields');
     }
 
     /**
@@ -73,7 +73,7 @@ class DynamicField extends Resource
     #[Override]
     public static function singularLabel(): string
     {
-        return __('Dynamic Field');
+        return __('Field');
     }
 
     /**
@@ -157,10 +157,9 @@ class DynamicField extends Resource
     public function fields(NovaRequest $request): array
     {
         return [
-            BelongsTo::make(__('Resource'), 'resource', DynamicResource::class)
+            BelongsTo::make(__('Template'), 'template', Template::class)
                 ->sortable()
-                ->filterable()
-                ->onlyOnForms(),
+                ->filterable(),
 
             ...array_values(static::defaultFields()),
         ];

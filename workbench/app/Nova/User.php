@@ -8,6 +8,7 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Opscale\NovaDynamicResources\Services\Actions\RenderField;
 use Override;
 
 /**
@@ -48,7 +49,7 @@ class User extends Resource
     #[Override]
     final public function fields(NovaRequest $request): array
     {
-        return [
+        $fields = [
             ID::make()->sortable(),
 
             Text::make('Name')
@@ -66,6 +67,22 @@ class User extends Resource
                 ->creationRules(fn (): array => $this->model()->validationRules['password'] ?? [])
                 ->updateRules(fn (): array => $this->model()->validationRules['password'] ?? []),
         ];
+
+        // Render dynamic fields
+        $dynamicFields = $this->resource->template?->fields ?? [];
+        foreach ($dynamicFields as $dynamicField) {
+            $result = RenderField::run([
+                'type' => $dynamicField->type,
+                'label' => $dynamicField->label,
+                'name' => $dynamicField->name,
+                'required' => $dynamicField->required,
+                'rules' => $dynamicField->rules ?? [],
+                'config' => $dynamicField->config ?? [],
+            ]);
+            $fields[] = $result['instance'];
+        }
+
+        return $fields;
     }
 
     /**

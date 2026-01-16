@@ -7,7 +7,6 @@ use DateTimeInterface;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
-use Opscale\NovaDynamicResources\Models\DynamicRecord;
 
 /**
  * @implements CastsAttributes<array<string, mixed>, array<string, mixed>>
@@ -22,25 +21,18 @@ class AsDynamicData implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): array
     {
-        if (! $model instanceof DynamicRecord) {
-            return $this->decodeValue($value);
-        }
-
-        // Ensure resource is loaded
-        if (! $model->relationLoaded('resource')) {
-            $model->load('resource');
-        }
-
-        $resource = $model->resource;
-        if ($resource === null) {
-            return $this->decodeValue($value);
-        }
-
         // Decode the JSON data
         $data = $this->decodeValue($value);
 
-        // Apply casts to each field based on resource configuration
-        foreach ($resource->fields as $field) {
+        // Get fields from the model
+        $fields = $model->template?->fields;
+
+        if ($fields === null || $fields->isEmpty()) {
+            return $data;
+        }
+
+        // Apply casts to each field based on configuration
+        foreach ($fields as $field) {
             $fieldName = $field->name;
 
             if (! array_key_exists($fieldName, $data)) {
