@@ -4,8 +4,8 @@ namespace Opscale\NovaDynamicResources\Nova\Repeatables;
 
 use Laravel\Nova\Fields\Repeater\Repeatable;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Opscale\NovaDynamicResources\Models\DynamicField as Model;
-use Opscale\NovaDynamicResources\Nova\DynamicField as Resource;
+use Opscale\NovaDynamicResources\Models\Field as Model;
+use Opscale\NovaDynamicResources\Nova\Field as Resource;
 use Override;
 
 class Field extends Repeatable

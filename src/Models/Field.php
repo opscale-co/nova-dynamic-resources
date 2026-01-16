@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Opscale\NovaDynamicResources\Models\Repositories\DynamicFieldRepository;
+use Opscale\NovaDynamicResources\Models\Repositories\FieldRepository;
 
-class DynamicField extends Model
+class Field extends Model
 {
-    use DynamicFieldRepository;
+    use FieldRepository;
     use HasUlids;
     use SoftDeletes;
     use ValidatorTrait;
@@ -22,10 +22,10 @@ class DynamicField extends Model
      * @var array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
      */
     public array $validationRules = [
-        'resource_id' => [
+        'template_id' => [
             'required',
             'ulid',
-            'exists:dynamic_resources,id',
+            'exists:dynamic_resources_templates,id',
         ],
         'type' => [
             'required',
@@ -65,12 +65,19 @@ class DynamicField extends Model
     ];
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'dynamic_resources_fields';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
      */
     protected $fillable = [
-        'resource_id',
+        'template_id',
         'type',
         'label',
         'name',
@@ -94,67 +101,12 @@ class DynamicField extends Model
     ];
 
     /**
-     * Get an attribute from the model, checking metadata for appended attributes.
+     * Get the template that owns this field.
      *
-     * @param  string  $key
-     * @return mixed
+     * @return BelongsTo<Template, $this>
      */
-    public function getAttribute($key)
+    public function template(): BelongsTo
     {
-        if (in_array($key, $this->appends, true)) {
-            $metadata = $this->getRawMetadata();
-
-            return $metadata[$key] ?? null;
-        }
-
-        return parent::getAttribute($key);
-    }
-
-    /**
-     * Set an attribute on the model, storing appended attributes in metadata.
-     *
-     * @param  string  $key
-     * @param  mixed  $value
-     * @return mixed
-     */
-    public function setAttribute($key, $value)
-    {
-        if (in_array($key, $this->appends, true)) {
-            $metadata = $this->getRawMetadata();
-            $metadata[$key] = $value;
-            $this->attributes['metadata'] = json_encode($metadata);
-
-            return $this;
-        }
-
-        return parent::setAttribute($key, $value);
-    }
-
-    /**
-     * Get the resource that owns the field.
-     */
-    public function resource(): BelongsTo
-    {
-        return $this->belongsTo(DynamicResource::class, 'resource_id');
-    }
-
-    /**
-     * Get raw metadata without triggering casts.
-     *
-     * @return array<string, mixed>
-     */
-    protected function getRawMetadata(): array
-    {
-        $raw = $this->attributes['metadata'] ?? null;
-
-        if ($raw === null) {
-            return [];
-        }
-
-        if (is_array($raw)) {
-            return $raw;
-        }
-
-        return json_decode($raw, true) ?? [];
+        return $this->belongsTo(Template::class);
     }
 }

@@ -5,10 +5,9 @@ namespace Workbench\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Config;
 use Opscale\NovaCatalogs\Models\Catalog;
-use Opscale\NovaDynamicResources\Models\DynamicField;
-use Opscale\NovaDynamicResources\Models\DynamicResource;
+use Opscale\NovaDynamicResources\Models\Template;
 
-class DynamicResourceSeeder extends Seeder
+class TemplateSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -38,8 +37,8 @@ class DynamicResourceSeeder extends Seeder
         // Get all field types from config
         $fieldTypes = Config::get('nova-dynamic-resources.fields', []);
 
-        // Create the default dynamic resource
-        $resource = DynamicResource::create([
+        // Create the default template
+        $template = Template::create([
             'label' => 'Test Resources',
             'singular_label' => 'Test Resource',
             'uri_key' => 'resources-test',
@@ -49,12 +48,12 @@ class DynamicResourceSeeder extends Seeder
 
         // Create one field for each type
         foreach (array_keys($fieldTypes) as $type) {
-            DynamicField::create([
-                'resource_id' => $resource->id,
+            $template->fields()->create([
                 'type' => $type,
                 'label' => ucfirst($type),
                 'name' => $type,
             ]);
         }
+
     }
 }

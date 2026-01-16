@@ -8,27 +8,27 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('dynamic_records', function (Blueprint $table) {
+        Schema::create('dynamic_resources_records', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->ulid('resource_id');
+            $table->ulid('template_id');
             $table->json('data');
             $table->json('metadata')->nullable();
             $table->timestamps();
 
             // Foreign key constraint
-            $table->foreign('resource_id')
+            $table->foreign('template_id')
                 ->references('id')
-                ->on('dynamic_resources')
+                ->on('dynamic_resources_templates')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
             // Index for better performance
-            $table->index('resource_id');
+            $table->index('template_id');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('dynamic_records');
+        Schema::dropIfExists('dynamic_resources_records');
     }
 };

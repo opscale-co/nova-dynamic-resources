@@ -1,12 +1,12 @@
 <?php
 
-namespace Opscale\NovaDynamicResources\Nova\Actions;
+namespace Opscale\NovaDynamicResources\Services\Actions;
 
 use Illuminate\Support\Collection;
 use Laravel\Nova\Actions\ActionResponse;
 use Laravel\Nova\Fields\ActionFields;
 use Opscale\Actions\Action;
-use Opscale\NovaDynamicResources\Models\DynamicRecord;
+use Opscale\NovaDynamicResources\Models\Record;
 use Override;
 
 class ViewRecord extends Action
@@ -73,15 +73,15 @@ class ViewRecord extends Action
     /**
      * Execute the action as a Nova action.
      *
-     * @param  Collection<int, DynamicRecord>  $models
+     * @param  Collection<int, Record>  $models
      */
     public function asNovaAction(ActionFields $fields, Collection $models): ActionResponse
     {
         $record = $models->first();
-        $record->load('resource');
-        $resource = $record->resource;
+        $record->load('template');
+        $template = $record->template;
 
-        $uriKey = $resource->uri_key;
+        $uriKey = $template->uri_key;
         $recordId = $record->id;
 
         return $this->visit("/resources/{$uriKey}/{$recordId}");

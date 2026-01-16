@@ -4,11 +4,11 @@ namespace Opscale\NovaDynamicResources;
 
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
-use Opscale\NovaDynamicResources\Models\DynamicResource as Template;
-use Opscale\NovaDynamicResources\Nova\DynamicAction;
-use Opscale\NovaDynamicResources\Nova\DynamicField;
-use Opscale\NovaDynamicResources\Nova\DynamicRecord;
-use Opscale\NovaDynamicResources\Nova\DynamicResource;
+use Opscale\NovaDynamicResources\Models\Template as TemplateModel;
+use Opscale\NovaDynamicResources\Nova\Action;
+use Opscale\NovaDynamicResources\Nova\Field;
+use Opscale\NovaDynamicResources\Nova\Record;
+use Opscale\NovaDynamicResources\Nova\Template;
 use Opscale\NovaPackageTools\NovaPackage;
 use Opscale\NovaPackageTools\NovaPackageServiceProvider;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
@@ -29,10 +29,10 @@ class ToolServiceProvider extends NovaPackageServiceProvider
             ->discoversMigrations()
             ->runsMigrations()
             ->hasResources([
-                DynamicResource::class,
-                DynamicField::class,
-                DynamicAction::class,
-                DynamicRecord::class,
+                Template::class,
+                Field::class,
+                Action::class,
+                Record::class,
             ])
             ->hasInstallCommand(function (InstallCommand $installCommand): void {
                 $installCommand
@@ -54,23 +54,17 @@ class ToolServiceProvider extends NovaPackageServiceProvider
 
     private function generateResources(): array
     {
-        $resources = Template::all();
+        $templates = TemplateModel::whereNull('base_class')->get();
         $classes = [];
-        foreach ($resources as $resource) {
-            $baseClass = null;
-            if ($resource->base_class && class_exists($resource->base_class)) {
-                $baseClass = $resource->base_class;
-            } else {
-                $baseClass = DynamicRecord::class;
-            }
-
-            $templateClass = Template::class;
+        foreach ($templates as $template) {
+            $baseClass = Record::class;
+            $templateClass = TemplateModel::class;
             $class = get_class(eval("
                 return new class extends {$baseClass} {
                     public static {$templateClass} \$template;
                 };"));
-            $class::$template = $resource;
-            $binding = 'dynamic-' . $resource->uri_key;
+            $class::$template = $template;
+            $binding = 'dynamic-' . $template->uri_key;
             $this->app->bindIf($binding, function ($app) use ($class): object {
                 return new $class;
             });

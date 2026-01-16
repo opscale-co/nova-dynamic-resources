@@ -109,7 +109,7 @@ class RenderField extends Action
 
         $instance = $fieldClass::make(
             $label,
-            $name,
+            'data->' . $name,
         )->rules($mergedRules);
 
         if (($validatedData['required'])) {

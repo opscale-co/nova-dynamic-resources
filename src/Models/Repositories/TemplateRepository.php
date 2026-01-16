@@ -4,12 +4,12 @@ namespace Opscale\NovaDynamicResources\Models\Repositories;
 
 use Illuminate\Support\Str;
 
-trait DynamicResourceRepository
+trait TemplateRepository
 {
     /**
-     * Boot the DynamicResourceRepository trait.
+     * Boot the TemplateRepository trait.
      */
-    public static function bootDynamicResourceRepository(): void
+    public static function bootTemplateRepository(): void
     {
         static::creating(function ($model): void {
             // Auto-populate singular_label if not set

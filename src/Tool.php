@@ -7,8 +7,8 @@ use Laravel\Nova\Menu\MenuGroup;
 use Laravel\Nova\Menu\MenuItem;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Tool as NovaTool;
-use Opscale\NovaDynamicResources\Nova\DynamicRecord;
-use Opscale\NovaDynamicResources\Nova\DynamicResource;
+use Opscale\NovaDynamicResources\Nova\Record;
+use Opscale\NovaDynamicResources\Nova\Template;
 
 class Tool extends NovaTool
 {
@@ -22,8 +22,8 @@ class Tool extends NovaTool
     final public function menu(Request $request): MenuGroup
     {
         return MenuGroup::make('Dynamic Resources', [
-            MenuItem::resource(DynamicResource::class),
-            MenuItem::resource(DynamicRecord::class),
+            MenuItem::resource(Template::class),
+            MenuItem::resource(Record::class),
         ])->collapsable();
     }
 }
