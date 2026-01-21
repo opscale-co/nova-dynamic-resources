@@ -123,7 +123,7 @@ class Field extends Resource
                 ->nullable()
                 ->hideWhenCreating(),
 
-            'metadata' => KeyValue::make(__('Metadata'), 'metadata')
+            'data' => KeyValue::make(__('Data'), 'data')
                 ->keyLabel(__('Key'))
                 ->valueLabel(__('Value'))
                 ->onlyOnDetail(),

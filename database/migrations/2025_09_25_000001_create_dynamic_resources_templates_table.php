@@ -10,16 +10,15 @@ return new class extends Migration
     {
         Schema::create('dynamic_resources_templates', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->string('base_class')->nullable();
+            $table->enum('type', ['Dynamic', 'Inherited', 'Composited'])->default('Composited');
+            $table->string('related_class')->nullable()->unique();
             $table->string('singular_label');
             $table->string('label');
-            $table->string('uri_key');
+            $table->string('uri_key')->unique();
             $table->string('title')->nullable();
-            $table->json('metadata')->nullable();
+            $table->json('data')->nullable();
             $table->timestamps();
             $table->softDeletes();
-
-            $table->unique('uri_key');
         });
     }
 

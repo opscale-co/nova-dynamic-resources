@@ -1,0 +1,88 @@
+<?php
+
+namespace Opscale\NovaDynamicResources\Nova\Concerns;
+
+use Laravel\Nova\Fields\Hidden;
+use Opscale\NovaDynamicResources\Services\Actions\RenderField;
+
+/**
+ * @mixin \Laravel\Nova\Resource
+ */
+trait UsesTemplate
+{
+    /**
+     * Get the displayable singular label of the resource.
+     */
+    #[Override]
+    public static function singularLabel(): string
+    {
+        if (isset(static::$template)) {
+            return static::$template->getAttribute('singular_label');
+        } else {
+            return parent::singularLabel();
+        }
+    }
+
+    /**
+     * Get the displayable label of the resource.
+     */
+    #[Override]
+    public static function label(): string
+    {
+        if (isset(static::$template)) {
+            return static::$template->getAttribute('label');
+        } else {
+            return parent::label();
+        }
+    }
+
+    /**
+     * Get the URI key for the resource.
+     */
+    #[Override]
+    public static function uriKey(): string
+    {
+        if (isset(static::$template)) {
+            return static::$template->getAttribute('uri_key');
+        } else {
+            return parent::uriKey();
+        }
+    }
+
+    /**
+     * Render dynamic fields from the model's template.
+     *
+     * @return array<int, \Laravel\Nova\Fields\Field>
+     */
+    protected function renderTemplateFields(): array
+    {
+        $fields = [];
+        $templateFields = [];
+
+        if (isset(static::$template)) {
+            // Relation for inheritance scenarios
+            $templateFields = static::$template->fields;
+            $fields[] = Hidden::make('Template', 'template_id')
+                ->default(static::$template->id)
+                ->onlyOnForms();
+        } else {
+            // Relation for composition scenarios
+            $templateFields = $this->resource->template?->fields ?? [];
+        }
+
+        foreach ($templateFields as $templateField) {
+            $result = RenderField::run([
+                'type' => $templateField->type,
+                'label' => $templateField->label,
+                'name' => $templateField->name,
+                'required' => $templateField->required,
+                'rules' => $templateField->rules ?? [],
+                'config' => $templateField->config ?? [],
+            ]);
+
+            $fields[] = $result['instance'];
+        }
+
+        return $fields;
+    }
+}

@@ -5,11 +5,13 @@ namespace Opscale\NovaDynamicResources\Nova;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\Repeater;
 use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\Slug;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Resource;
 use Laravel\Nova\Tabs\Tab;
+use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
 use Opscale\NovaDynamicResources\Models\Template as Model;
 use Opscale\NovaDynamicResources\Nova\Repeatables\Action as ActionRepeatable;
 use Opscale\NovaDynamicResources\Nova\Repeatables\Field as FieldRepeatable;
@@ -72,6 +74,24 @@ class Template extends Resource
     }
 
     /**
+     * Get the available base classes for dynamic resources.
+     *
+     * @return array<string, string>
+     */
+    protected static function getRelatedResources(bool $checkRelation): array
+    {
+        $baseClasses = [];
+
+        foreach (Nova::$resources as $resource) {
+            if (is_subclass_of($resource, Record::class) === $checkRelation) {
+                $baseClasses[$resource] = class_basename($resource);
+            }
+        }
+
+        return $baseClasses;
+    }
+
+    /**
      * Get the fields displayed by the resource.
      */
     /**
@@ -82,16 +102,16 @@ class Template extends Resource
     {
         return [
             Tab::group(fields: [
-                Tab::make(__('Template'), [
+                Tab::make(__('Resource'), [
                     ...array_values($this->defaultFields($request)),
                 ]),
 
                 Tab::make(__('Fields'), [
-                    HasMany::make(__('Fields'), 'fields', Field::class),
+                    'fields' => HasMany::make(__('Fields'), 'fields', Field::class),
                 ]),
 
                 Tab::make(__('Actions'), [
-                    HasMany::make(__('Actions'), 'actions', Action::class),
+                    'actions' => HasMany::make(__('Actions'), 'actions', Action::class),
                 ]),
             ]),
         ];
@@ -110,58 +130,48 @@ class Template extends Resource
         ];
     }
 
-    #[Override]
-    protected function defaultFields(NovaRequest $request): array
+    final protected function defaultFields(NovaRequest $request): array
     {
-        $baseClasses = collect(Nova::$resources)
-            ->mapWithKeys(function (string $resourceClass): array {
-                return [$resourceClass::$model => $resourceClass::singularLabel()];
-            });
-
         return [
-            'base_class' => Select::make(__('Base Class'), 'base_class')
-                ->options($baseClasses)
-                ->displayUsingLabels()
-                ->nullable()
-                ->rules(fn (): array => $this->model()?->validationRules['base_class'])
-                ->hideFromIndex(),
+            'label' => Text::make(__('Label'), 'label')
+                ->rules(fn (): array => $this->model()?->validationRules['label'])
+                ->help(__('Use a plural label for your resource.')),
 
             'singular_label' => Text::make(__('Singular Label'), 'singular_label')
                 ->rules(fn (): array => $this->model()?->validationRules['singular_label'])
-                ->dependsOn('base_class', function (Text $field, NovaRequest $request, mixed $formData): void {
-                    $resourceClass = Nova::resourceForModel($formData->base_class);
-                    if ($resourceClass) {
-                        $field->immutable()->setValue($resourceClass::singularLabel());
-                    }
-                }),
+                ->hideWhenCreating(),
 
-            'label' => Text::make(__('Label'), 'label')
-                ->rules(fn (): array => $this->model()?->validationRules['label'])
-                ->dependsOn('base_class', function (Text $field, NovaRequest $request, mixed $formData): void {
-                    $resourceClass = Nova::resourceForModel($formData->base_class);
-                    if ($resourceClass) {
-                        $field->immutable()->setValue($resourceClass::label());
-                    }
-                }),
-
-            'uri_key' => Text::make(__('URI Key'), 'uri_key')
+            'uri_key' => Slug::make(__('URI Key'), 'uri_key')
+                ->from('label')
                 ->creationRules(fn (): array => $this->model()?->validationRules['uri_key'])
-                ->dependsOn('base_class', function (Text $field, NovaRequest $request, mixed $formData): void {
-                    $resourceClass = Nova::resourceForModel($formData->base_class);
-                    if ($resourceClass) {
-                        $field->immutable()->setValue($resourceClass::uriKey());
-                    }
-                }),
+                ->hideWhenCreating(),
 
-            'title' => Text::make(__('Title'), 'title')
-                ->rules(fn (): array => $this->model()?->validationRules['title'])
-                ->help(__('Define the property to be used as title.'))
-                ->dependsOn('base_class', function (Text $field, NovaRequest $request, mixed $formData): void {
-                    $resourceClass = Nova::resourceForModel($formData->base_class);
-                    if ($resourceClass && property_exists($resourceClass, 'title')) {
-                        $field->immutable()->setValue($resourceClass::$title);
+            'type' => Select::make(__('Type'), 'type')
+                ->options(collect(TemplateType::cases())->mapWithKeys(fn (TemplateType $type) => [
+                    $type->value => $type->value,
+                ])->toArray())
+                ->displayUsingLabels()
+                ->rules(fn (): array => $this->model()?->validationRules['type']),
+
+            'related_class' => Select::make(__('Related Class'), 'related_class')
+                ->dependsOn('type', function (Select $field, NovaRequest $request, $formData) {
+                    $type = $formData->type;
+
+                    if ($type === TemplateType::Inherited->value) {
+                        $field->show()
+                            ->options(static::getRelatedResources(true));
+                    } elseif ($type === TemplateType::Composited->value) {
+                        $field->show()
+                            ->options(static::getRelatedResources(false));
+                    } else {
+                        $field->hide();
                     }
-                }),
+                })
+                ->displayUsingLabels()
+                ->searchable()
+                ->rules(fn (): array => $this->model()?->validationRules['related_class'])
+                ->hideFromIndex()
+                ->hide(),
 
             'fields' => Repeater::make(__('Fields'), 'fields')
                 ->repeatables([
@@ -169,6 +179,10 @@ class Template extends Resource
                 ])
                 ->asHasMany(Field::class)
                 ->required(),
+
+            'title' => Text::make(__('Title'), 'title')
+                ->rules(fn (): array => $this->model()?->validationRules['title'])
+                ->help(__('Define the property to be used as title.')),
 
             'actions' => Repeater::make(__('Actions'), 'actions')
                 ->repeatables([

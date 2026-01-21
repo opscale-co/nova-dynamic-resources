@@ -54,10 +54,16 @@ class ToolServiceProvider extends NovaPackageServiceProvider
 
     private function generateResources(): array
     {
-        $templates = TemplateModel::whereNull('base_class')->get();
+        $templates = TemplateModel::instantiables()->get();
         $classes = [];
         foreach ($templates as $template) {
-            $baseClass = Record::class;
+            $baseClass = null;
+            if ($template->related_class) {
+                $baseClass = $template->related_class;
+            } else {
+                $baseClass = Record::class;
+            }
+
             $templateClass = TemplateModel::class;
             $class = get_class(eval("
                 return new class extends {$baseClass} {

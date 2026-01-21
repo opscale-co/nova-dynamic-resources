@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Opscale\NovaDynamicResources\Models\Concerns\HasDynamicData;
+use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
 use Opscale\NovaDynamicResources\Models\Repositories\TemplateRepository;
 
 class Template extends Model
@@ -50,10 +51,15 @@ class Template extends Model
             'min:1',
             'max:255',
         ],
-        'base_class' => [
+        'type' => [
+            'required',
+            'string',
+        ],
+        'related_class' => [
             'nullable',
             'string',
             'max:255',
+            'unique:dynamic_resources_templates,related_class',
         ],
     ];
 
@@ -74,7 +80,17 @@ class Template extends Model
         'label',
         'uri_key',
         'title',
-        'base_class',
+        'type',
+        'related_class',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'type' => TemplateType::class,
     ];
 
     /**
@@ -86,14 +102,6 @@ class Template extends Model
         'fields',
         'actions',
     ];
-
-    /**
-     * Get the attribute name for dynamic data storage.
-     */
-    public function getDynamicProperty(): string
-    {
-        return 'metadata';
-    }
 
     /**
      * Get the fields for the template.

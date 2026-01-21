@@ -14,16 +14,7 @@ trait HasDynamicData
      */
     public function initializeHasDynamicData(): void
     {
-        $property = $this->getDynamicProperty();
-        $this->casts = array_merge($this->casts ?? [], [$property => AsDynamicData::class]);
-    }
-
-    /**
-     * Get the attribute name for dynamic data storage.
-     */
-    public function getDynamicProperty(): string
-    {
-        return 'data';
+        $this->casts = array_merge($this->casts ?? [], ['data' => AsDynamicData::class]);
     }
 
     /**
@@ -75,10 +66,9 @@ trait HasDynamicData
     /**
      * Get a dynamic data value by key (with casts applied).
      */
-    public function getDynamicData(string $key, mixed $default = null): mixed
+    public function getData(string $key, mixed $default = null): mixed
     {
-        $property = $this->getDynamicProperty();
-        $data = $this->{$property} ?? [];
+        $data = $this->data ?? [];
 
         return $data[$key] ?? $default;
     }
@@ -86,12 +76,11 @@ trait HasDynamicData
     /**
      * Set a dynamic data value by key.
      */
-    public function setDynamicData(string $key, mixed $value): static
+    public function setData(string $key, mixed $value): static
     {
-        $property = $this->getDynamicProperty();
         $data = $this->getRawData();
         $data[$key] = $value;
-        $this->attributes[$property] = json_encode($data);
+        $this->attributes['data'] = json_encode($data);
 
         return $this;
     }
@@ -99,10 +88,9 @@ trait HasDynamicData
     /**
      * Check if a dynamic data key exists.
      */
-    public function hasDynamicData(string $key): bool
+    public function hasData(string $key): bool
     {
-        $property = $this->getDynamicProperty();
-        $data = $this->{$property} ?? [];
+        $data = $this->data ?? [];
 
         return array_key_exists($key, $data);
     }
@@ -110,12 +98,11 @@ trait HasDynamicData
     /**
      * Remove a dynamic data key.
      */
-    public function removeDynamicData(string $key): static
+    public function removeData(string $key): static
     {
-        $property = $this->getDynamicProperty();
         $data = $this->getRawData();
         unset($data[$key]);
-        $this->attributes[$property] = json_encode($data);
+        $this->attributes['data'] = json_encode($data);
 
         return $this;
     }
@@ -130,7 +117,7 @@ trait HasDynamicData
     protected function mutateAttribute($key, $value)
     {
         if (in_array($key, $this->appends ?? [], true)) {
-            return $this->getDynamicData($key);
+            return $this->getData($key);
         }
 
         return parent::mutateAttribute($key, $value);
@@ -146,7 +133,7 @@ trait HasDynamicData
     protected function setMutatedAttributeValue($key, $value)
     {
         if (in_array($key, $this->appends ?? [], true)) {
-            return $this->setDynamicData($key, $value);
+            return $this->setData($key, $value);
         }
 
         return parent::setMutatedAttributeValue($key, $value);
@@ -159,8 +146,7 @@ trait HasDynamicData
      */
     protected function getRawData(): array
     {
-        $property = $this->getDynamicProperty();
-        $raw = $this->attributes[$property] ?? null;
+        $raw = $this->attributes['data'] ?? null;
 
         if ($raw === null) {
             return [];

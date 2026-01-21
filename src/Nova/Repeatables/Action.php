@@ -26,7 +26,7 @@ class Action extends Repeatable
     final public function fields(NovaRequest $request): array
     {
         $fields = Resource::defaultFields();
-        unset($fields['config'], $fields['metadata']);
+        unset($fields['config'], $fields['data']);
 
         return array_values($fields);
     }

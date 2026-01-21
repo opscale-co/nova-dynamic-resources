@@ -3,8 +3,8 @@
 namespace Workbench\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Config;
 use Opscale\NovaCatalogs\Models\Catalog;
+use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
 use Opscale\NovaDynamicResources\Models\Template;
 
 class TemplateSeeder extends Seeder
@@ -34,26 +34,91 @@ class TemplateSeeder extends Seeder
             $catalog->items()->create($item);
         }
 
-        // Get all field types from config
-        $fieldTypes = Config::get('nova-dynamic-resources.fields', []);
-
-        // Create the default template
-        $template = Template::create([
-            'label' => 'Test Resources',
-            'singular_label' => 'Test Resource',
-            'uri_key' => 'resources-test',
+        // Create Dynamic template for Events
+        $eventsTemplate = Template::create([
+            'label' => 'Events',
+            'singular_label' => 'Event',
+            'uri_key' => 'events',
             'title' => 'name',
-            'base_class' => null,
+            'type' => TemplateType::Dynamic,
+            'related_class' => null,
         ]);
 
-        // Create one field for each type
-        foreach (array_keys($fieldTypes) as $type) {
-            $template->fields()->create([
-                'type' => $type,
-                'label' => ucfirst($type),
-                'name' => $type,
-            ]);
-        }
+        $eventsTemplate->fields()->createMany([
+            [
+                'type' => 'name',
+                'label' => 'Name',
+                'name' => 'name',
+                'required' => true,
+            ],
+            [
+                'type' => 'description',
+                'label' => 'Description',
+                'name' => 'description',
+                'required' => false,
+            ],
+            [
+                'type' => 'address',
+                'label' => 'Address',
+                'name' => 'address',
+                'required' => false,
+            ],
+            [
+                'type' => 'date',
+                'label' => 'Date',
+                'name' => 'date',
+                'required' => true,
+            ],
+        ]);
 
+        // Create Inherited template for Products
+        $productTemplate = Template::create([
+            'label' => 'Products',
+            'singular_label' => 'Product',
+            'uri_key' => 'products',
+            'title' => 'name',
+            'type' => TemplateType::Inherited,
+            'related_class' => \Workbench\App\Nova\Item::class,
+        ]);
+
+        $productTemplate->fields()->createMany([
+            [
+                'type' => 'quantity',
+                'label' => 'Weight',
+                'name' => 'weight',
+                'required' => false,
+            ],
+            [
+                'type' => 'quantity',
+                'label' => 'Height',
+                'name' => 'height',
+                'required' => false,
+            ],
+            [
+                'type' => 'quantity',
+                'label' => 'Width',
+                'name' => 'width',
+                'required' => false,
+            ],
+        ]);
+
+        // Create Composited template for Users
+        $userTemplate = Template::create([
+            'label' => 'Users',
+            'singular_label' => 'User',
+            'uri_key' => 'users',
+            'title' => 'name',
+            'type' => TemplateType::Composited,
+            'related_class' => \Workbench\App\Nova\User::class,
+        ]);
+
+        $userTemplate->fields()->createMany([
+            [
+                'type' => 'phone',
+                'label' => 'Phone',
+                'name' => 'phone',
+                'required' => false,
+            ],
+        ]);
     }
 }
