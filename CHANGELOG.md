@@ -2,6 +2,16 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## <small>1.4.1 (2026-01-21)</small>
+
+* Merge pull request #14 from opscale-co/develop ([7e5a192](https://github.com/opscale-co/nova-dynamic-resources/commit/7e5a192)), closes [#14](https://github.com/opscale-co/nova-dynamic-resources/issues/14)
+* perf(project): modified application for templates ([8c1d3c8](https://github.com/opscale-co/nova-dynamic-resources/commit/8c1d3c8))
+
+
+### BREAKING CHANGE
+
+* Classpath changed
+
 ## 1.4.0 (2026-01-16)
 
 * Merge pull request #13 from opscale-co/develop ([da4e07f](https://github.com/opscale-co/nova-dynamic-resources/commit/da4e07f)), closes [#13](https://github.com/opscale-co/nova-dynamic-resources/issues/13)
