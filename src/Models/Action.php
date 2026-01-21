@@ -39,7 +39,7 @@ class Action extends Model
             'nullable',
             'array',
         ],
-        'metadata' => [
+        'data' => [
             'nullable',
             'array',
         ],
@@ -62,7 +62,7 @@ class Action extends Model
         'class',
         'label',
         'config',
-        'metadata',
+        'data',
     ];
 
     /**
@@ -72,7 +72,7 @@ class Action extends Model
      */
     protected $casts = [
         'config' => 'array',
-        'metadata' => 'array',
+        'data' => 'array',
     ];
 
     /**

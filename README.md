@@ -55,21 +55,213 @@ public function tools()
 
 ## Usage
 
-### Creating Dynamic Resources
+This package provides three different approaches to create dynamic resources, each suited for different use cases:
 
-1. Navigate to the "Dynamic Resources" menu item in your Nova app
-2. Create a new Dynamic Resource by defining:
-   - **Label**: The display name for your resource
-   - **Fields**: An array of field definitions using the repeater interface
-   - **Title**: The field to be used as the descriptor for the record
+| Type | Use Case | Model | Nova Resource | Fields |
+|------|----------|-------|---------------|--------|
+| **Dynamic** | Fully dynamic resources | Uses `Record` model | Auto-generated | All from template |
+| **Inherited** | Own model/table with `template_id` | Custom with `UsesTemplate` | Custom with `UsesTemplate` | Static + template |
+| **Composited** | Add dynamic fields to existing models | Existing model with `UsesTemplate` | Existing resource with `UsesTemplate` | Static + template |
 
-### Adding Dynamic Fields to Existing Models
+---
 
-You can also add dynamic fields to your existing models. This is useful when you want to extend your models with configurable fields without modifying the database schema.
+### 1. Dynamic Type
+
+**Best for:** Rapid prototyping, admin-configurable resources, or when you don't need custom business logic.
+
+Dynamic templates create fully dynamic resources where both the model and Nova resource are generated automatically. All data is stored in the `dynamic_resources_records` table.
+
+#### Setup
+
+Simply create a template in Nova or via seeder:
+
+```php
+use Opscale\NovaDynamicResources\Models\Template;
+use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
+
+Template::create([
+    'label' => 'Events',
+    'singular_label' => 'Event',
+    'uri_key' => 'events',
+    'title' => 'name',
+    'type' => TemplateType::Dynamic,
+    'related_class' => null,
+]);
+```
+
+Then add fields to the template:
+
+```php
+$template->fields()->createMany([
+    ['type' => 'name', 'label' => 'Name', 'name' => 'name', 'required' => true],
+    ['type' => 'description', 'label' => 'Description', 'name' => 'description'],
+    ['type' => 'address', 'label' => 'Address', 'name' => 'address'],
+    ['type' => 'date', 'label' => 'Date', 'name' => 'date', 'required' => true],
+]);
+```
+
+The resource will appear automatically in Nova's sidebar.
+
+---
+
+### 2. Inherited Type
+
+**Best for:** When you have a base model that needs different dynamic fields depending on conditions. Each record can reference a different template, allowing varied field configurations per record.
+
+Inherited templates use your own Eloquent model with a `template_id` foreign key. This allows you to have a dedicated table for your records while still leveraging dynamic fields from templates.
 
 #### 1. Database Migration
 
-Your table requires a `data` column with JSON type to store the dynamic field values:
+Create a migration for your model's table with a `template_id` foreign key, your static columns, and a `data` JSON column for dynamic template fields:
+
+```php
+Schema::create('products', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('template_id')->constrained('dynamic_resources_templates')->cascadeOnDelete();
+    // Static columns
+    $table->string('name');
+    $table->text('description')->nullable();
+    $table->decimal('price', 10, 2);
+    $table->unsignedInteger('stock')->default(0);
+    // Dynamic template fields stored here
+    $table->json('data')->nullable();
+    $table->timestamps();
+});
+```
+
+#### 2. Model Setup
+
+Create your model with the `UsesTemplate` trait:
+
+```php
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Opscale\NovaDynamicResources\Models\Concerns\UsesTemplate;
+
+class Product extends Model
+{
+    use UsesTemplate;
+
+    protected $fillable = [
+        'template_id',
+        'name',
+        'description',
+        'price',
+        'stock',
+        'data',
+    ];
+
+    protected $casts = [
+        'price' => 'decimal:2',
+        'stock' => 'integer',
+        'data' => 'array',
+    ];
+}
+```
+
+The `UsesTemplate` trait automatically detects the `template_id` field and uses a `belongsTo` relationship to the template.
+
+#### 3. Create the Template
+
+```php
+use Opscale\NovaDynamicResources\Models\Template;
+use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
+
+Template::create([
+    'label' => 'Products',
+    'singular_label' => 'Product',
+    'uri_key' => 'products',
+    'title' => 'name',
+    'type' => TemplateType::Inherited,
+    'related_class' => \App\Nova\Product::class,
+]);
+```
+
+#### 4. Add Template Fields
+
+Add dynamic fields that will be stored in the `data` JSON column:
+
+```php
+$template->fields()->createMany([
+    ['type' => 'quantity', 'label' => 'Weight', 'name' => 'weight'],
+    ['type' => 'quantity', 'label' => 'Height', 'name' => 'height'],
+    ['type' => 'quantity', 'label' => 'Width', 'name' => 'width'],
+]);
+```
+
+#### 5. Nova Resource Integration
+
+Create a Nova resource with the `UsesTemplate` trait. You can define static fields before the dynamic template fields:
+
+```php
+namespace App\Nova;
+
+use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\Currency;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Number;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Textarea;
+use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Resource;
+use Opscale\NovaDynamicResources\Nova\Concerns\UsesTemplate;
+
+class Product extends Resource
+{
+    use UsesTemplate;
+
+    public static $model = \App\Models\Product::class;
+
+    public static $title = 'name';
+
+    public function fields(NovaRequest $request): array
+    {
+        return [
+            ID::make()->sortable(),
+
+            BelongsTo::make(__('Template'), 'template', \Opscale\NovaDynamicResources\Nova\Template::class)
+                ->searchable()
+                ->withoutTrashed(),
+
+            // Static fields defined in the Nova resource
+            Text::make(__('Name'), 'name')
+                ->sortable()
+                ->rules('required', 'string', 'max:255'),
+
+            Textarea::make(__('Description'), 'description')
+                ->rules('nullable', 'string')
+                ->hideFromIndex(),
+
+            Currency::make(__('Price'), 'price')
+                ->sortable()
+                ->rules('required', 'numeric', 'min:0'),
+
+            Number::make(__('Stock'), 'stock')
+                ->sortable()
+                ->rules('required', 'integer', 'min:0')
+                ->default(0),
+
+            // Dynamic fields from the associated template
+            ...$this->renderTemplateFields(),
+        ];
+    }
+}
+```
+
+The Product resource will display the static database fields (name, description, price, stock) followed by any dynamic fields defined in the template (weight, height, width) which are stored in the `data` JSON column.
+
+---
+
+### 3. Composited Type
+
+**Best for:** When you need the same extra dynamic fields for all records of an existing model. All records share the same template, linked via the Nova resource class.
+
+Composited templates attach dynamic fields to existing models (like User, Order, etc.) and Nova resources. The dynamic field values are stored in a `data` JSON column on the existing table.
+
+#### 1. Database Migration
+
+Add a `data` column to your existing table:
 
 ```php
 Schema::table('users', function (Blueprint $table) {
@@ -79,80 +271,82 @@ Schema::table('users', function (Blueprint $table) {
 
 #### 2. Model Setup
 
-Add the `HasDynamicTemplate` trait to your model:
+Add the `UsesTemplate` trait to your model:
 
 ```php
-use Opscale\NovaDynamicResources\Models\Concerns\HasDynamicTemplate;
+use Opscale\NovaDynamicResources\Models\Concerns\UsesTemplate;
 
 class User extends Authenticatable
 {
-    use HasDynamicTemplate;
+    use UsesTemplate;
 
-    // ...
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'data', // Add this
+    ];
 }
 ```
 
-The `HasDynamicTemplate` trait provides:
+The `UsesTemplate` trait provides:
 - A `template()` relationship to access the model's template configuration
 - A `fields()` relationship to access the template's fields
 - Dynamic data storage and retrieval via the `data` JSON column
 - Automatic eager loading of template and fields
 
-#### 3. Create a Template
-
-Create a template in the database with `base_class` set to your model's fully qualified class name:
+#### 3. Create the Template
 
 ```php
 use Opscale\NovaDynamicResources\Models\Template;
+use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
 
 Template::create([
-    'base_class' => \App\Models\User::class,
-    'singular_label' => 'User',
     'label' => 'Users',
+    'singular_label' => 'User',
     'uri_key' => 'users',
     'title' => 'name',
+    'type' => TemplateType::Composited,
+    'related_class' => \App\Nova\User::class,
 ]);
 ```
 
-#### 4. Nova Resource Integration
-
-To render the dynamic fields in your Nova resource, add the following snippet to your `fields()` method:
+#### 4. Add Template Fields
 
 ```php
-use Opscale\NovaDynamicResources\Services\Actions\RenderField;
+$template->fields()->createMany([
+    ['type' => 'phone', 'label' => 'Phone', 'name' => 'phone'],
+]);
+```
 
-public function fields(NovaRequest $request): array
+#### 5. Nova Resource Integration
+
+Add the `UsesTemplate` trait to your Nova resource and use `renderTemplateFields()` to render the dynamic fields:
+
+```php
+use Opscale\NovaDynamicResources\Nova\Concerns\UsesTemplate;
+
+class User extends Resource
 {
-    $fields = [
-        // Your static fields...
-        ID::make()->sortable(),
-        Text::make('Name'),
-        Text::make('Email'),
-    ];
+    use UsesTemplate;
 
-    // Render dynamic fields from template
-    $dynamicFields = $this->resource->template?->fields ?? [];
-    foreach ($dynamicFields as $dynamicField) {
-        $result = RenderField::run([
-            'type' => $dynamicField->type,
-            'label' => $dynamicField->label,
-            'name' => $dynamicField->name,
-            'required' => $dynamicField->required,
-            'rules' => $dynamicField->rules ?? [],
-            'config' => $dynamicField->config ?? [],
-        ]);
-        $fields[] = $result['instance'];
+    public function fields(NovaRequest $request): array
+    {
+        return [
+            // Your existing static fields...
+            ID::make()->sortable(),
+            Text::make('Name'),
+            Text::make('Email'),
+            Password::make('Password')->onlyOnForms(),
+
+            // Render dynamic fields from template
+            ...$this->renderTemplateFields(),
+        ];
     }
-
-    return $fields;
 }
 ```
 
-This snippet:
-1. Accesses the model's template through the `HasDynamicTemplate` relationship
-2. Iterates over each field defined in the template
-3. Uses `RenderField` to create the appropriate Nova field instance based on the field type
-4. Appends the dynamic fields to your existing static fields
+This approach allows you to extend existing models with configurable fields without modifying the database schema beyond the `data` column.
 
 ### Field Configuration
 

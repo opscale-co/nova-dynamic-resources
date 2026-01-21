@@ -2,7 +2,9 @@
 
 namespace Opscale\NovaDynamicResources\Models\Repositories;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
+use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
 
 trait TemplateRepository
 {
@@ -27,5 +29,19 @@ trait TemplateRepository
                 $model->uri_key = Str::slug($model->label);
             }
         });
+    }
+
+    /**
+     * Scope a query to only include instantiable templates (Dynamic or Inherited).
+     *
+     * @param  Builder<\Opscale\NovaDynamicResources\Models\Template>  $query
+     * @return Builder<\Opscale\NovaDynamicResources\Models\Template>
+     */
+    public function scopeInstantiables(Builder $query): Builder
+    {
+        return $query->whereIn('type', [
+            TemplateType::Dynamic,
+            TemplateType::Inherited,
+        ]);
     }
 }

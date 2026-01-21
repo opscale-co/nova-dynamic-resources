@@ -58,7 +58,7 @@ class Field extends Model
             'nullable',
             'array',
         ],
-        'metadata' => [
+        'data' => [
             'nullable',
             'array',
         ],
@@ -85,7 +85,7 @@ class Field extends Model
         'rules',
         'config',
         'hooks',
-        'metadata',
+        'data',
     ];
 
     /**
@@ -97,7 +97,7 @@ class Field extends Model
         'rules' => 'array',
         'config' => 'array',
         'hooks' => 'array',
-        'metadata' => 'array',
+        'data' => 'array',
     ];
 
     /**

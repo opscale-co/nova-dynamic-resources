@@ -7,7 +7,7 @@ use Enigma\ValidatorTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Opscale\NovaDynamicResources\Models\Concerns\HasDynamicTemplate;
+use Opscale\NovaDynamicResources\Models\Concerns\UsesTemplate;
 use Workbench\Database\Factories\UserFactory;
 
 /**
@@ -24,7 +24,7 @@ use Workbench\Database\Factories\UserFactory;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasDynamicTemplate, HasFactory, Notifiable, ValidatorTrait;
+    use HasFactory, Notifiable, UsesTemplate, ValidatorTrait;
 
     /**
      * @var array<string, list<string>>

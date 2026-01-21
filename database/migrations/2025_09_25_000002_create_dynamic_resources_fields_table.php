@@ -18,7 +18,7 @@ return new class extends Migration
             $table->json('rules')->nullable();
             $table->json('config')->nullable();
             $table->json('hooks')->nullable();
-            $table->json('metadata')->nullable();
+            $table->json('data')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
