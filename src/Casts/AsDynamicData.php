@@ -25,7 +25,6 @@ class AsDynamicData implements CastsAttributes
         $data = $this->decodeValue($value);
 
         // Get fields from the model
-        $model->loadMissing('template.fields');
         $fields = $model->template?->fields;
 
         if ($fields === null || $fields->isEmpty()) {
