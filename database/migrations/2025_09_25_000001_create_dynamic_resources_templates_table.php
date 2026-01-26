@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('dynamic_resources_templates', function (Blueprint $table) {
             $table->ulid('id')->primary();
-            $table->enum('type', ['Dynamic', 'Inherited', 'Composited'])->default('Composited');
-            $table->string('related_class')->nullable()->unique();
+            $table->enum('type', ['Dynamic', 'Inherited', 'Composited'])->default('Dynamic');
+            $table->string('related_class')->nullable();
             $table->string('singular_label');
             $table->string('label');
             $table->string('uri_key')->unique();
