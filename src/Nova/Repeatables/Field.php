@@ -26,7 +26,7 @@ class Field extends Repeatable
     final public function fields(NovaRequest $request): array
     {
         $fields = Resource::defaultFields();
-        unset($fields['name'], $fields['rules'], $fields['config'], $fields['hooks'], $fields['data']);
+        unset($fields['name'], $fields['config'], $fields['hooks'], $fields['data']);
 
         return array_values($fields);
     }
