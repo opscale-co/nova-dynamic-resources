@@ -2,6 +2,13 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## <small>1.4.3 (2026-01-28)</small>
+
+* fix(Record resource ) remove unnecessary #[Override] attribute from fieldsForIndex method ([33f9249](https://github.com/opscale-co/nova-dynamic-resources/commit/33f9249))
+* Merge pull request #16 from kevin-Oz/refactor/remove-override ([9c8a8d8](https://github.com/opscale-co/nova-dynamic-resources/commit/9c8a8d8)), closes [#16](https://github.com/opscale-co/nova-dynamic-resources/issues/16)
+* Merge pull request #19 from opscale-co/develop ([9273d4e](https://github.com/opscale-co/nova-dynamic-resources/commit/9273d4e)), closes [#19](https://github.com/opscale-co/nova-dynamic-resources/issues/19)
+* fix(config): removed default nullable rules ([141bc12](https://github.com/opscale-co/nova-dynamic-resources/commit/141bc12))
+
 ## <small>1.4.2 (2026-01-26)</small>
 
 * Merge pull request #15 from opscale-co/develop ([061504a](https://github.com/opscale-co/nova-dynamic-resources/commit/061504a)), closes [#15](https://github.com/opscale-co/nova-dynamic-resources/issues/15)
