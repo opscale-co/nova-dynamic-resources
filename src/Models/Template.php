@@ -59,7 +59,6 @@ class Template extends Model
             'nullable',
             'string',
             'max:255',
-            'unique:dynamic_resources_templates,related_class',
         ],
     ];
 

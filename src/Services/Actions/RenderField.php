@@ -113,7 +113,7 @@ class RenderField extends Action
         )->rules($mergedRules);
 
         if (($validatedData['required'])) {
-            $instance->required();
+            $instance->required(true);
         }
 
         if (! empty($mergedConfig)) {
