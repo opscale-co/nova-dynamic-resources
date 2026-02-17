@@ -105,6 +105,9 @@ class Field extends Resource
             'required' => Boolean::make(__('Required'), 'required')
                 ->rules($model->validationRules['required']),
 
+            'display_in_index' => Boolean::make(__('Display in Index'), 'display_in_index')
+                ->rules($model->validationRules['display_in_index']),
+
             'rules' => KeyValue::make(__('Validation Rules'), 'rules')
                 ->keyLabel(__('Rule'))
                 ->valueLabel(__('Value'))

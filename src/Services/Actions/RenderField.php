@@ -56,6 +56,12 @@ class RenderField extends Action
                 'rules' => ['required', 'boolean'],
             ],
             [
+                'name' => 'display_in_index',
+                'description' => 'Whether the field should be displayed in the index view',
+                'type' => 'boolean',
+                'rules' => ['nullable', 'boolean'],
+            ],
+            [
                 'name' => 'rules',
                 'description' => 'Validation rules for the field',
                 'type' => 'array',
@@ -73,7 +79,7 @@ class RenderField extends Action
     /**
      * Render a Nova field from a field configuration.
      *
-     * @param  array{type?: string, label?: string, name?: string, required?: bool, rules?: array<mixed>, config?: array<string, mixed>}  $attributes
+     * @param  array{type?: string, label?: string, name?: string, required?: bool, rules?: array<mixed>, config?: array<string, mixed>, display_in_index?: bool}  $attributes
      *
      * @throws InvalidArgumentException
      */
@@ -114,6 +120,10 @@ class RenderField extends Action
 
         if (($validatedData['required'])) {
             $instance->required(true);
+        }
+
+        if (! ($validatedData['display_in_index'] ?? true)) {
+            $instance->hideFromIndex();
         }
 
         if (! empty($mergedConfig)) {

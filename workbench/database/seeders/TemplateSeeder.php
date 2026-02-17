@@ -87,18 +87,21 @@ class TemplateSeeder extends Seeder
                 'label' => 'Weight',
                 'name' => 'weight',
                 'required' => false,
+                'display_in_index' => false,
             ],
             [
                 'type' => 'quantity',
                 'label' => 'Height',
                 'name' => 'height',
                 'required' => false,
+                'display_in_index' => false,
             ],
             [
                 'type' => 'quantity',
                 'label' => 'Width',
                 'name' => 'width',
                 'required' => false,
+                'display_in_index' => false,
             ],
         ]);
 

@@ -76,6 +76,7 @@ trait UsesTemplate
                 'label' => $templateField->label,
                 'name' => $templateField->name,
                 'required' => $templateField->required,
+                'display_in_index' => $templateField->display_in_index,
                 'rules' => $templateField->rules ?? [],
                 'config' => $templateField->config ?? [],
             ]);

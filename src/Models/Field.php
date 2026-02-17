@@ -46,6 +46,10 @@ class Field extends Model
             'required',
             'boolean',
         ],
+        'display_in_index' => [
+            'required',
+            'boolean',
+        ],
         'rules' => [
             'nullable',
             'array',
@@ -82,6 +86,7 @@ class Field extends Model
         'label',
         'name',
         'required',
+        'display_in_index',
         'rules',
         'config',
         'hooks',
