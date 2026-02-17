@@ -2,6 +2,11 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## 1.6.0 (2026-02-17)
+
+* Merge pull request #21 from opscale-co/develop ([4059843](https://github.com/opscale-co/nova-dynamic-resources/commit/4059843)), closes [#21](https://github.com/opscale-co/nova-dynamic-resources/issues/21)
+* feat(usestemplate): added actions rendering ([b671cd8](https://github.com/opscale-co/nova-dynamic-resources/commit/b671cd8))
+
 ## 1.5.0 (2026-02-17)
 
 * Merge pull request #20 from opscale-co/develop ([82ab24d](https://github.com/opscale-co/nova-dynamic-resources/commit/82ab24d)), closes [#20](https://github.com/opscale-co/nova-dynamic-resources/issues/20)
