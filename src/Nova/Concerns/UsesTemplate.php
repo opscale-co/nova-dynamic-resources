@@ -3,6 +3,7 @@
 namespace Opscale\NovaDynamicResources\Nova\Concerns;
 
 use Laravel\Nova\Fields\Hidden;
+use Opscale\NovaDynamicResources\Services\Actions\RenderAction;
 use Opscale\NovaDynamicResources\Services\Actions\RenderField;
 
 /**
@@ -85,5 +86,32 @@ trait UsesTemplate
         }
 
         return $fields;
+    }
+
+    /**
+     * Render dynamic actions from the model's template.
+     *
+     * @return array<int, \Laravel\Nova\Actions\Action>
+     */
+    protected function renderTemplateActions(): array
+    {
+        $actions = [];
+
+        if (isset(static::$template)) {
+            $templateActions = static::$template->actions;
+        } else {
+            $templateActions = $this->resource->template?->actions ?? [];
+        }
+
+        foreach ($templateActions as $templateAction) {
+            $result = RenderAction::run([
+                'class' => $templateAction->class,
+                'config' => $templateAction->config ?? [],
+            ]);
+
+            $actions[] = $result['instance'];
+        }
+
+        return $actions;
     }
 }
