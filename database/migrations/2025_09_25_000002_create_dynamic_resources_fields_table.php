@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('label');
             $table->string('name');
             $table->boolean('required')->default(false);
+            $table->boolean('display_in_index')->default(true);
             $table->json('rules')->nullable();
             $table->json('config')->nullable();
             $table->json('hooks')->nullable();

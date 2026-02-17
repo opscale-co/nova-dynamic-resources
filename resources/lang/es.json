@@ -49,5 +49,7 @@
     "Renders a Nova field from a field configuration": "Renderiza un campo de Nova desde una configuración de campo",
     "Gets select options from a catalog based on the catalog name": "Obtiene las opciones de selección de un catálogo basado en el nombre del catálogo",
     "Navigating to create record page": "Navegando a la página de creación de registro",
-    "Navigating to record detail page": "Navegando a la página de detalle del registro"
+    "Navigating to record detail page": "Navegando a la página de detalle del registro",
+    "Template": "Plantilla",
+    "Display in Index": "Mostrar en Índice"
 }

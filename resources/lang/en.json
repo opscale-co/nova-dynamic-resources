@@ -49,5 +49,7 @@
     "Renders a Nova field from a field configuration": "Renders a Nova field from a field configuration",
     "Gets select options from a catalog based on the catalog name": "Gets select options from a catalog based on the catalog name",
     "Navigating to create record page": "Navigating to create record page",
-    "Navigating to record detail page": "Navigating to record detail page"
+    "Navigating to record detail page": "Navigating to record detail page",
+    "Template": "Template",
+    "Display in Index": "Display in Index"
 }
