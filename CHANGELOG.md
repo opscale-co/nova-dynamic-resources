@@ -2,6 +2,11 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## 1.5.0 (2026-02-17)
+
+* Merge pull request #20 from opscale-co/develop ([82ab24d](https://github.com/opscale-co/nova-dynamic-resources/commit/82ab24d)), closes [#20](https://github.com/opscale-co/nova-dynamic-resources/issues/20)
+* feat(field): allow hiding in index ([160dd7e](https://github.com/opscale-co/nova-dynamic-resources/commit/160dd7e))
+
 ## <small>1.4.3 (2026-01-28)</small>
 
 * fix(Record resource ) remove unnecessary #[Override] attribute from fieldsForIndex method ([33f9249](https://github.com/opscale-co/nova-dynamic-resources/commit/33f9249))
