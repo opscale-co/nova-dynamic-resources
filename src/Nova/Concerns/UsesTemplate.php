@@ -72,6 +72,13 @@ trait UsesTemplate
         }
 
         foreach ($templateFields as $templateField) {
+            if (isset(static::$template) && static::$template->hasData($templateField->name)) {
+                $fields[] = Hidden::make($templateField->label, 'data->' . $templateField->name)
+                    ->default(static::$template->getData($templateField->name));
+
+                continue;
+            }
+
             $result = RenderField::run([
                 'type' => $templateField->type,
                 'label' => $templateField->label,

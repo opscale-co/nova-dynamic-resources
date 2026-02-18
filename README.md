@@ -251,6 +251,35 @@ class Product extends Resource
 
 The Product resource will display the static database fields (name, description, price, stock) followed by any dynamic fields defined in the template (weight, height, width) which are stored in the `data` JSON column.
 
+#### Predefined Template Data
+
+Inherited templates support predefined values via the template's `data` JSON column. When a template has a value stored in its `data` for a given field name, that field will be rendered as a hidden field with the predefined value instead of a visible input.
+
+This is useful when you want certain field values to be fixed by the template rather than entered by the user:
+
+```php
+$template = Template::create([
+    'label' => 'Electronics',
+    'singular_label' => 'Electronic',
+    'uri_key' => 'electronics',
+    'title' => 'name',
+    'type' => TemplateType::Inherited,
+    'related_class' => \App\Nova\Product::class,
+]);
+
+// Set predefined data on the template
+$template->setData('category', 'electronics');
+$template->save();
+
+// Add fields — 'category' will be auto-filled and hidden
+$template->fields()->createMany([
+    ['type' => 'name', 'label' => 'Category', 'name' => 'category', 'required' => true],
+    ['type' => 'quantity', 'label' => 'Weight', 'name' => 'weight'],
+]);
+```
+
+In this example, the "Category" field will be automatically set to `"electronics"` as a hidden field, while "Weight" remains a regular visible input.
+
 ---
 
 ### 3. Composited Type
