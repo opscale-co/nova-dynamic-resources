@@ -2,6 +2,11 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## 1.7.0 (2026-02-18)
+
+* Merge pull request #22 from opscale-co/develop ([06fe264](https://github.com/opscale-co/nova-dynamic-resources/commit/06fe264)), closes [#22](https://github.com/opscale-co/nova-dynamic-resources/issues/22)
+* feat(template): predefined values for inherited templates ([d73f717](https://github.com/opscale-co/nova-dynamic-resources/commit/d73f717))
+
 ## 1.6.0 (2026-02-17)
 
 * Merge pull request #21 from opscale-co/develop ([4059843](https://github.com/opscale-co/nova-dynamic-resources/commit/4059843)), closes [#21](https://github.com/opscale-co/nova-dynamic-resources/issues/21)
