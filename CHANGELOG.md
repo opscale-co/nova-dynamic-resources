@@ -2,6 +2,11 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## <small>1.7.1 (2026-02-19)</small>
+
+* Merge pull request #23 from opscale-co/develop ([0e17316](https://github.com/opscale-co/nova-dynamic-resources/commit/0e17316)), closes [#23](https://github.com/opscale-co/nova-dynamic-resources/issues/23)
+* fix(usestemplate): solved wrong record shoing at index ([4b2c98a](https://github.com/opscale-co/nova-dynamic-resources/commit/4b2c98a))
+
 ## 1.7.0 (2026-02-18)
 
 * Merge pull request #22 from opscale-co/develop ([06fe264](https://github.com/opscale-co/nova-dynamic-resources/commit/06fe264)), closes [#22](https://github.com/opscale-co/nova-dynamic-resources/issues/22)
