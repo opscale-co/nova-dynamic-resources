@@ -2,7 +2,10 @@
 
 namespace Opscale\NovaDynamicResources\Nova\Concerns;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Laravel\Nova\Fields\Hidden;
+use Laravel\Nova\Http\Requests\NovaRequest;
 use Opscale\NovaDynamicResources\Services\Actions\RenderAction;
 use Opscale\NovaDynamicResources\Services\Actions\RenderField;
 
@@ -48,6 +51,24 @@ trait UsesTemplate
         } else {
             return parent::uriKey();
         }
+    }
+
+    /**
+     * Build an "index" query for the given resource.
+     *
+     * @param  Builder<Model>  $query
+     * @return Builder<Model>
+     */
+    #[Override]
+    public static function indexQuery(NovaRequest $request, $query)
+    {
+        if (isset(static::$template)) {
+            return $query->whereHas('template', function (Builder $q) {
+                $q->where('uri_key', static::uriKey());
+            });
+        }
+
+        return $query;
     }
 
     /**
