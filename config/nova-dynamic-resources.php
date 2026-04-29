@@ -206,6 +206,17 @@ return [
             'rules' => ['string', 'max:255'],
         ],
 
+        'parent' => [
+            'field' => \Laravel\Nova\Fields\BelongsTo::class,
+            'hint' => 'Parent relationship for hierarchical structures, ownership references, or nested records',
+            'rules' => ['exists'],
+            'config' => [
+                'sortable' => true,
+                'filterable' => true,
+                'showCreateRelationButton' => true,
+            ],
+        ],
+
         'password' => [
             'field' => \Laravel\Nova\Fields\Password::class,
             'hint' => 'Secure passwords for authentication and account protection',

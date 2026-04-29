@@ -126,7 +126,6 @@ class Record extends Resource
     /**
      * @return array<mixed>
      */
-    #[Override]
     public function fieldsForIndex(NovaRequest $request): array
     {
         if (! isset(static::$template)) {
