@@ -69,6 +69,12 @@ class TemplateSeeder extends Seeder
                 'name' => 'date',
                 'required' => true,
             ],
+            [
+                'type' => 'parent',
+                'label' => 'Parent Event',
+                'name' => 'parent_event',
+                'required' => false,
+            ],
         ]);
 
         // Create Inherited template for Products

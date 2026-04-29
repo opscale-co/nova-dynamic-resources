@@ -16,9 +16,12 @@ abstract class Resource extends NovaResource
 {
     /**
      * Build an "index" query for the given resource.
+     *
+     * @param  Builder<\Illuminate\Database\Eloquent\Model>  $query
+     * @return Builder<\Illuminate\Database\Eloquent\Model>
      */
     #[Override]
-    final public static function indexQuery(NovaRequest $request, Builder $query): Builder
+    public static function indexQuery(NovaRequest $request, $query)
     {
         return $query;
     }

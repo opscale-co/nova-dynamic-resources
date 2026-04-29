@@ -17,7 +17,6 @@ trait UsesTemplate
     /**
      * Get the displayable singular label of the resource.
      */
-    #[Override]
     public static function singularLabel(): string
     {
         if (isset(static::$template)) {
@@ -30,7 +29,6 @@ trait UsesTemplate
     /**
      * Get the displayable label of the resource.
      */
-    #[Override]
     public static function label(): string
     {
         if (isset(static::$template)) {
@@ -43,7 +41,6 @@ trait UsesTemplate
     /**
      * Get the URI key for the resource.
      */
-    #[Override]
     public static function uriKey(): string
     {
         if (isset(static::$template)) {
@@ -59,7 +56,6 @@ trait UsesTemplate
      * @param  Builder<Model>  $query
      * @return Builder<Model>
      */
-    #[Override]
     public static function indexQuery(NovaRequest $request, $query)
     {
         if (isset(static::$template)) {
