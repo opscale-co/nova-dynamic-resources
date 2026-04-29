@@ -2,6 +2,11 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## 1.8.0 (2026-04-29)
+
+* Merge pull request #24 from opscale-co/develop ([f53a467](https://github.com/opscale-co/nova-dynamic-resources/commit/f53a467)), closes [#24](https://github.com/opscale-co/nova-dynamic-resources/issues/24)
+* feat(field): added parent type using BelongsTo relation ([b7cb0ca](https://github.com/opscale-co/nova-dynamic-resources/commit/b7cb0ca))
+
 ## <small>1.7.1 (2026-02-19)</small>
 
 * Merge pull request #23 from opscale-co/develop ([0e17316](https://github.com/opscale-co/nova-dynamic-resources/commit/0e17316)), closes [#23](https://github.com/opscale-co/nova-dynamic-resources/issues/23)
