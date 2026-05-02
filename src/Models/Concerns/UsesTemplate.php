@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Models\Concerns;
 
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Laravel\Nova\Nova;
-use Opscale\NovaDynamicResources\Models\Field;
 use Opscale\NovaDynamicResources\Models\Template;
 
 /**
@@ -19,17 +21,19 @@ trait UsesTemplate
     /**
      * Boot the UsesTemplate trait.
      */
-    public static function bootUsesTemplate(): void
+    final public static function bootUsesTemplate(): void
     {
-        static::retrieved(function ($model) {
-            $model->loadAppends();
+        static::retrieved(function (Model $model): void {
+            if (method_exists($model, 'loadAppends')) {
+                $model->loadAppends();
+            }
         });
     }
 
     /**
      * Initialize the UsesTemplate trait.
      */
-    public function initializeUsesTemplate(): void
+    final public function initializeUsesTemplate(): void
     {
         $this->with = array_merge($this->with, ['template.fields']);
     }
@@ -37,11 +41,13 @@ trait UsesTemplate
     /**
      * Get the template for this model.
      * Uses template_id if the field exists, otherwise falls back to class_name lookup.
+     *
+     * @return BelongsTo<Template, $this>|HasOne<Template, $this>
      */
-    public function template(): BelongsTo|HasOne
+    final public function template(): BelongsTo|HasOne
     {
         // Relation for inheritance scenarios
-        if (in_array('template_id', $this->fillable)) {
+        if (in_array('template_id', $this->fillable, true)) {
             return $this->belongsTo(Template::class);
         }
 
@@ -52,19 +58,29 @@ trait UsesTemplate
     /**
      * Load dynamic appends from template fields.
      */
-    protected function loadAppends(): void
+    final protected function loadAppends(): void
     {
-        $fieldNames = $this->template?->fields?->pluck('name')->toArray() ?? [];
+        /** @var Template|null $template */
+        $template = $this->getRelationValue('template');
+
+        if ($template === null) {
+            return;
+        }
+
+        /** @var list<string> $fieldNames */
+        $fieldNames = $template->fields->pluck('name')->all();
         $this->appends = array_merge($this->appends, $fieldNames);
     }
 
     /**
      * Get the class name attribute (returns the Nova resource class for this model).
+     *
+     * @return Attribute<string|null, never>
      */
-    protected function className(): Attribute
+    final protected function className(): Attribute
     {
         return Attribute::make(
-            get: fn () => Nova::resourceForModel($this),
+            get: fn (): ?string => Nova::resourceForModel($this),
         );
     }
 }

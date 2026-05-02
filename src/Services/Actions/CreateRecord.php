@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Services\Actions;
 
 use Illuminate\Support\Collection;
@@ -49,6 +51,9 @@ class CreateRecord extends Action
         return __('Navigates to the create page for a new record in the selected dynamic resource');
     }
 
+    /**
+     * @return array<int, array{name: string, description: string, type: string, rules: array<int, string>}>
+     */
     #[Override]
     public function parameters(): array
     {
@@ -75,9 +80,15 @@ class CreateRecord extends Action
      *
      * @param  Collection<int, Template>  $models
      */
-    public function asNovaAction(ActionFields $fields, Collection $models): ActionResponse
+    #[Override]
+    final public function asNovaAction(ActionFields $fields, Collection $models): ActionResponse
     {
         $resource = $models->first();
+
+        if ($resource === null) {
+            return $this->visit('/');
+        }
+
         $uriKey = $resource->uri_key;
 
         return $this->visit("/resources/{$uriKey}/new");

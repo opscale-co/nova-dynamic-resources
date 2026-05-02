@@ -4,11 +4,14 @@ migrations:
   - workbench/database/migrations
 
 providers:
+  - Inertia\ServiceProvider
   - Laravel\Nova\NovaCoreServiceProvider
   - Laravel\Nova\NovaServiceProvider
+  - Laravel\Fortify\FortifyServiceProvider
+  - Laravel\Dusk\DuskServiceProvider
   - Workbench\App\Providers\WorkbenchServiceProvider
   - Workbench\App\Providers\NovaServiceProvider
-  - Opscale\NovaDynamicResources\ToolServiceProvider
+  - Opscale\NovaDynamicResources\PackageServiceProvider
 
 seeders:
   - Workbench\Database\Seeders\DatabaseSeeder

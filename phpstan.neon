@@ -6,6 +6,69 @@ includes:
     - vendor/opscale-co/strict-rules/rules.solid.neon
 parameters:
     level: 9
-    phpVersion: 80200
+    phpVersion: 80300
     paths:
         - src
+        - tests
+    scanDirectories:
+        - database/migrations
+        - workbench
+    excludePaths:
+        - tests/fixtures/*
+    ignoreErrors:
+        -
+            identifier: smells.helpersRestriction.helper
+            message: '#Helper function "__\(\)#'
+        -
+            identifier: solid.lsp.parentCall
+            message: '#asNovaAction\(\).*overrides a parent method but does not call parent::#'
+            paths:
+                - src/Services/Actions/CreateRecord.php
+                - src/Services/Actions/ViewRecord.php
+        -
+            identifier: property.defaultValue
+            message: '#Property .*\$resourceClasses .* does not accept default value#'
+            path: src/PackageServiceProvider.php
+
+        # Nova\Concerns\UsesTemplate is consumed by workbench Nova resources
+        # which are not part of the phpstan paths.
+        -
+            identifier: trait.unused
+            path: src/Nova/Concerns/UsesTemplate.php
+
+        # Action::run() is dynamic dispatch from lorisleiva/laravel-actions.
+        # Return type is the action's handle() return — phpstan can't infer it.
+        -
+            identifier: offsetAccess.nonOffsetAccessible
+            paths:
+                - tests/Feature/Actions/*
+
+        -
+            identifier: argument.type
+            path: tests/Feature/Actions/RenderFieldTest.php
+
+        # Pest expectation chains use magic __get for ->not modifier
+        -
+            identifier: property.notFound
+            message: '#Pest\\Mixins\\Expectation.*::\$not#'
+            paths:
+                - tests/*
+
+        # Pest closures bind $this to the test case but PHPStan analyses them standalone
+        -
+            identifier: variable.undefined
+            paths:
+                - tests/*
+
+        # Eloquent finder methods can return null; tests assert non-null state
+        -
+            identifier: property.nonObject
+            paths:
+                - tests/*
+
+        # In tests we already validated the model exists before passing attributes
+        -
+            identifier: argument.type
+            paths:
+                - tests/Feature/Casts/*
+

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Nova;
 
 use Illuminate\Support\Facades\Config;
@@ -79,9 +81,9 @@ class Field extends Resource
     /**
      * Get the default fields for this resource.
      *
-     * @return array<mixed>
+     * @return array<string, \Laravel\Nova\Fields\Field>
      */
-    public static function defaultFields(): array
+    final public static function defaultFields(): array
     {
         $model = new Model;
 
@@ -138,7 +140,7 @@ class Field extends Resource
      *
      * @return array<string, string>
      */
-    protected static function getBusinessTypeOptions(): array
+    final protected static function getBusinessTypeOptions(): array
     {
         /** @var array<string, mixed> $configFields */
         $configFields = Config::get('nova-dynamic-resources.fields', []);

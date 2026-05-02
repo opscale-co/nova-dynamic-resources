@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Services\Actions;
 
 use Opscale\Actions\Action;
@@ -25,6 +27,9 @@ class RenderAction extends Action
         return __('Renders a Nova action from an action configuration');
     }
 
+    /**
+     * @return array<int, array{name: string, description: string, type: string, rules: array<int, string>}>
+     */
     #[Override]
     public function parameters(): array
     {
@@ -48,6 +53,7 @@ class RenderAction extends Action
      * Render a Nova action from an action configuration.
      *
      * @param  array{class?: class-string, config?: array<string, mixed>}  $attributes
+     * @return array{success: bool, instance: object}
      */
     #[Override]
     public function handle(array $attributes = []): array
@@ -62,9 +68,9 @@ class RenderAction extends Action
 
         $instance = new $class;
 
-        if (! empty($config)) {
+        if ($config !== []) {
             foreach ($config as $method => $parameters) {
-                if (is_string($method) && method_exists($instance, $method)) {
+                if (method_exists($instance, $method)) {
                     $instance = is_array($parameters) ?
                         $instance->{$method}(...$parameters) :
                         $instance->{$method}($parameters);

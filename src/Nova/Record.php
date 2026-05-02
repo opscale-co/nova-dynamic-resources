@@ -1,10 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Nova;
 
 use Illuminate\Database\Eloquent\Builder;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\Hidden;
 use Laravel\Nova\Fields\KeyValue;
 use Laravel\Nova\Fields\Text;
@@ -19,8 +22,6 @@ use Override;
 
 /**
  * @extends Resource<Model>
- *
- * @property-read TemplateModel $template
  */
 class Record extends Resource
 {
@@ -39,16 +40,11 @@ class Record extends Resource
     #[Override]
     public static function singularLabel(): string
     {
-        /** @var string $singular_label */
-        $singular_label = null;
-
         if (isset(static::$template)) {
-            $singular_label = static::$template->getAttribute('singular_label');
-        } else {
-            $singular_label = __('Record');
+            return static::$template->singular_label;
         }
 
-        return $singular_label;
+        return __('Record');
     }
 
     /**
@@ -57,16 +53,11 @@ class Record extends Resource
     #[Override]
     public static function label(): string
     {
-        /** @var string $label */
-        $label = null;
-
         if (isset(static::$template)) {
-            $label = static::$template->getAttribute('label');
-        } else {
-            $label = __('Records');
+            return static::$template->label;
         }
 
-        return $label;
+        return __('Records');
     }
 
     /**
@@ -75,16 +66,11 @@ class Record extends Resource
     #[Override]
     public static function uriKey(): string
     {
-        /** @var string $uri_key */
-        $uri_key = null;
-
         if (isset(static::$template)) {
-            $uri_key = static::$template->getAttribute('uri_key');
-        } else {
-            $uri_key = __('records');
+            return static::$template->uri_key;
         }
 
-        return $uri_key;
+        return __('records');
     }
 
     /**
@@ -98,64 +84,66 @@ class Record extends Resource
     {
         if (isset(static::$template)) {
             return $query->where('template_id', static::$template->id);
-        } else {
-            return $query;
         }
+
+        return $query;
     }
 
     /**
      * Get the value that should be displayed to represent the resource.
      */
-    final public function title(): string
+    #[Override]
+    public function title(): string
     {
-        /** @var string $label */
-        if (isset($this->model()->template->title)) {
-            $title = $this->model()->data[
-                $this->model()->template->title
-            ];
-        } else {
-            $title = $this->model()->id;
+        $model = $this->model();
+
+        if ($model === null) {
+            return (string) parent::title();
         }
 
-        return $title;
+        $template = $model->template;
+
+        if ($template === null || $template->title === null) {
+            return $model->id;
+        }
+
+        $title = $model->data[$template->title] ?? $model->id;
+
+        return is_string($title) ? $title : (string) $model->id;
     }
 
     /**
-     * Get the fields displayed by the resource.
+     * Get the fields displayed by the resource for the index.
+     *
+     * @return array<int, Field>
      */
-    /**
-     * @return array<mixed>
-     */
-    public function fieldsForIndex(NovaRequest $request): array
+    final public function fieldsForIndex(NovaRequest $request): array
     {
         if (! isset(static::$template)) {
             return [
-                'template' => BelongsTo::make(__('Template'), 'template', Template::class)
+                BelongsTo::make(__('Template'), 'template', Template::class)
                     ->sortable()
                     ->filterable(),
 
-                'title' => Text::make(__('Title'), function () {
-                    return $this->title();
-                }),
+                Text::make(__('Title'), fn (): string => $this->title()),
 
-                'data' => KeyValue::make(__('Data'), 'data')
+                KeyValue::make(__('Data'), 'data')
                     ->keyLabel(__('Field'))
                     ->valueLabel(__('Value')),
 
-                'created_at' => DateTime::make(__('Created At'), 'created_at')
+                DateTime::make(__('Created At'), 'created_at')
                     ->sortable()
                     ->filterable(),
             ];
-        } else {
-            return $this->fields($request);
         }
+
+        return $this->fields($request);
     }
 
     /**
      * Get the fields displayed by the resource.
-     */
-    /**
-     * @return array<mixed>
+     *
+     * @return array<int, Field>
      */
     #[Override]
     public function fields(NovaRequest $request): array
@@ -165,15 +153,15 @@ class Record extends Resource
         }
 
         $template = static::$template;
+        /** @var array<int, Field> $fields */
         $fields = [
             Hidden::make('Template', 'template_id')
                 ->default($template->id)
                 ->rules('required'),
         ];
 
-        $templateFields = $template->fields;
-
-        foreach ($templateFields as $templateField) {
+        foreach ($template->fields as $templateField) {
+            /** @var array{success: bool, instance: Field} $result */
             $result = RenderField::run([
                 'type' => $templateField->type,
                 'label' => $templateField->label,
@@ -191,32 +179,34 @@ class Record extends Resource
 
     /**
      * Get the actions available for the resource.
-     */
-    /**
-     * @return array<mixed>
+     *
+     * @return array<int, \Laravel\Nova\Actions\Action>
      */
     #[Override]
     public function actions(NovaRequest $request): array
     {
+        $defaults = parent::actions($request);
+
         // Add inline action when viewing all records
         if (! isset(static::$template)) {
             return [
-                ViewRecord::make()
-                    ->showOnIndex()
-                    ->showInline()
-                    ->withoutConfirmation(),
+                ...$defaults,
+                ViewRecord::make(),
             ];
         }
 
-        $template = $this->model()->template;
+        $model = $this->model();
+        $template = $model?->template;
+
         if ($template === null) {
-            return [];
+            return $defaults;
         }
 
-        $actions = [];
+        /** @var array<int, \Laravel\Nova\Actions\Action> $actions */
+        $actions = $defaults;
 
-        $templateActions = $template->actions;
-        foreach ($templateActions as $templateAction) {
+        foreach ($template->actions as $templateAction) {
+            /** @var array{success: bool, instance: \Laravel\Nova\Actions\Action} $result */
             $result = RenderAction::run([
                 'class' => $templateAction->class,
                 'config' => $templateAction->config ?? [],

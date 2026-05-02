@@ -1,17 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Models;
 
-use Enigma\ValidatorTrait;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
+use Opscale\NovaDynamicResources\Models\Concerns\CastsValidationData;
 use Opscale\NovaDynamicResources\Models\Concerns\UsesTemplate;
+use Opscale\Validations\Validatable;
+use Override;
 
+/**
+ * @property string $id
+ * @property string $template_id
+ * @property array<string, mixed> $data
+ * @property array<string, mixed>|null $metadata
+ * @property-read Template|null $template
+ */
 class Record extends Model
 {
+    use CastsValidationData;
     use HasUlids;
     use UsesTemplate;
-    use ValidatorTrait;
+    use Validatable;
 
     /**
      * The validation rules for the model.
@@ -51,4 +63,20 @@ class Record extends Model
         'data',
         'metadata',
     ];
+
+    #[Override]
+    public static function boot(): void
+    {
+        parent::boot();
+        static::creating(fn (self $model): bool => $model->validate() === null || true);
+        static::updating(fn (self $model): bool => $model->validate() === null || true);
+    }
+
+    /**
+     * @return array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
+     */
+    final public function validationRules(): array
+    {
+        return $this->validationRules;
+    }
 }

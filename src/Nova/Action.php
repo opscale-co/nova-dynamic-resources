@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Nova;
 
 use Laravel\Nova\Fields\BelongsTo;
@@ -75,9 +77,9 @@ class Action extends Resource
     /**
      * Get the default fields for this resource.
      *
-     * @return array<mixed>
+     * @return array<string, \Laravel\Nova\Fields\Field>
      */
-    public static function defaultFields(): array
+    final public static function defaultFields(): array
     {
         $model = new Model;
 

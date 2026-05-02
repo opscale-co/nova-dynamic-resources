@@ -1,53 +1,57 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Nova\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\Hidden;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Opscale\NovaDynamicResources\Models\Template;
 use Opscale\NovaDynamicResources\Services\Actions\RenderAction;
 use Opscale\NovaDynamicResources\Services\Actions\RenderField;
 
 /**
- * @mixin \Laravel\Nova\Resource
+ * @mixin \Laravel\Nova\Resource<\Illuminate\Database\Eloquent\Model>
  */
 trait UsesTemplate
 {
     /**
      * Get the displayable singular label of the resource.
      */
-    public static function singularLabel(): string
+    final public static function singularLabel(): string
     {
         if (isset(static::$template)) {
-            return static::$template->getAttribute('singular_label');
-        } else {
-            return parent::singularLabel();
+            return (string) static::$template->getAttribute('singular_label');
         }
+
+        return parent::singularLabel();
     }
 
     /**
      * Get the displayable label of the resource.
      */
-    public static function label(): string
+    final public static function label(): string
     {
         if (isset(static::$template)) {
-            return static::$template->getAttribute('label');
-        } else {
-            return parent::label();
+            return (string) static::$template->getAttribute('label');
         }
+
+        return parent::label();
     }
 
     /**
      * Get the URI key for the resource.
      */
-    public static function uriKey(): string
+    final public static function uriKey(): string
     {
         if (isset(static::$template)) {
-            return static::$template->getAttribute('uri_key');
-        } else {
-            return parent::uriKey();
+            return (string) static::$template->getAttribute('uri_key');
         }
+
+        return parent::uriKey();
     }
 
     /**
@@ -56,11 +60,11 @@ trait UsesTemplate
      * @param  Builder<Model>  $query
      * @return Builder<Model>
      */
-    public static function indexQuery(NovaRequest $request, $query)
+    final public static function indexQuery(NovaRequest $request, $query)
     {
         if (isset(static::$template)) {
-            return $query->whereHas('template', function (Builder $q) {
-                $q->where('uri_key', static::uriKey());
+            return $query->whereHas('template', function (Builder $relation): void {
+                $relation->where('uri_key', static::uriKey());
             });
         }
 
@@ -70,32 +74,34 @@ trait UsesTemplate
     /**
      * Render dynamic fields from the model's template.
      *
-     * @return array<int, \Laravel\Nova\Fields\Field>
+     * @return array<int, Field>
      */
-    protected function renderTemplateFields(): array
+    final protected function renderTemplateFields(): array
     {
         $fields = [];
+        /** @var iterable<int, \Opscale\NovaDynamicResources\Models\Field> $templateFields */
         $templateFields = [];
 
         if (isset(static::$template)) {
-            // Relation for inheritance scenarios
             $templateFields = static::$template->fields;
             $fields[] = Hidden::make('Template', 'template_id')
                 ->default(static::$template->id)
                 ->onlyOnForms();
         } else {
-            // Relation for composition scenarios
-            $templateFields = $this->resource->template?->fields ?? [];
+            /** @var Template|null $template */
+            $template = $this->resource?->getAttribute('template');
+            $templateFields = $template?->fields ?? [];
         }
 
         foreach ($templateFields as $templateField) {
             if (isset(static::$template) && static::$template->hasData($templateField->name)) {
-                $fields[] = Hidden::make($templateField->label, 'data->' . $templateField->name)
+                $fields[] = Hidden::make($templateField->label, 'data->'.$templateField->name)
                     ->default(static::$template->getData($templateField->name));
 
                 continue;
             }
 
+            /** @var array{success: bool, instance: Field} $result */
             $result = RenderField::run([
                 'type' => $templateField->type,
                 'label' => $templateField->label,
@@ -117,17 +123,20 @@ trait UsesTemplate
      *
      * @return array<int, \Laravel\Nova\Actions\Action>
      */
-    protected function renderTemplateActions(): array
+    final protected function renderTemplateActions(): array
     {
         $actions = [];
 
         if (isset(static::$template)) {
             $templateActions = static::$template->actions;
         } else {
-            $templateActions = $this->resource->template?->actions ?? [];
+            /** @var Template|null $template */
+            $template = $this->resource?->getAttribute('template');
+            $templateActions = $template?->actions ?? [];
         }
 
         foreach ($templateActions as $templateAction) {
+            /** @var array{success: bool, instance: \Laravel\Nova\Actions\Action} $result */
             $result = RenderAction::run([
                 'class' => $templateAction->class,
                 'config' => $templateAction->config ?? [],

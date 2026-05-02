@@ -1,18 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Models;
 
-use Enigma\ValidatorTrait;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Opscale\NovaDynamicResources\Models\Concerns\CastsValidationData;
+use Opscale\Validations\Validatable;
+use Override;
 
+/**
+ * @property string $id
+ * @property string $template_id
+ * @property string $class
+ * @property string $label
+ * @property array<string, mixed>|null $config
+ * @property array<string, mixed>|null $data
+ * @property-read Template|null $template
+ */
 class Action extends Model
 {
+    use CastsValidationData;
     use HasUlids;
     use SoftDeletes;
-    use ValidatorTrait;
+    use Validatable;
 
     /**
      * The validation rules for the model.
@@ -75,12 +89,28 @@ class Action extends Model
         'data' => 'array',
     ];
 
+    #[Override]
+    public static function boot(): void
+    {
+        parent::boot();
+        static::creating(fn (self $model): bool => $model->validate() === null || true);
+        static::updating(fn (self $model): bool => $model->validate() === null || true);
+    }
+
+    /**
+     * @return array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
+     */
+    final public function validationRules(): array
+    {
+        return $this->validationRules;
+    }
+
     /**
      * Get the template that owns this action.
      *
      * @return BelongsTo<Template, $this>
      */
-    public function template(): BelongsTo
+    final public function template(): BelongsTo
     {
         return $this->belongsTo(Template::class);
     }

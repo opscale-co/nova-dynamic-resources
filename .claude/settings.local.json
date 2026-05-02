@@ -15,7 +15,10 @@
       "Bash(php:*)",
       "Bash(npm run lint)",
       "WebFetch(domain:nova.laravel.com)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(cp -R vendor/orchestra/testbench-core/laravel/public/vendor vendor/orchestra/testbench-dusk/laravel/public/vendor)",
+      "Bash(cp vendor/orchestra/testbench-core/laravel/database/database.sqlite vendor/orchestra/testbench-dusk/laravel/database/)",
+      "Bash(rm -rf vendor/orchestra/testbench-dusk/laravel/storage/framework/views/* vendor/orchestra/testbench-core/laravel/storage/framework/views/*)"
     ],
     "deny": [],
     "ask": []

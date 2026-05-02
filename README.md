@@ -47,7 +47,7 @@ public function tools()
 {
     return [
         // ...
-        new \Opscale\NovaDynamicResources\Tool(),
+        new \Opscale\NovaDynamicResources\Package(),
     ];
 }
 

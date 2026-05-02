@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Workbench\App\Models;
 
-use Enigma\ValidatorTrait;
 use Illuminate\Database\Eloquent\Model;
 use Opscale\NovaDynamicResources\Models\Concerns\UsesTemplate;
+use Opscale\Validations\Validatable;
 
 /**
  * @property int $id
@@ -17,7 +19,7 @@ use Opscale\NovaDynamicResources\Models\Concerns\UsesTemplate;
  */
 class Item extends Model
 {
-    use UsesTemplate, ValidatorTrait;
+    use UsesTemplate, Validatable;
 
     /**
      * @var array<string, list<string>>

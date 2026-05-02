@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources;
 
 use Illuminate\Http\Request;
@@ -10,13 +12,13 @@ use Laravel\Nova\Tool as NovaTool;
 use Opscale\NovaDynamicResources\Nova\Record;
 use Opscale\NovaDynamicResources\Nova\Template;
 
-class Tool extends NovaTool
+class Package extends NovaTool
 {
     final public function boot(): void
     {
         parent::boot();
-        Nova::script('nova-dynamic-resources', __DIR__ . '/../dist/js/tool.js');
-        Nova::style('nova-dynamic-resources', __DIR__ . '/../dist/css/tool.css');
+        Nova::script('nova-dynamic-resources', __DIR__.'/../dist/js/tool.js');
+        Nova::style('nova-dynamic-resources', __DIR__.'/../dist/css/tool.css');
     }
 
     final public function menu(Request $request): MenuGroup

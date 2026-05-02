@@ -1,23 +1,41 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Models;
 
-use Enigma\ValidatorTrait;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Opscale\NovaDynamicResources\Models\Concerns\CastsValidationData;
 use Opscale\NovaDynamicResources\Models\Concerns\HasDynamicData;
 use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
 use Opscale\NovaDynamicResources\Models\Repositories\TemplateRepository;
+use Opscale\Validations\Validatable;
+use Override;
 
+/**
+ * @property string $id
+ * @property TemplateType $type
+ * @property string|null $related_class
+ * @property string $singular_label
+ * @property string $label
+ * @property string $uri_key
+ * @property string|null $title
+ * @property array<string, mixed>|null $data
+ * @property-read EloquentCollection<int, Field> $fields
+ * @property-read EloquentCollection<int, Action> $actions
+ */
 class Template extends Model
 {
+    use CastsValidationData;
     use HasDynamicData;
     use HasUlids;
     use SoftDeletes;
     use TemplateRepository;
-    use ValidatorTrait;
+    use Validatable;
 
     /**
      * The validation rules for the model.
@@ -95,25 +113,45 @@ class Template extends Model
     /**
      * The relationships that should always be loaded.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $with = [
         'fields',
         'actions',
     ];
 
+    #[Override]
+    public static function boot(): void
+    {
+        parent::boot();
+        static::creating(fn (self $model): bool => $model->validate() === null || true);
+        static::updating(fn (self $model): bool => $model->validate() === null || true);
+    }
+
+    /**
+     * @return array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
+     */
+    final public function validationRules(): array
+    {
+        return $this->validationRules;
+    }
+
     /**
      * Get the fields for the template.
+     *
+     * @return HasMany<Field, $this>
      */
-    public function fields(): HasMany
+    final public function fields(): HasMany
     {
         return $this->hasMany(Field::class);
     }
 
     /**
      * Get the actions for the template.
+     *
+     * @return HasMany<Action, $this>
      */
-    public function actions(): HasMany
+    final public function actions(): HasMany
     {
         return $this->hasMany(Action::class);
     }
