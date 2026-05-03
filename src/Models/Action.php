@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Opscale\NovaDynamicResources\Models\Concerns\CastsValidationData;
 use Opscale\Validations\Validatable;
-use Override;
 
 /**
  * @property string $id
@@ -33,7 +32,7 @@ class Action extends Model
      *
      * @var array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
      */
-    public array $validationRules = [
+    public static array $validationRules = [
         'template_id' => [
             'required',
             'ulid',
@@ -88,22 +87,6 @@ class Action extends Model
         'config' => 'array',
         'data' => 'array',
     ];
-
-    #[Override]
-    public static function boot(): void
-    {
-        parent::boot();
-        static::creating(fn (self $model): bool => $model->validate() === null || true);
-        static::updating(fn (self $model): bool => $model->validate() === null || true);
-    }
-
-    /**
-     * @return array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
-     */
-    final public function validationRules(): array
-    {
-        return $this->validationRules;
-    }
 
     /**
      * Get the template that owns this action.

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Mockery;
 use Opscale\NovaDynamicResources\Services\Actions\RenderField;
 
 it('renders a Nova field for a configured type', function (): void {

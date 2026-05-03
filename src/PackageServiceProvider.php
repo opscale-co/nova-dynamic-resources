@@ -11,6 +11,7 @@ use Opscale\NovaDynamicResources\Models\Template as TemplateModel;
 use Opscale\NovaDynamicResources\Nova\Action;
 use Opscale\NovaDynamicResources\Nova\Field;
 use Opscale\NovaDynamicResources\Nova\Record;
+use Opscale\NovaDynamicResources\Nova\Relationship;
 use Opscale\NovaDynamicResources\Nova\Template;
 use Opscale\NovaPackageTools\NovaPackage;
 use Opscale\NovaPackageTools\NovaPackageServiceProvider;
@@ -27,6 +28,7 @@ class PackageServiceProvider extends NovaPackageServiceProvider
         Template::class,
         Field::class,
         Action::class,
+        Relationship::class,
         Record::class,
     ];
 

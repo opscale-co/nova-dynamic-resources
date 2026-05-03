@@ -12,6 +12,8 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 use Opscale\NovaDynamicResources\Models\Template;
 use Opscale\NovaDynamicResources\Services\Actions\RenderAction;
 use Opscale\NovaDynamicResources\Services\Actions\RenderField;
+use Opscale\NovaDynamicResources\Services\Actions\RenderRelationship;
+use Throwable;
 
 /**
  * @mixin \Laravel\Nova\Resource<\Illuminate\Database\Eloquent\Model>
@@ -146,5 +148,50 @@ trait UsesTemplate
         }
 
         return $actions;
+    }
+
+    /**
+     * Render dynamic relationships from the model's template.
+     *
+     * @return array<int, Field>
+     */
+    final protected function renderTemplateRelationships(): array
+    {
+        $fields = [];
+
+        if (isset(static::$template)) {
+            $templateRelationships = static::$template->relationships;
+        } else {
+            /** @var Template|null $template */
+            $template = $this->resource?->getAttribute('template');
+            $templateRelationships = $template?->relationships ?? [];
+        }
+
+        foreach ($templateRelationships as $templateRelationship) {
+            $relatedTemplate = $templateRelationship->relatedTemplate;
+
+            if ($relatedTemplate === null) {
+                continue;
+            }
+
+            try {
+                /** @var array{success: bool, instance: Field} $result */
+                $result = RenderRelationship::run([
+                    'cardinality' => $templateRelationship->cardinality->value,
+                    'name' => $templateRelationship->name,
+                    'label' => $templateRelationship->label,
+                    'related_uri_key' => (string) $relatedTemplate->uri_key,
+                    'rules' => $templateRelationship->rules ?? [],
+                    'config' => $templateRelationship->config ?? [],
+                ]);
+
+                $fields[] = $result['instance'];
+            } catch (Throwable) {
+                // Skip relationships whose related Resource binding is not yet registered.
+                continue;
+            }
+        }
+
+        return $fields;
     }
 }

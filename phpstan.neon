@@ -72,3 +72,51 @@ parameters:
             paths:
                 - tests/Feature/Casts/*
 
+        # BuildDynamicRelation instantiates concrete Relation subclasses by design —
+        # the cardinality match cannot be replaced with DI without breaking the
+        # one-shot Action contract from Opscale\Actions\Action.
+        -
+            identifier: solid.dip.disallowInstantiation
+            path: src/Services/Actions/BuildDynamicRelation.php
+        -
+            identifier: return.type
+            path: src/Services/Actions/BuildDynamicRelation.php
+
+        # Json* relations extend Eloquent BelongsTo/HasOne/HasMany and intentionally
+        # replace the FK column lookup with a JSON path read; calling parent:: would
+        # re-query the column-based path and defeat the override.
+        -
+            identifier: solid.lsp.parentCall
+            paths:
+                - src/Eloquent/Relations/JsonBelongsTo.php
+                - src/Eloquent/Relations/JsonHasOne.php
+                - src/Eloquent/Relations/JsonHasMany.php
+        -
+            identifier: missingType.generics
+            paths:
+                - src/Eloquent/Relations/JsonBelongsTo.php
+                - src/Eloquent/Relations/JsonHasOne.php
+                - src/Eloquent/Relations/JsonHasMany.php
+
+        # Nova's BelongsTo/HasOne/HasMany::make accepts (label, attribute, resourceClass)
+        # but PHPStan only sees the base Field::make(label, attribute, resolveCallback) signature.
+        -
+            identifier: argument.type
+            path: src/Services/Actions/RenderRelationship.php
+
+        # Dynamic relationships are declared per-template at runtime; PHPStan can't
+        # know about per-template properties/methods on Record instances.
+        -
+            identifier: property.notFound
+            paths:
+                - tests/Unit/Models/Concerns/HasDynamicRelationshipsTest.php
+                - tests/Unit/Models/RelationshipTest.php
+        -
+            identifier: method.notFound
+            paths:
+                - tests/Unit/Models/Concerns/HasDynamicRelationshipsTest.php
+        -
+            identifier: argument.templateType
+            paths:
+                - tests/Unit/Models/Concerns/HasDynamicRelationshipsTest.php
+

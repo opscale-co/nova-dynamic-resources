@@ -7,6 +7,7 @@ namespace Workbench\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Opscale\NovaCatalogs\Models\Catalog;
+use Opscale\NovaDynamicResources\Models\Enums\RelationshipCardinality;
 use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
 use Opscale\NovaDynamicResources\Models\Record;
 use Opscale\NovaDynamicResources\Models\Template;
@@ -216,5 +217,16 @@ class TemplateSeeder extends Seeder
                 'display_in_index' => false,
             ]);
         }
+
+        // Self-referential relationship to validate dynamic resolution end-to-end.
+        $showcaseTemplate->relationships()->create([
+            'name' => 'parent',
+            'label' => 'Parent',
+            'cardinality' => RelationshipCardinality::BelongsTo,
+            'related_template_id' => $showcaseTemplate->id,
+            'foreign_key' => 'parent_id',
+            'inverse_name' => 'children',
+            'required' => false,
+        ]);
     }
 }

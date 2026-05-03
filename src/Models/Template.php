@@ -14,7 +14,6 @@ use Opscale\NovaDynamicResources\Models\Concerns\HasDynamicData;
 use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
 use Opscale\NovaDynamicResources\Models\Repositories\TemplateRepository;
 use Opscale\Validations\Validatable;
-use Override;
 
 /**
  * @property string $id
@@ -27,6 +26,7 @@ use Override;
  * @property array<string, mixed>|null $data
  * @property-read EloquentCollection<int, Field> $fields
  * @property-read EloquentCollection<int, Action> $actions
+ * @property-read EloquentCollection<int, Relationship> $relationships
  */
 class Template extends Model
 {
@@ -42,7 +42,7 @@ class Template extends Model
      *
      * @var array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
      */
-    public array $validationRules = [
+    public static array $validationRules = [
         'label' => [
             'required',
             'string',
@@ -118,23 +118,8 @@ class Template extends Model
     protected $with = [
         'fields',
         'actions',
+        'relationships',
     ];
-
-    #[Override]
-    public static function boot(): void
-    {
-        parent::boot();
-        static::creating(fn (self $model): bool => $model->validate() === null || true);
-        static::updating(fn (self $model): bool => $model->validate() === null || true);
-    }
-
-    /**
-     * @return array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
-     */
-    final public function validationRules(): array
-    {
-        return $this->validationRules;
-    }
 
     /**
      * Get the fields for the template.
@@ -154,5 +139,15 @@ class Template extends Model
     final public function actions(): HasMany
     {
         return $this->hasMany(Action::class);
+    }
+
+    /**
+     * Get the relationships for the template.
+     *
+     * @return HasMany<Relationship, $this>
+     */
+    final public function relationships(): HasMany
+    {
+        return $this->hasMany(Relationship::class);
     }
 }

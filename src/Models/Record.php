@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Opscale\NovaDynamicResources\Models\Concerns\CastsValidationData;
 use Opscale\NovaDynamicResources\Models\Concerns\UsesTemplate;
 use Opscale\Validations\Validatable;
-use Override;
 
 /**
  * @property string $id
@@ -30,7 +29,7 @@ class Record extends Model
      *
      * @var array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
      */
-    public array $validationRules = [
+    public static array $validationRules = [
         'template_id' => [
             'required',
             'string',
@@ -63,20 +62,4 @@ class Record extends Model
         'data',
         'metadata',
     ];
-
-    #[Override]
-    public static function boot(): void
-    {
-        parent::boot();
-        static::creating(fn (self $model): bool => $model->validate() === null || true);
-        static::updating(fn (self $model): bool => $model->validate() === null || true);
-    }
-
-    /**
-     * @return array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
-     */
-    final public function validationRules(): array
-    {
-        return $this->validationRules;
-    }
 }

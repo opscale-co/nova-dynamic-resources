@@ -24,7 +24,7 @@ class Item extends Model
     /**
      * @var array<string, list<string>>
      */
-    public array $validationRules = [
+    public static array $validationRules = [
         'template_id' => ['required', 'exists:dynamic_resources_templates,id'],
         'name' => ['required', 'string', 'max:255'],
         'description' => ['nullable', 'string'],

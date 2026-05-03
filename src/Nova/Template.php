@@ -20,6 +20,7 @@ use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
 use Opscale\NovaDynamicResources\Models\Template as Model;
 use Opscale\NovaDynamicResources\Nova\Repeatables\Action as ActionRepeatable;
 use Opscale\NovaDynamicResources\Nova\Repeatables\Field as FieldRepeatable;
+use Opscale\NovaDynamicResources\Nova\Repeatables\Relationship as RelationshipRepeatable;
 use Opscale\NovaDynamicResources\Services\Actions\CreateRecord;
 use Override;
 
@@ -117,6 +118,10 @@ class Template extends Resource
                 Tab::make(__('Actions'), [
                     'actions' => HasMany::make(__('Actions'), 'actions', Action::class),
                 ]),
+
+                Tab::make(__('Relationships'), [
+                    'relationships' => HasMany::make(__('Relationships'), 'relationships', Relationship::class),
+                ]),
             ]),
         ];
     }
@@ -201,6 +206,13 @@ class Template extends Resource
                 ])
                 ->asHasMany(Action::class)
                 ->hideWhenCreating(),
+
+            'relationships' => Repeater::make(__('Relationships'), 'relationships')
+                ->repeatables([
+                    RelationshipRepeatable::make(),
+                ])
+                ->asHasMany(Relationship::class)
+                ->hideWhenCreating(),
         ];
     }
 
@@ -209,6 +221,6 @@ class Template extends Resource
      */
     final protected function resolveRule(string $key): array
     {
-        return $this->model()?->validationRules[$key] ?? [];
+        return Model::$validationRules[$key] ?? [];
     }
 }

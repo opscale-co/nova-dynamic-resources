@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'fields' => [
         'address' => [
@@ -206,17 +208,6 @@ return [
             'rules' => ['string', 'max:255'],
         ],
 
-        'parent' => [
-            'field' => \Laravel\Nova\Fields\BelongsTo::class,
-            'hint' => 'Parent relationship for hierarchical structures, ownership references, or nested records',
-            'rules' => ['exists'],
-            'config' => [
-                'sortable' => true,
-                'filterable' => true,
-                'showCreateRelationButton' => true,
-            ],
-        ],
-
         'password' => [
             'field' => \Laravel\Nova\Fields\Password::class,
             'hint' => 'Secure passwords for authentication and account protection',
@@ -248,7 +239,7 @@ return [
             'hint' => 'Rich text content for blog posts, articles, or formatted messages',
             'rules' => ['string'],
             'config' => [
-                'withFiles' => true,
+                'withFiles' => 'public',
             ],
         ],
 
@@ -394,6 +385,35 @@ return [
             'config' => [
                 'trueValue' => true,
                 'falseValue' => false,
+            ],
+        ],
+    ],
+
+    'relationships' => [
+        'belongs_to' => [
+            'field' => \Laravel\Nova\Fields\BelongsTo::class,
+            'hint' => 'Owns a single related record (the foreign key lives on this side).',
+            'rules' => ['nullable'],
+            'config' => [
+                'sortable' => true,
+                'searchable' => true,
+                'showCreateRelationButton' => true,
+            ],
+        ],
+
+        'has_one' => [
+            'field' => \Laravel\Nova\Fields\HasOne::class,
+            'hint' => 'Inverse single-record relationship; the related record holds the foreign key.',
+            'rules' => [],
+            'config' => [],
+        ],
+
+        'has_many' => [
+            'field' => \Laravel\Nova\Fields\HasMany::class,
+            'hint' => 'Collection of related records; each related record holds the foreign key.',
+            'rules' => [],
+            'config' => [
+                'collapsable' => true,
             ],
         ],
     ],

@@ -9,34 +9,34 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Opscale\NovaDynamicResources\Models\Concerns\CastsValidationData;
-use Opscale\NovaDynamicResources\Models\Repositories\FieldRepository;
+use Opscale\NovaDynamicResources\Models\Enums\RelationshipCardinality;
+use Opscale\NovaDynamicResources\Models\Repositories\RelationshipRepository;
 use Opscale\Validations\Validatable;
 
 /**
  * @property string $id
  * @property string $template_id
- * @property string $type
- * @property string $label
  * @property string $name
+ * @property string $label
+ * @property RelationshipCardinality $cardinality
+ * @property string $related_template_id
+ * @property string $foreign_key
+ * @property string|null $inverse_name
  * @property bool $required
- * @property bool $display_in_index
  * @property array<int|string, mixed>|null $rules
  * @property array<string, mixed>|null $config
- * @property array<string, mixed>|null $hooks
- * @property array<string, mixed>|null $data
  * @property-read Template|null $template
+ * @property-read Template|null $relatedTemplate
  */
-class Field extends Model
+class Relationship extends Model
 {
     use CastsValidationData;
-    use FieldRepository;
     use HasUlids;
+    use RelationshipRepository;
     use SoftDeletes;
     use Validatable;
 
     /**
-     * The validation rules for the model.
-     *
      * @var array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
      */
     public static array $validationRules = [
@@ -45,26 +45,39 @@ class Field extends Model
             'ulid',
             'exists:dynamic_resources_templates,id',
         ],
-        'type' => [
+        'name' => [
             'required',
             'string',
             'max:255',
+            'regex:/^[a-z][a-zA-Z0-9_]*$/',
         ],
         'label' => [
             'required',
             'string',
             'max:255',
         ],
-        'name' => [
+        'cardinality' => [
+            'required',
+            'string',
+        ],
+        'related_template_id' => [
+            'required',
+            'ulid',
+            'exists:dynamic_resources_templates,id',
+        ],
+        'foreign_key' => [
             'required',
             'string',
             'max:255',
+            'regex:/^[a-z][a-z0-9_]*$/',
+        ],
+        'inverse_name' => [
+            'nullable',
+            'string',
+            'max:255',
+            'regex:/^[a-z][a-zA-Z0-9_]*$/',
         ],
         'required' => [
-            'required',
-            'boolean',
-        ],
-        'display_in_index' => [
             'required',
             'boolean',
         ],
@@ -76,60 +89,52 @@ class Field extends Model
             'nullable',
             'array',
         ],
-        'hooks' => [
-            'nullable',
-            'array',
-        ],
-        'data' => [
-            'nullable',
-            'array',
-        ],
     ];
 
     /**
-     * The table associated with the model.
-     *
      * @var string
      */
-    protected $table = 'dynamic_resources_fields';
+    protected $table = 'dynamic_resources_relationships';
 
     /**
-     * The attributes that are mass assignable.
-     *
      * @var list<string>
      */
     protected $fillable = [
         'template_id',
-        'type',
-        'label',
         'name',
+        'label',
+        'cardinality',
+        'related_template_id',
+        'foreign_key',
+        'inverse_name',
         'required',
-        'display_in_index',
         'rules',
         'config',
-        'hooks',
-        'data',
     ];
 
     /**
-     * The attributes that should be cast.
-     *
      * @var array<string, string>
      */
     protected $casts = [
+        'cardinality' => RelationshipCardinality::class,
+        'required' => 'boolean',
         'rules' => 'array',
         'config' => 'array',
-        'hooks' => 'array',
-        'data' => 'array',
     ];
 
     /**
-     * Get the template that owns this field.
-     *
      * @return BelongsTo<Template, $this>
      */
     final public function template(): BelongsTo
     {
         return $this->belongsTo(Template::class);
+    }
+
+    /**
+     * @return BelongsTo<Template, $this>
+     */
+    final public function relatedTemplate(): BelongsTo
+    {
+        return $this->belongsTo(Template::class, 'related_template_id');
     }
 }

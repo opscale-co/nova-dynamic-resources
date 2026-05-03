@@ -92,7 +92,7 @@ final class SeededTemplatesTest extends DuskTestCase
     }
 
     #[Test]
-    final public function showcase_create_form_renders_every_field_type(): void
+    final public function showcase_create_form_renders_every_field_type_and_relationship(): void
     {
         $expectedLabels = [
             'Address', 'Color', 'Country', 'Date', 'Description', 'Document',
@@ -101,6 +101,7 @@ final class SeededTemplatesTest extends DuskTestCase
             'Postal Code', 'Post', 'Quantity', 'Rating', 'Region', 'Slug', 'Snippet',
             'State', 'Title', 'Token', 'Ulid', 'Url', 'Username', 'Uuid', 'Yes No',
             'Audio', 'Video', 'File', 'Pdf',
+            'Parent', // dynamic Relationship rendered alongside template fields
         ];
 
         $this->browse(function (Browser $browser) use ($expectedLabels): void {

@@ -35,6 +35,14 @@ trait TemplateRepository
     }
 
     /**
+     * Look up a template by its primary key.
+     */
+    final public static function findById(string $id): ?Template
+    {
+        return Template::query()->find($id);
+    }
+
+    /**
      * Scope a query to only include instantiable templates (Dynamic or Inherited).
      *
      * @param  Builder<Template>  $query

@@ -17,8 +17,10 @@ use Opscale\NovaDynamicResources\Models\Record as Model;
 use Opscale\NovaDynamicResources\Models\Template as TemplateModel;
 use Opscale\NovaDynamicResources\Services\Actions\RenderAction;
 use Opscale\NovaDynamicResources\Services\Actions\RenderField;
+use Opscale\NovaDynamicResources\Services\Actions\RenderRelationship;
 use Opscale\NovaDynamicResources\Services\Actions\ViewRecord;
 use Override;
+use Throwable;
 
 /**
  * @extends Resource<Model>
@@ -71,6 +73,26 @@ class Record extends Resource
         }
 
         return __('records');
+    }
+
+    /**
+     * Pre-fill the model with the current template context so dynamic
+     * relationships resolve on freshly instantiated (create-form) records.
+     */
+    #[Override]
+    public static function newModel()
+    {
+        /** @var Model $model */
+        $model = parent::newModel();
+
+        if (isset(static::$template)) {
+            if (in_array('template_id', $model->getFillable(), true)) {
+                $model->setAttribute('template_id', static::$template->id);
+            }
+            $model->setRelation('template', static::$template);
+        }
+
+        return $model;
     }
 
     /**
@@ -172,6 +194,29 @@ class Record extends Resource
                 'config' => $templateField->config ?? [],
             ]);
             $fields[] = $result['instance'];
+        }
+
+        foreach ($template->relationships as $templateRelationship) {
+            $relatedTemplate = $templateRelationship->relatedTemplate;
+
+            if ($relatedTemplate === null) {
+                continue;
+            }
+
+            try {
+                /** @var array{success: bool, instance: Field} $relationResult */
+                $relationResult = RenderRelationship::run([
+                    'cardinality' => $templateRelationship->cardinality->value,
+                    'name' => $templateRelationship->name,
+                    'label' => $templateRelationship->label,
+                    'related_uri_key' => (string) $relatedTemplate->uri_key,
+                    'rules' => $templateRelationship->rules ?? [],
+                    'config' => $templateRelationship->config ?? [],
+                ]);
+                $fields[] = $relationResult['instance'];
+            } catch (Throwable) {
+                continue;
+            }
         }
 
         return $fields;

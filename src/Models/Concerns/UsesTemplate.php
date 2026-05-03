@@ -17,6 +17,7 @@ use Opscale\NovaDynamicResources\Models\Template;
 trait UsesTemplate
 {
     use HasDynamicData;
+    use HasDynamicRelationships;
 
     /**
      * Boot the UsesTemplate trait.

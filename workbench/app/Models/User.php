@@ -31,7 +31,7 @@ class User extends Authenticatable
     /**
      * @var array<string, list<string>>
      */
-    public array $validationRules = [
+    public static array $validationRules = [
         'name' => ['required', 'string', 'max:255'],
         'email' => ['required', 'string', 'email', 'max:254', 'unique:users'],
         'password' => ['required', 'string', 'min:8'],

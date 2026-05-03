@@ -81,14 +81,12 @@ class Action extends Resource
      */
     final public static function defaultFields(): array
     {
-        $model = new Model;
-
         return [
             'class' => Text::make(__('Class'), 'class')
-                ->rules($model->validationRules['class']),
+                ->rules(Model::$validationRules['class']),
 
             'label' => Text::make(__('Label'), 'label')
-                ->rules($model->validationRules['label']),
+                ->rules(Model::$validationRules['label']),
 
             'config' => KeyValue::make(__('Config'), 'config')
                 ->keyLabel(__('Key'))

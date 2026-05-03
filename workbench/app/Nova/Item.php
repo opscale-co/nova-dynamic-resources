@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Workbench\App\Nova;
 
 use Laravel\Nova\Fields\Currency;
@@ -65,6 +67,7 @@ class Item extends Resource
                 ->default(0),
 
             ...$this->renderTemplateFields(),
+            ...$this->renderTemplateRelationships(),
         ];
     }
 }
