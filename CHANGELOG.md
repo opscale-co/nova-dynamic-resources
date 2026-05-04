@@ -2,6 +2,13 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## 1.9.0 (2026-05-04)
+
+* Merge pull request #25 from opscale-co/001-template-relationships ([e6c2d0e](https://github.com/opscale-co/nova-dynamic-resources/commit/e6c2d0e)), closes [#25](https://github.com/opscale-co/nova-dynamic-resources/issues/25)
+* Merge pull request #26 from opscale-co/develop ([43ff415](https://github.com/opscale-co/nova-dynamic-resources/commit/43ff415)), closes [#26](https://github.com/opscale-co/nova-dynamic-resources/issues/26)
+* feat(relationships): add Relationship as a first-class Template concern ([dfe9b17](https://github.com/opscale-co/nova-dynamic-resources/commit/dfe9b17))
+* test: add full template-type test coverage and showcase template ([b437b8c](https://github.com/opscale-co/nova-dynamic-resources/commit/b437b8c))
+
 ## 1.8.0 (2026-04-29)
 
 * Merge pull request #24 from opscale-co/develop ([f53a467](https://github.com/opscale-co/nova-dynamic-resources/commit/f53a467)), closes [#24](https://github.com/opscale-co/nova-dynamic-resources/issues/24)
