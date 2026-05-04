@@ -6,6 +6,117 @@ includes:
     - vendor/opscale-co/strict-rules/rules.solid.neon
 parameters:
     level: 9
-    phpVersion: 80200
+    phpVersion: 80300
     paths:
         - src
+        - tests
+    scanDirectories:
+        - database/migrations
+        - workbench
+    excludePaths:
+        - tests/fixtures/*
+    ignoreErrors:
+        -
+            identifier: smells.helpersRestriction.helper
+            message: '#Helper function "__\(\)#'
+        -
+            identifier: solid.lsp.parentCall
+            message: '#asNovaAction\(\).*overrides a parent method but does not call parent::#'
+            paths:
+                - src/Services/Actions/CreateRecord.php
+                - src/Services/Actions/ViewRecord.php
+        -
+            identifier: property.defaultValue
+            message: '#Property .*\$resourceClasses .* does not accept default value#'
+            path: src/PackageServiceProvider.php
+
+        # Nova\Concerns\UsesTemplate is consumed by workbench Nova resources
+        # which are not part of the phpstan paths.
+        -
+            identifier: trait.unused
+            path: src/Nova/Concerns/UsesTemplate.php
+
+        # Action::run() is dynamic dispatch from lorisleiva/laravel-actions.
+        # Return type is the action's handle() return — phpstan can't infer it.
+        -
+            identifier: offsetAccess.nonOffsetAccessible
+            paths:
+                - tests/Feature/Actions/*
+
+        -
+            identifier: argument.type
+            path: tests/Feature/Actions/RenderFieldTest.php
+
+        # Pest expectation chains use magic __get for ->not modifier
+        -
+            identifier: property.notFound
+            message: '#Pest\\Mixins\\Expectation.*::\$not#'
+            paths:
+                - tests/*
+
+        # Pest closures bind $this to the test case but PHPStan analyses them standalone
+        -
+            identifier: variable.undefined
+            paths:
+                - tests/*
+
+        # Eloquent finder methods can return null; tests assert non-null state
+        -
+            identifier: property.nonObject
+            paths:
+                - tests/*
+
+        # In tests we already validated the model exists before passing attributes
+        -
+            identifier: argument.type
+            paths:
+                - tests/Feature/Casts/*
+
+        # BuildDynamicRelation instantiates concrete Relation subclasses by design —
+        # the cardinality match cannot be replaced with DI without breaking the
+        # one-shot Action contract from Opscale\Actions\Action.
+        -
+            identifier: solid.dip.disallowInstantiation
+            path: src/Services/Actions/BuildDynamicRelation.php
+        -
+            identifier: return.type
+            path: src/Services/Actions/BuildDynamicRelation.php
+
+        # Json* relations extend Eloquent BelongsTo/HasOne/HasMany and intentionally
+        # replace the FK column lookup with a JSON path read; calling parent:: would
+        # re-query the column-based path and defeat the override.
+        -
+            identifier: solid.lsp.parentCall
+            paths:
+                - src/Eloquent/Relations/JsonBelongsTo.php
+                - src/Eloquent/Relations/JsonHasOne.php
+                - src/Eloquent/Relations/JsonHasMany.php
+        -
+            identifier: missingType.generics
+            paths:
+                - src/Eloquent/Relations/JsonBelongsTo.php
+                - src/Eloquent/Relations/JsonHasOne.php
+                - src/Eloquent/Relations/JsonHasMany.php
+
+        # Nova's BelongsTo/HasOne/HasMany::make accepts (label, attribute, resourceClass)
+        # but PHPStan only sees the base Field::make(label, attribute, resolveCallback) signature.
+        -
+            identifier: argument.type
+            path: src/Services/Actions/RenderRelationship.php
+
+        # Dynamic relationships are declared per-template at runtime; PHPStan can't
+        # know about per-template properties/methods on Record instances.
+        -
+            identifier: property.notFound
+            paths:
+                - tests/Unit/Models/Concerns/HasDynamicRelationshipsTest.php
+                - tests/Unit/Models/RelationshipTest.php
+        -
+            identifier: method.notFound
+            paths:
+                - tests/Unit/Models/Concerns/HasDynamicRelationshipsTest.php
+        -
+            identifier: argument.templateType
+            paths:
+                - tests/Unit/Models/Concerns/HasDynamicRelationshipsTest.php
+

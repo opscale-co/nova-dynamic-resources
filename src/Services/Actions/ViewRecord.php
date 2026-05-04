@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Services\Actions;
 
 use Illuminate\Support\Collection;
@@ -49,6 +51,9 @@ class ViewRecord extends Action
         return __('Navigates to the detail page for the selected dynamic record');
     }
 
+    /**
+     * @return array<int, array{name: string, description: string, type: string, rules: array<int, string>}>
+     */
     #[Override]
     public function parameters(): array
     {
@@ -75,11 +80,21 @@ class ViewRecord extends Action
      *
      * @param  Collection<int, Record>  $models
      */
-    public function asNovaAction(ActionFields $fields, Collection $models): ActionResponse
+    #[Override]
+    final public function asNovaAction(ActionFields $fields, Collection $models): ActionResponse
     {
         $record = $models->first();
+
+        if ($record === null) {
+            return $this->visit('/');
+        }
+
         $record->load('template');
         $template = $record->template;
+
+        if ($template === null) {
+            return $this->visit('/');
+        }
 
         $uriKey = $template->uri_key;
         $recordId = $record->id;

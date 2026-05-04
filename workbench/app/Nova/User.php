@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Workbench\App\Nova;
 
 use Illuminate\Http\Request;
@@ -55,20 +57,21 @@ class User extends Resource
 
             Text::make('Name')
                 ->sortable()
-                ->rules(fn (): array => $this->model()->validationRules['name'] ?? []),
+                ->rules(fn (): array => \Workbench\App\Models\User::$validationRules['name'] ?? []),
 
             Text::make('Email')
                 ->sortable()
                 ->rules('required', 'email', 'max:254')
-                ->creationRules(fn (): array => $this->model()->validationRules['email'] ?? [])
-                ->updateRules(fn (): array => $this->model()->validationRules['email'] ?? []),
+                ->creationRules(fn (): array => \Workbench\App\Models\User::$validationRules['email'] ?? [])
+                ->updateRules(fn (): array => \Workbench\App\Models\User::$validationRules['email'] ?? []),
 
             Password::make('Password')
                 ->onlyOnForms()
-                ->creationRules(fn (): array => $this->model()->validationRules['password'] ?? [])
-                ->updateRules(fn (): array => $this->model()->validationRules['password'] ?? []),
+                ->creationRules(fn (): array => \Workbench\App\Models\User::$validationRules['password'] ?? [])
+                ->updateRules(fn (): array => \Workbench\App\Models\User::$validationRules['password'] ?? []),
 
             ...$this->renderTemplateFields(),
+            ...$this->renderTemplateRelationships(),
         ];
     }
 

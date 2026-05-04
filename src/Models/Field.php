@@ -1,27 +1,45 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Models;
 
-use Enigma\ValidatorTrait;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Opscale\NovaDynamicResources\Models\Concerns\CastsValidationData;
 use Opscale\NovaDynamicResources\Models\Repositories\FieldRepository;
+use Opscale\Validations\Validatable;
 
+/**
+ * @property string $id
+ * @property string $template_id
+ * @property string $type
+ * @property string $label
+ * @property string $name
+ * @property bool $required
+ * @property bool $display_in_index
+ * @property array<int|string, mixed>|null $rules
+ * @property array<string, mixed>|null $config
+ * @property array<string, mixed>|null $hooks
+ * @property array<string, mixed>|null $data
+ * @property-read Template|null $template
+ */
 class Field extends Model
 {
+    use CastsValidationData;
     use FieldRepository;
     use HasUlids;
     use SoftDeletes;
-    use ValidatorTrait;
+    use Validatable;
 
     /**
      * The validation rules for the model.
      *
      * @var array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
      */
-    public array $validationRules = [
+    public static array $validationRules = [
         'template_id' => [
             'required',
             'ulid',
@@ -110,7 +128,7 @@ class Field extends Model
      *
      * @return BelongsTo<Template, $this>
      */
-    public function template(): BelongsTo
+    final public function template(): BelongsTo
     {
         return $this->belongsTo(Template::class);
     }

@@ -1,19 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Models\Repositories;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
+use Opscale\NovaDynamicResources\Models\Template;
 
 trait TemplateRepository
 {
     /**
      * Boot the TemplateRepository trait.
      */
-    public static function bootTemplateRepository(): void
+    final public static function bootTemplateRepository(): void
     {
-        static::creating(function ($model): void {
+        static::creating(function (Template $model): void {
             // Auto-populate singular_label if not set
             if (empty($model->singular_label) && ! empty($model->label)) {
                 $model->singular_label = Str::singular($model->label);
@@ -32,12 +35,20 @@ trait TemplateRepository
     }
 
     /**
+     * Look up a template by its primary key.
+     */
+    final public static function findById(string $id): ?Template
+    {
+        return Template::query()->find($id);
+    }
+
+    /**
      * Scope a query to only include instantiable templates (Dynamic or Inherited).
      *
-     * @param  Builder<\Opscale\NovaDynamicResources\Models\Template>  $query
-     * @return Builder<\Opscale\NovaDynamicResources\Models\Template>
+     * @param  Builder<Template>  $query
+     * @return Builder<Template>
      */
-    public function scopeInstantiables(Builder $query): Builder
+    final public function scopeInstantiables(Builder $query): Builder
     {
         return $query->whereIn('type', [
             TemplateType::Dynamic,

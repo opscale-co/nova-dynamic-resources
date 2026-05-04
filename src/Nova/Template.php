@@ -1,7 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Nova;
 
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Support\Collection;
+use Laravel\Nova\Fields\FormData;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\Repeater;
 use Laravel\Nova\Fields\Select;
@@ -15,6 +20,7 @@ use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
 use Opscale\NovaDynamicResources\Models\Template as Model;
 use Opscale\NovaDynamicResources\Nova\Repeatables\Action as ActionRepeatable;
 use Opscale\NovaDynamicResources\Nova\Repeatables\Field as FieldRepeatable;
+use Opscale\NovaDynamicResources\Nova\Repeatables\Relationship as RelationshipRepeatable;
 use Opscale\NovaDynamicResources\Services\Actions\CreateRecord;
 use Override;
 
@@ -76,9 +82,9 @@ class Template extends Resource
     /**
      * Get the available base classes for dynamic resources.
      *
-     * @return array<string, string>
+     * @return array<class-string, string>
      */
-    protected static function getRelatedResources(bool $checkRelation): array
+    final protected static function getRelatedResources(bool $checkRelation): array
     {
         $baseClasses = [];
 
@@ -93,9 +99,8 @@ class Template extends Resource
 
     /**
      * Get the fields displayed by the resource.
-     */
-    /**
-     * @return array<mixed>
+     *
+     * @return array<int, \Laravel\Nova\Tabs\TabsGroup>
      */
     #[Override]
     public function fields(NovaRequest $request): array
@@ -113,6 +118,10 @@ class Template extends Resource
                 Tab::make(__('Actions'), [
                     'actions' => HasMany::make(__('Actions'), 'actions', Action::class),
                 ]),
+
+                Tab::make(__('Relationships'), [
+                    'relationships' => HasMany::make(__('Relationships'), 'relationships', Relationship::class),
+                ]),
             ]),
         ];
     }
@@ -125,37 +134,44 @@ class Template extends Resource
     #[Override]
     public function actions(NovaRequest $request): array
     {
-        return [
-            CreateRecord::make()->showInline(),
+        /** @var array<int, \Laravel\Nova\Actions\Action> $actions */
+        $actions = [
+            ...parent::actions($request),
+            CreateRecord::make(),
         ];
+
+        return $actions;
     }
 
+    /**
+     * @return array<string, \Laravel\Nova\Fields\Field>
+     */
     final protected function defaultFields(NovaRequest $request): array
     {
         return [
             'label' => Text::make(__('Label'), 'label')
-                ->rules(fn (): array => $this->model()?->validationRules['label'])
+                ->rules(fn (): array => $this->resolveRule('label'))
                 ->help(__('Use a plural label for your resource.')),
 
             'singular_label' => Text::make(__('Singular Label'), 'singular_label')
-                ->rules(fn (): array => $this->model()?->validationRules['singular_label'])
+                ->rules(fn (): array => $this->resolveRule('singular_label'))
                 ->hideWhenCreating(),
 
             'uri_key' => Slug::make(__('URI Key'), 'uri_key')
                 ->from('label')
-                ->creationRules(fn (): array => $this->model()?->validationRules['uri_key'])
+                ->creationRules(fn (): array => $this->resolveRule('uri_key'))
                 ->hideWhenCreating(),
 
             'type' => Select::make(__('Type'), 'type')
-                ->options(collect(TemplateType::cases())->mapWithKeys(fn (TemplateType $type) => [
+                ->options(Collection::make(TemplateType::cases())->mapWithKeys(fn (TemplateType $type): array => [
                     $type->value => $type->value,
-                ])->toArray())
+                ])->all())
                 ->displayUsingLabels()
-                ->rules(fn (): array => $this->model()?->validationRules['type']),
+                ->rules(fn (): array => $this->resolveRule('type')),
 
             'related_class' => Select::make(__('Related Class'), 'related_class')
-                ->dependsOn('type', function (Select $field, NovaRequest $request, $formData) {
-                    $type = $formData->type;
+                ->dependsOn('type', function (Select $field, NovaRequest $request, FormData $formData): void {
+                    $type = $formData->resource('type');
 
                     if ($type === TemplateType::Inherited->value) {
                         $field->show()
@@ -169,7 +185,7 @@ class Template extends Resource
                 })
                 ->displayUsingLabels()
                 ->searchable()
-                ->rules(fn (): array => $this->model()?->validationRules['related_class'])
+                ->rules(fn (): array => $this->resolveRule('related_class'))
                 ->hideFromIndex()
                 ->hide(),
 
@@ -181,7 +197,7 @@ class Template extends Resource
                 ->required(),
 
             'title' => Text::make(__('Title'), 'title')
-                ->rules(fn (): array => $this->model()?->validationRules['title'])
+                ->rules(fn (): array => $this->resolveRule('title'))
                 ->help(__('Define the property to be used as title.')),
 
             'actions' => Repeater::make(__('Actions'), 'actions')
@@ -190,6 +206,21 @@ class Template extends Resource
                 ])
                 ->asHasMany(Action::class)
                 ->hideWhenCreating(),
+
+            'relationships' => Repeater::make(__('Relationships'), 'relationships')
+                ->repeatables([
+                    RelationshipRepeatable::make(),
+                ])
+                ->asHasMany(Relationship::class)
+                ->hideWhenCreating(),
         ];
+    }
+
+    /**
+     * @return array<int, ValidationRule|string>
+     */
+    final protected function resolveRule(string $key): array
+    {
+        return Model::$validationRules[$key] ?? [];
     }
 }

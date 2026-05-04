@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Nova;
 
 use Illuminate\Support\Facades\Config;
@@ -79,34 +81,32 @@ class Field extends Resource
     /**
      * Get the default fields for this resource.
      *
-     * @return array<mixed>
+     * @return array<string, \Laravel\Nova\Fields\Field>
      */
-    public static function defaultFields(): array
+    final public static function defaultFields(): array
     {
-        $model = new Model;
-
         return [
             'label' => Text::make(__('Label'), 'label')
-                ->rules($model->validationRules['label']),
+                ->rules(Model::$validationRules['label']),
 
             'name' => Slug::make(__('Name'), 'name')
                 ->from('label')
                 ->separator('_')
                 ->creationRules('nullable')
-                ->updateRules($model->validationRules['name'])
+                ->updateRules(Model::$validationRules['name'])
                 ->hideFromIndex(),
 
             'type' => Select::make(__('Type'), 'type')
                 ->options(static::getBusinessTypeOptions())
                 ->displayUsingLabels()
                 ->searchable()
-                ->rules($model->validationRules['type']),
+                ->rules(Model::$validationRules['type']),
 
             'required' => Boolean::make(__('Required'), 'required')
-                ->rules($model->validationRules['required']),
+                ->rules(Model::$validationRules['required']),
 
             'display_in_index' => Boolean::make(__('Display in Index'), 'display_in_index')
-                ->rules($model->validationRules['display_in_index']),
+                ->rules(Model::$validationRules['display_in_index']),
 
             'rules' => KeyValue::make(__('Validation Rules'), 'rules')
                 ->keyLabel(__('Rule'))
@@ -138,7 +138,7 @@ class Field extends Resource
      *
      * @return array<string, string>
      */
-    protected static function getBusinessTypeOptions(): array
+    final protected static function getBusinessTypeOptions(): array
     {
         /** @var array<string, mixed> $configFields */
         $configFields = Config::get('nova-dynamic-resources.fields', []);

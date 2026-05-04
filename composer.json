@@ -26,11 +26,11 @@
     }
   ],
   "require": {
-    "php": "^8.2",
-    "opscale-co/actions": "^1.0",
-    "opscale-co/nova-catalogs": "^1.2",
-    "opscale-co/nova-package-tools": "^1.0",
-    "theriddleofenigma/laravel-model-validation": "^1.6"
+    "php": "^8.3",
+    "opscale-co/actions": "^1.0.2",
+    "opscale-co/nova-catalogs": "^1.3.1",
+    "opscale-co/nova-package-tools": "^1.1",
+    "opscale-co/validations": "^1.0"
   },
   "autoload": {
     "psr-4": {
@@ -48,12 +48,15 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Opscale\\NovaDynamicResources\\ToolServiceProvider"
+        "Opscale\\NovaDynamicResources\\PackageServiceProvider"
       ]
     }
   },
   "config": {
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
   },
   "minimum-stability": "stable",
   "prefer-stable": true,
@@ -62,7 +65,11 @@
     "larastan/larastan": "^3.7",
     "laravel/nova": "^5.4",
     "laravel/nova-devtool": "^1.0",
-    "opscale-co/strict-rules": "^1.1",
+    "mockery/mockery": "^1.6",
+    "opscale-co/strict-rules": "^1.3",
+    "orchestra/testbench-dusk": "^9.19",
+    "pestphp/pest": "^2.36",
+    "pestphp/pest-plugin-laravel": "^2.4",
     "phpunit/phpunit": "^10.5",
     "rector/rector": "^2.1",
     "tightenco/duster": "^2.7"
