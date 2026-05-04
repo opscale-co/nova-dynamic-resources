@@ -425,6 +425,51 @@ This is useful for:
 - Transforming values before applying them to fields
 - Running custom logic based on field configuration
 
+## Relationships
+
+In addition to fields, templates can define **relationships** to other templates. This enables hierarchical structures (parent/children), ownership references, and links between dynamic resources without writing model code. Relationships are stored in the `dynamic_resources_relationships` table and resolved at runtime.
+
+### Relationship Cardinalities
+
+Three cardinalities are supported, each backed by a Nova relation field configured in `config/nova-dynamic-resources.php` under the `relationships` key:
+
+| Cardinality | Nova Field | Description |
+|-------------|------------|-------------|
+| `BelongsTo` | `BelongsTo` | Owns a single related record (the foreign key lives on this side) |
+| `HasOne`    | `HasOne`   | Inverse single-record relationship; the related record holds the foreign key |
+| `HasMany`   | `HasMany`  | Collection of related records; each related record holds the foreign key |
+
+### Defining Relationships
+
+Use the `relationships()` method on a template and provide the cardinality, related template, and foreign key. The example below creates a self-referential parent/children relationship:
+
+```php
+use Opscale\NovaDynamicResources\Models\Enums\RelationshipCardinality;
+
+$template->relationships()->create([
+    'name' => 'parent',
+    'label' => 'Parent',
+    'cardinality' => RelationshipCardinality::BelongsTo,
+    'related_template_id' => $template->id, // self-referential
+    'foreign_key' => 'parent_id',
+    'inverse_name' => 'children',
+    'required' => false,
+]);
+```
+
+Available attributes:
+
+- **name**: Relationship name on the source template (also the Nova field name)
+- **label**: Display label in Nova
+- **cardinality**: `RelationshipCardinality::BelongsTo`, `HasOne`, or `HasMany`
+- **related_template_id**: ID of the target template
+- **foreign_key**: Column that stores the relationship key
+- **inverse_name**: Optional name used to expose the inverse side on the related template
+- **required**: Whether the relationship is mandatory
+- **rules** / **config**: Extra Laravel validation rules and Nova field config (merged with the defaults from `config/nova-dynamic-resources.php`)
+
+Relationships whose related Nova resource is not yet registered are skipped silently when rendering.
+
 ## Testing
 
 ``` bash
