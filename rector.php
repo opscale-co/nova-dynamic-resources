@@ -21,12 +21,12 @@ function phpSetup(): array
     return [
         'paths' => [
             // Basic library/package
-            __DIR__ . '/src',
-            __DIR__ . '/tests',
+            __DIR__.'/src',
+            __DIR__.'/tests',
         ],
         'sets' => [
             // Basic PHP rules
-            SetList::PHP_82,
+            SetList::PHP_83,
             SetList::CODE_QUALITY,
             SetList::CODING_STYLE,
             SetList::DEAD_CODE,
@@ -42,7 +42,7 @@ function phpSetup(): array
         ],
         'skip' => [
             // Tests fixtures
-            __DIR__ . '/tests/fixtures',
+            __DIR__.'/tests/fixtures',
 
             // Specific rules
             Rector\CodeQuality\Rector\If_\SimplifyIfReturnBoolRector::class,
@@ -61,7 +61,7 @@ function laravelSetup(): array
 
     return [
         'paths' => array_merge($phpConfig['paths'], [
-            __DIR__ . '/src',
+            __DIR__.'/src',
         ]),
         'sets' => array_merge($phpConfig['sets'], [
             // Laravel specific rules
@@ -84,7 +84,7 @@ function laravelSetup(): array
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->cacheDirectory('/tmp/rector-cache');
     $rectorConfig->cacheClass(FileCacheStorage::class);
-    $rectorConfig->phpVersion(PhpVersion::PHP_82);
+    $rectorConfig->phpVersion(PhpVersion::PHP_83);
 
     // Get configuration for Laravel projects
     $config = laravelSetup();

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Services\Actions;
 
 use Illuminate\Support\Facades\Config;
@@ -27,6 +29,9 @@ class RenderField extends Action
         return __('Renders a Nova field from a field configuration');
     }
 
+    /**
+     * @return array<int, array{name: string, description: string, type: string, rules: array<int, string>}>
+     */
     #[Override]
     public function parameters(): array
     {
@@ -80,6 +85,7 @@ class RenderField extends Action
      * Render a Nova field from a field configuration.
      *
      * @param  array{type?: string, label?: string, name?: string, required?: bool, rules?: array<mixed>, config?: array<string, mixed>, display_in_index?: bool}  $attributes
+     * @return array{success: bool, instance: object}
      *
      * @throws InvalidArgumentException
      */
@@ -98,10 +104,10 @@ class RenderField extends Action
         $config = $validatedData['config'] ?? [];
 
         /** @var array{field: class-string, rules?: array<mixed>, config?: array<mixed>, hooks?: array<string, class-string>}|null $component */
-        $component = Config::get('nova-dynamic-resources.fields.' . $type, null);
+        $component = Config::get('nova-dynamic-resources.fields.'.$type, null);
 
         if ($component === null) {
-            throw new InvalidArgumentException('Invalid field type: ' . $type);
+            throw new InvalidArgumentException('Invalid field type: '.$type);
         }
 
         /** @var array<mixed> $mergedRules */
@@ -115,10 +121,10 @@ class RenderField extends Action
 
         $instance = $fieldClass::make(
             $label,
-            'data->' . $name,
+            'data->'.$name,
         )->rules($mergedRules);
 
-        if (($validatedData['required'])) {
+        if ($validatedData['required']) {
             $instance->required(true);
         }
 
@@ -126,7 +132,7 @@ class RenderField extends Action
             $instance->hideFromIndex();
         }
 
-        if (! empty($mergedConfig)) {
+        if ($mergedConfig !== []) {
             foreach ($mergedConfig as $method => $parameters) {
                 // Check if there's a hook for this method
                 if (isset($hooks[$method]) &&
@@ -136,7 +142,7 @@ class RenderField extends Action
                     /** @var array{success: bool, value: mixed} $hookResult */
                     $hookResult = $hookClass::run(['catalog' => $parameters]);
                     $instance->{$method}($hookResult['value'] ?? $parameters);
-                } elseif (is_string($method) && method_exists($instance, $method)) {
+                } elseif (method_exists($instance, $method)) {
                     $instance = is_array($parameters) ?
                         $instance->{$method}(...$parameters) :
                         $instance->{$method}($parameters);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Opscale\NovaDynamicResources\Services\Actions;
 
 use Opscale\Actions\Action;
@@ -26,6 +28,9 @@ class SelectOptions extends Action
         return __('Gets select options from a catalog based on the catalog name');
     }
 
+    /**
+     * @return array<int, array{name: string, description: string, type: string, rules: array<int, string>}>
+     */
     #[Override]
     public function parameters(): array
     {

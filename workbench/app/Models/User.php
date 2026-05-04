@@ -1,13 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Workbench\App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Enigma\ValidatorTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Opscale\NovaDynamicResources\Models\Concerns\UsesTemplate;
+use Opscale\Validations\Validatable;
 use Workbench\Database\Factories\UserFactory;
 
 /**
@@ -24,12 +26,12 @@ use Workbench\Database\Factories\UserFactory;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, UsesTemplate, ValidatorTrait;
+    use HasFactory, Notifiable, UsesTemplate, Validatable;
 
     /**
      * @var array<string, list<string>>
      */
-    public array $validationRules = [
+    public static array $validationRules = [
         'name' => ['required', 'string', 'max:255'],
         'email' => ['required', 'string', 'email', 'max:254', 'unique:users'],
         'password' => ['required', 'string', 'min:8'],
