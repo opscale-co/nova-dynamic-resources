@@ -2,6 +2,12 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## 1.10.0 (2026-05-05)
+
+* chore: refresh composer.lock for bundled field packages ([fd524c6](https://github.com/opscale-co/nova-dynamic-resources/commit/fd524c6))
+* feat: bundle BPMN/DBML/geospatial fields and tab relationship layout ([af2d546](https://github.com/opscale-co/nova-dynamic-resources/commit/af2d546))
+* docs(readme): document template relationships ([6f34f72](https://github.com/opscale-co/nova-dynamic-resources/commit/6f34f72))
+
 ## 1.9.0 (2026-05-04)
 
 * Merge pull request #25 from opscale-co/001-template-relationships ([e6c2d0e](https://github.com/opscale-co/nova-dynamic-resources/commit/e6c2d0e)), closes [#25](https://github.com/opscale-co/nova-dynamic-resources/issues/25)
