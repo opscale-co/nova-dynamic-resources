@@ -13,6 +13,8 @@ use Laravel\Nova\Fields\KeyValue;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
+use Laravel\Nova\Tabs\Tab;
+use Opscale\NovaDynamicResources\Models\Enums\RelationshipCardinality;
 use Opscale\NovaDynamicResources\Models\Record as Model;
 use Opscale\NovaDynamicResources\Models\Template as TemplateModel;
 use Opscale\NovaDynamicResources\Services\Actions\RenderAction;
@@ -137,7 +139,7 @@ class Record extends Resource
     /**
      * Get the fields displayed by the resource for the index.
      *
-     * @return array<int, Field>
+     * @return array<int, Field|\Laravel\Nova\Panel>
      */
     final public function fieldsForIndex(NovaRequest $request): array
     {
@@ -165,7 +167,7 @@ class Record extends Resource
     /**
      * Get the fields displayed by the resource.
      *
-     * @return array<int, Field>
+     * @return array<int, Field|\Laravel\Nova\Panel>
      */
     #[Override]
     public function fields(NovaRequest $request): array
@@ -175,26 +177,11 @@ class Record extends Resource
         }
 
         $template = static::$template;
-        /** @var array<int, Field> $fields */
-        $fields = [
-            Hidden::make('Template', 'template_id')
-                ->default($template->id)
-                ->rules('required'),
-        ];
 
-        foreach ($template->fields as $templateField) {
-            /** @var array{success: bool, instance: Field} $result */
-            $result = RenderField::run([
-                'type' => $templateField->type,
-                'label' => $templateField->label,
-                'name' => $templateField->name,
-                'required' => $templateField->required,
-                'display_in_index' => $templateField->display_in_index,
-                'rules' => $templateField->rules ?? [],
-                'config' => $templateField->config ?? [],
-            ]);
-            $fields[] = $result['instance'];
-        }
+        /** @var array<int, Field> $belongsToFields */
+        $belongsToFields = [];
+        /** @var array<int, array{label: string, field: Field}> $hasFields */
+        $hasFields = [];
 
         foreach ($template->relationships as $templateRelationship) {
             $relatedTemplate = $templateRelationship->relatedTemplate;
@@ -213,13 +200,57 @@ class Record extends Resource
                     'rules' => $templateRelationship->rules ?? [],
                     'config' => $templateRelationship->config ?? [],
                 ]);
-                $fields[] = $relationResult['instance'];
             } catch (Throwable) {
                 continue;
             }
+
+            if ($templateRelationship->cardinality === RelationshipCardinality::BelongsTo) {
+                $belongsToFields[] = $relationResult['instance'];
+            } else {
+                $hasFields[] = [
+                    'label' => $templateRelationship->label,
+                    'field' => $relationResult['instance'],
+                ];
+            }
         }
 
-        return $fields;
+        /** @var array<int, Field> $templateFields */
+        $templateFields = [];
+
+        foreach ($template->fields as $templateField) {
+            /** @var array{success: bool, instance: Field} $result */
+            $result = RenderField::run([
+                'type' => $templateField->type,
+                'label' => $templateField->label,
+                'name' => $templateField->name,
+                'required' => $templateField->required,
+                'display_in_index' => $templateField->display_in_index,
+                'rules' => $templateField->rules ?? [],
+                'config' => $templateField->config ?? [],
+            ]);
+            $templateFields[] = $result['instance'];
+        }
+
+        $hidden = Hidden::make('Template', 'template_id')
+            ->default($template->id)
+            ->rules('required');
+
+        $primaryFields = [...$belongsToFields, ...$templateFields];
+
+        if ($hasFields === []) {
+            return [$hidden, ...$primaryFields];
+        }
+
+        $tabs = [Tab::make(__('Fields'), $primaryFields)];
+
+        foreach ($hasFields as $rel) {
+            $tabs[] = Tab::make($rel['label'], [$rel['field']]);
+        }
+
+        return [
+            $hidden,
+            Tab::group($template->label, $tabs),
+        ];
     }
 
     /**

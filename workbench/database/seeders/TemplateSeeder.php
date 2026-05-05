@@ -189,6 +189,134 @@ class TemplateSeeder extends Seeder
             $user->forceFill(['data' => ['phone' => '+1-555-0100']])->save();
         });
 
+        // Create paired Dynamic templates to demonstrate BelongsTo + HasMany.
+        // Author has many Books; Book belongs to Author.
+        $authorsTemplate = Template::create([
+            'label' => 'Authors',
+            'singular_label' => 'Author',
+            'uri_key' => 'authors',
+            'title' => 'name',
+            'type' => TemplateType::Dynamic,
+            'related_class' => null,
+        ]);
+
+        $authorsTemplate->fields()->createMany([
+            [
+                'type' => 'name',
+                'label' => 'Name',
+                'name' => 'name',
+                'required' => true,
+                'display_in_index' => true,
+            ],
+            [
+                'type' => 'description',
+                'label' => 'Biography',
+                'name' => 'biography',
+                'required' => false,
+                'display_in_index' => false,
+            ],
+        ]);
+
+        $booksTemplate = Template::create([
+            'label' => 'Books',
+            'singular_label' => 'Book',
+            'uri_key' => 'books',
+            'title' => 'title',
+            'type' => TemplateType::Dynamic,
+            'related_class' => null,
+        ]);
+
+        $booksTemplate->fields()->createMany([
+            [
+                'type' => 'title',
+                'label' => 'Title',
+                'name' => 'title',
+                'required' => true,
+                'display_in_index' => true,
+            ],
+            [
+                'type' => 'date',
+                'label' => 'Published At',
+                'name' => 'published_at',
+                'required' => false,
+                'display_in_index' => true,
+            ],
+        ]);
+
+        // Book → Author (BelongsTo): renders before the fields on a Book.
+        $booksTemplate->relationships()->create([
+            'name' => 'author',
+            'label' => 'Author',
+            'cardinality' => RelationshipCardinality::BelongsTo,
+            'related_template_id' => $authorsTemplate->id,
+            'foreign_key' => 'author_id',
+            'inverse_name' => 'books',
+            'required' => true,
+        ]);
+
+        // Author → Books (HasMany): renders as a tab after the fields on an Author.
+        $authorsTemplate->relationships()->create([
+            'name' => 'books',
+            'label' => 'Books',
+            'cardinality' => RelationshipCardinality::HasMany,
+            'related_template_id' => $booksTemplate->id,
+            'foreign_key' => 'author_id',
+            'inverse_name' => 'author',
+            'required' => false,
+        ]);
+
+        $jane = Record::create([
+            'template_id' => $authorsTemplate->id,
+            'data' => [
+                'name' => 'Jane Austen',
+                'biography' => 'English novelist known for her social commentary.',
+            ],
+        ]);
+
+        $george = Record::create([
+            'template_id' => $authorsTemplate->id,
+            'data' => [
+                'name' => 'George Orwell',
+                'biography' => 'English novelist, essayist, and critic.',
+            ],
+        ]);
+
+        Record::create([
+            'template_id' => $booksTemplate->id,
+            'data' => [
+                'title' => 'Pride and Prejudice',
+                'published_at' => '1813-01-28',
+                'author_id' => $jane->id,
+            ],
+        ]);
+
+        Record::create([
+            'template_id' => $booksTemplate->id,
+            'data' => [
+                'title' => 'Sense and Sensibility',
+                'published_at' => '1811-10-30',
+                'author_id' => $jane->id,
+            ],
+        ]);
+
+        Record::create([
+            'template_id' => $booksTemplate->id,
+            'data' => [
+                'title' => '1984',
+                'published_at' => '1949-06-08',
+                'author_id' => $george->id,
+            ],
+        ]);
+
+        Record::create([
+            'template_id' => $booksTemplate->id,
+            'data' => [
+                'title' => 'Animal Farm',
+                'published_at' => '1945-08-17',
+                'author_id' => $george->id,
+            ],
+        ]);
+
         // Create Dynamic template that exercises every renderable field type
         $showcaseTemplate = Template::create([
             'label' => 'Showcases',

@@ -395,6 +395,16 @@ Field types are based on business logic and can be found in the `config/nova-dyn
 
 You can add more field types by extending the configuration file. The available types include common business field patterns like text, email, phone, address, etc. Business types are used instead of technical field types because they carry implicit validation rules and configuration - for example, an "email" type automatically includes email format validation, while a "phone" type includes phone number pattern validation.
 
+#### Bundled Opscale field packages
+
+The default config also exposes types backed by sibling Opscale Nova field packages, all pulled in automatically as dependencies:
+
+| Type(s) | Package |
+|---|---|
+| `bpmn` | [`opscale-co/nova-bpmn-field`](https://github.com/opscale-co/nova-bpmn-field) — BPMN 2.0 process diagrams |
+| `dbml` | [`opscale-co/nova-dbml-field`](https://github.com/opscale-co/nova-dbml-field) — DBML data-model diagrams |
+| `location`, `place`, `geofence`, `area`, `route` | [`opscale-co/nova-geospatial-fields`](https://github.com/opscale-co/nova-geospatial-fields) — Leaflet-backed geospatial fields |
+
 ### Field Configuration Options
 
 The **Config** section allows you to call specific methods on the Nova field instance. For example:
@@ -469,6 +479,15 @@ Available attributes:
 - **rules** / **config**: Extra Laravel validation rules and Nova field config (merged with the defaults from `config/nova-dynamic-resources.php`)
 
 Relationships whose related Nova resource is not yet registered are skipped silently when rendering.
+
+### Layout
+
+On the dynamic `Record` resource, relationships are laid out around the template fields based on their cardinality:
+
+- **`BelongsTo`** relationships render **before** the template fields, so the parent reference is the first thing the user sees.
+- **`HasOne`** and **`HasMany`** relationships render **after** the template fields. When at least one is present, the form is split into Nova tabs: a `Fields` tab containing the `BelongsTo` relationships and the template fields, plus one tab per `HasOne` / `HasMany` relationship using its `label`.
+
+For example, an `Author` template with a `HasMany` relationship to `Books` will render as a `Fields` tab plus a `Books` tab. A `Book` template with a `BelongsTo` relationship to `Author` renders the author selector before the book's own fields, with no extra tabs.
 
 ## Testing
 

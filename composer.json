@@ -28,7 +28,10 @@
   "require": {
     "php": "^8.3",
     "opscale-co/actions": "^1.0.2",
+    "opscale-co/nova-bpmn-field": "^1.0",
     "opscale-co/nova-catalogs": "^1.3.1",
+    "opscale-co/nova-dbml-field": "^1.0",
+    "opscale-co/nova-geospatial-fields": "^1.0",
     "opscale-co/nova-package-tools": "^1.1",
     "opscale-co/validations": "^1.0"
   },

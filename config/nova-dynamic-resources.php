@@ -20,6 +20,16 @@ return [
             ],
         ],
 
+        'bpmn' => [
+            'field' => \Opscale\Fields\BPMN::class,
+            'hint' => 'BPMN 2.0 process diagrams rendered with an interactive bpmn-js viewer',
+            'rules' => ['file', 'max:5120'],
+            'config' => [
+                'prunable' => true,
+                'deletable' => true,
+            ],
+        ],
+
         'city' => [
             'field' => \Laravel\Nova\Fields\Select::class,
             'hint' => 'City name for location-based data and geographic segmentation',
@@ -47,6 +57,12 @@ return [
             'config' => [
                 'searchable' => true,
             ],
+        ],
+
+        'dbml' => [
+            'field' => \Opscale\Fields\DBML::class,
+            'hint' => 'DBML data model rendered as an interactive Vue Flow diagram',
+            'rules' => ['string'],
         ],
 
         'date' => [
@@ -156,16 +172,43 @@ return [
             ]
         ],
 
-        /*'location' => [
-            'field' => \Laravel\Nova\Fields\Place::class,
-            'hint' => 'Geographic coordinates for mapping, location services, and spatial analysis',
-            'rules' => ['string', 'max:500'],
+        'location' => [
+            'field' => \Opscale\Fields\Geospatial\Location::class,
+            'hint' => 'Single map pin for venues, points of interest, or asset locations',
+            'rules' => ['nullable', 'json'],
+            'cast' => 'array',
+        ],
+
+        'place' => [
+            'field' => \Opscale\Fields\Geospatial\Address::class,
+            'hint' => 'Geocoded street address resolved to a map pin via Nominatim or Photon',
+            'rules' => ['nullable', 'json'],
+            'cast' => 'array',
+        ],
+
+        'geofence' => [
+            'field' => \Opscale\Fields\Geospatial\Geofence::class,
+            'hint' => 'Closed polygon outlining a delivery zone, service area, or restricted region',
+            'rules' => ['nullable', 'json'],
+            'cast' => 'array',
+        ],
+
+        'area' => [
+            'field' => \Opscale\Fields\Geospatial\Area::class,
+            'hint' => 'Circular coverage area defined by a center point and radius in meters',
+            'rules' => ['nullable', 'json'],
+            'cast' => 'array',
             'config' => [
-                'countries' => ['US', 'CA', 'GB', 'AU'],
-                'showLatitude' => true,
-                'showLongitude' => true,
+                'defaultRadius' => 500,
             ],
-        ],*/
+        ],
+
+        'route' => [
+            'field' => \Opscale\Fields\Geospatial\Route::class,
+            'hint' => 'Multi-waypoint path for delivery routes, trips, or itineraries',
+            'rules' => ['nullable', 'json'],
+            'cast' => 'array',
+        ],
 
         'maritalStatus' => [
             'field' => \Laravel\Nova\Fields\Select::class,
