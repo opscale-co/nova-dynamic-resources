@@ -120,3 +120,10 @@ parameters:
             paths:
                 - tests/Unit/Models/Concerns/HasDynamicRelationshipsTest.php
 
+        # Browser smoke-tests visit one detail URL per seeded template and
+        # need direct access to Eloquent models to look up first records.
+        -
+            identifier: ddd.domainServices.complexLogic
+            paths:
+                - tests/Browser/*
+

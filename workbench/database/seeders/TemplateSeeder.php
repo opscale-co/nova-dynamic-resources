@@ -7,12 +7,14 @@ namespace Workbench\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 use Opscale\NovaCatalogs\Models\Catalog;
+use Opscale\NovaDynamicResources\Models\Action;
 use Opscale\NovaDynamicResources\Models\Enums\RelationshipCardinality;
 use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
 use Opscale\NovaDynamicResources\Models\Record;
 use Opscale\NovaDynamicResources\Models\Template;
 use Workbench\App\Models\Item;
 use Workbench\App\Models\User;
+use Workbench\App\Services\Actions\DummyAction;
 
 class TemplateSeeder extends Seeder
 {
@@ -355,6 +357,50 @@ class TemplateSeeder extends Seeder
             'foreign_key' => 'parent_id',
             'inverse_name' => 'children',
             'required' => false,
+        ]);
+
+        // Minimal showcase record so every seeded template has at least one
+        // first record available for detail-view rendering tests.
+        Record::create([
+            'template_id' => $showcaseTemplate->id,
+            'data' => [
+                'name' => 'Showcase One',
+            ],
+        ]);
+
+        // Seed DummyAction rows to verify Template Actions render correctly
+        // through RenderAction → Nova. The chainable label() setter is fed
+        // from config.label so each row appears with its own name.
+        Action::create([
+            'template_id' => $eventsTemplate->id,
+            'class' => DummyAction::class,
+            'label' => 'Mark as Confirmed',
+            'config' => ['label' => ['Mark as Confirmed']],
+            'data' => null,
+        ]);
+
+        Action::create([
+            'template_id' => $eventsTemplate->id,
+            'class' => DummyAction::class,
+            'label' => 'Send Reminder',
+            'config' => ['label' => ['Send Reminder']],
+            'data' => null,
+        ]);
+
+        Action::create([
+            'template_id' => $productTemplate->id,
+            'class' => DummyAction::class,
+            'label' => 'Restock',
+            'config' => ['label' => ['Restock']],
+            'data' => null,
+        ]);
+
+        Action::create([
+            'template_id' => $authorsTemplate->id,
+            'class' => DummyAction::class,
+            'label' => 'Publish Profile',
+            'config' => ['label' => ['Publish Profile']],
+            'data' => null,
         ]);
     }
 }

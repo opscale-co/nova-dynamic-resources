@@ -49,6 +49,13 @@ abstract class DuskTestCase extends BaseTestCase
             \Laravel\Nova\NovaServiceProvider::class,
             \Laravel\Fortify\FortifyServiceProvider::class,
             \Laravel\Dusk\DuskServiceProvider::class,
+            // Lorisleiva's ActionServiceProvider binds the ActionManager
+            // singleton; Opscale's ToolServiceProvider registers the Nova
+            // design pattern. Without them the Dusk serve process resolves
+            // a bare ActionManager with no design patterns and template
+            // actions stay undecorated, breaking Nova serialization.
+            \Lorisleiva\Actions\ActionServiceProvider::class,
+            \Opscale\Actions\ToolServiceProvider::class,
             PackageServiceProvider::class,
         ]);
     }
