@@ -2,6 +2,12 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## 1.11.0 (2026-05-19)
+
+* feat: add TemplatedRepeater for HasMany of Composited templates ([96755b7](https://github.com/opscale-co/nova-dynamic-resources/commit/96755b7))
+* Merge branch 'main' of https://github.com/opscale-co/nova-dynamic-resources ([d8a4bc5](https://github.com/opscale-co/nova-dynamic-resources/commit/d8a4bc5))
+* test(browser): cover template action rendering in record detail views ([869cfe4](https://github.com/opscale-co/nova-dynamic-resources/commit/869cfe4))
+
 ## 1.10.0 (2026-05-05)
 
 * chore: refresh composer.lock for bundled field packages ([fd524c6](https://github.com/opscale-co/nova-dynamic-resources/commit/fd524c6))
