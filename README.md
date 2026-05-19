@@ -489,6 +489,29 @@ On the dynamic `Record` resource, relationships are laid out around the template
 
 For example, an `Author` template with a `HasMany` relationship to `Books` will render as a `Fields` tab plus a `Books` tab. A `Book` template with a `BelongsTo` relationship to `Author` renders the author selector before the book's own fields, with no extra tabs.
 
+## Templated Repeater
+
+For HasMany scenarios where each child row should be rendered as one of several **Composited** templates targeting the same Nova resource, the package ships a `TemplatedRepeater` field. It wraps Nova's `Repeater` and auto-populates its repeatables from the Composited templates whose `related_class` matches the child resource — Nova's "+ Add" menu then lists one block type per template.
+
+```php
+use Opscale\NovaDynamicResources\Nova\Fields\TemplatedRepeater;
+
+TemplatedRepeater::make(__('Items'), 'items')
+    ->forResource(\App\Nova\LineItem::class)
+    ->asHasMany(\App\Nova\LineItem::class)
+    ->uniqueField('uuid');
+```
+
+Requirements on the child model:
+
+- A foreign key back to the parent (e.g. `bundle_id`).
+- A `uuid` column (or whichever column you pass to `uniqueField()`) so Nova's HasMany preset can diff added/removed/updated rows across submissions.
+- The `UsesTemplate` trait, plus a `template_id` column and a `data` JSON column — exactly as for any Composited resource.
+
+Each row persists its own `template_id` plus the inline values of that template's dynamic fields. Detail/edit of existing rows happens on the child's own Nova resource.
+
+For advanced wiring (custom Composited filter, hand-built repeatables list) the underlying class is `Opscale\NovaDynamicResources\Nova\Repeatables\Record` — `TemplatedRepeater::forResource()` is just a thin sugar around `Record::repeatablesFor()`.
+
 ## Testing
 
 ``` bash

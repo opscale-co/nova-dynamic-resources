@@ -38,7 +38,7 @@ final class SeededTemplatesTest extends DuskTestCase
     }
 
     #[Test]
-    final public function inherited_products_index_shows_first_seeded_record(): void
+    final public function composited_products_index_shows_first_seeded_record(): void
     {
         $this->browse(function (Browser $browser): void {
             $this->loginToNova($browser)
@@ -51,7 +51,7 @@ final class SeededTemplatesTest extends DuskTestCase
     }
 
     #[Test]
-    final public function inherited_products_create_form_renders_host_and_template_fields(): void
+    final public function composited_products_create_form_renders_host_and_template_fields(): void
     {
         $this->browse(function (Browser $browser): void {
             $this->loginToNova($browser)

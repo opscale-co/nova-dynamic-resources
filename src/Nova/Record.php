@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Opscale\NovaDynamicResources\Nova;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\App;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Field;
@@ -14,6 +15,7 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
 use Laravel\Nova\Tabs\Tab;
+use Opscale\Actions\Decorators\NovaActionDecorator;
 use Opscale\NovaDynamicResources\Models\Enums\RelationshipCardinality;
 use Opscale\NovaDynamicResources\Models\Record as Model;
 use Opscale\NovaDynamicResources\Models\Template as TemplateModel;
@@ -278,16 +280,34 @@ class Record extends Resource
             return $defaults;
         }
 
-        /** @var array<int, \Laravel\Nova\Actions\Action> $actions */
-        $actions = $defaults;
+        return [...$defaults, ...$this->resolveTemplateActions($template)];
+    }
+
+    /**
+     * Resolve the dynamic actions defined on the template.
+     *
+     * Kept as a separate method so the `actions` frame in the call stack has
+     * an intermediate method between it and `RenderAction::run()`. Without it,
+     * `NovaActionDesignPattern` decorates `RenderAction` with the Nova action
+     * decorator and `AsObject::run()` ends up invoking the decorator's
+     * `handle(ActionFields, Collection)` signature with an array.
+     *
+     * @return array<int, \Laravel\Nova\Actions\Action>
+     */
+    private function resolveTemplateActions(TemplateModel $template): array
+    {
+        $actions = [];
 
         foreach ($template->actions as $templateAction) {
-            /** @var array{success: bool, instance: \Laravel\Nova\Actions\Action} $result */
+            /** @var array{success: bool, instance: object} $result */
             $result = RenderAction::run([
                 'class' => $templateAction->class,
                 'config' => $templateAction->config ?? [],
             ]);
-            $actions[] = $result['instance'];
+
+            $actions[] = App::make(NovaActionDecorator::class, [
+                'action' => $result['instance'],
+            ]);
         }
 
         return $actions;

@@ -70,6 +70,10 @@ return [
             'hint' => 'Important dates such as deadlines, events, or milestones',
             'rules' => ['date'],
             'cast' => 'date',
+            'config' => [
+                'format' => 'YYYY-MM-DD',
+                'pickerFormat' => 'Y-m-d',
+            ],
         ],
 
         'description' => [
@@ -229,8 +233,9 @@ return [
             'rules' => ['date'],
             'cast' => 'datetime',
             'config' => [
-                'pickerDisplayFormat' => 'Y-m-d H:i:s',
-                'pickerFormat' => 'Y-m-d H:i:S',
+                'format' => 'YYYY-MM-DD',
+                'pickerDisplayFormat' => 'Y-m-d',
+                'pickerFormat' => 'Y-m-d',
             ],
         ],
 
@@ -388,6 +393,10 @@ return [
             'rules' => ['url', 'max:2048'],
             'config' => [
                 'displayUsing' => function ($value) {
+                    if (! is_string($value) || $value === '') {
+                        return $value;
+                    }
+
                     return parse_url($value, PHP_URL_HOST) ?? $value;
                 },
                 'clickable' => true,

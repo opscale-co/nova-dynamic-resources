@@ -28,7 +28,7 @@ final class RecordDetailRenderTest extends DuskTestCase
     }
 
     #[Test]
-    final public function inherited_products_detail_renders_without_exception(): void
+    final public function composited_products_detail_renders_without_exception(): void
     {
         $id = (string) Item::query()->orderBy('id')->firstOrFail()->id;
 

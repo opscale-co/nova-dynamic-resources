@@ -12,6 +12,7 @@ use Opscale\NovaDynamicResources\Models\Enums\RelationshipCardinality;
 use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
 use Opscale\NovaDynamicResources\Models\Record;
 use Opscale\NovaDynamicResources\Models\Template;
+use Workbench\App\Models\Bundle;
 use Workbench\App\Models\Item;
 use Workbench\App\Models\User;
 use Workbench\App\Services\Actions\DummyAction;
@@ -84,13 +85,17 @@ class TemplateSeeder extends Seeder
             ],
         ]);
 
-        // Create Inherited template for Products
+        // Create Composited template for Products. Composited (not
+        // Inherited) is the correct type because Workbench\App\Nova\Item
+        // is a regular Nova Resource (not a Record subclass) — dynamic
+        // template fields live in the host model's `data` JSON column
+        // alongside its native columns.
         $productTemplate = Template::create([
             'label' => 'Products',
             'singular_label' => 'Product',
             'uri_key' => 'products',
             'title' => 'name',
-            'type' => TemplateType::Inherited,
+            'type' => TemplateType::Composited,
             'related_class' => \Workbench\App\Nova\Item::class,
         ]);
 
@@ -330,12 +335,14 @@ class TemplateSeeder extends Seeder
         ]);
 
         $showcaseFieldTypes = [
-            'address', 'color', 'country', 'date', 'description', 'document',
-            'email', 'gender', 'hash', 'image', 'ip', 'language', 'maritalStatus',
-            'moment', 'money', 'name', 'options', 'password', 'phone',
-            'postalCode', 'post', 'quantity', 'rating', 'region', 'slug', 'snippet',
-            'state', 'title', 'token', 'ulid', 'url', 'username', 'uuid', 'yesNo',
-            'audio', 'video', 'file', 'pdf',
+            'address', 'audio', 'bpmn', 'city', 'color', 'country', 'date',
+            'dbml', 'description', 'document', 'email', 'file', 'gender',
+            'hash', 'image', 'ip', 'language', 'maritalStatus', 'moment',
+            'money', 'name', 'options', 'password', 'pdf', 'phone',
+            'postalCode', 'post', 'quantity', 'rating', 'region', 'slug',
+            'snippet', 'state', 'title', 'token', 'ulid', 'url', 'username',
+            'uuid', 'video', 'yesNo',
+            'location', 'place', 'geofence', 'area', 'route',
         ];
 
         foreach ($showcaseFieldTypes as $type) {
@@ -359,12 +366,282 @@ class TemplateSeeder extends Seeder
             'required' => false,
         ]);
 
-        // Minimal showcase record so every seeded template has at least one
-        // first record available for detail-view rendering tests.
+        // Fully populated showcase record so the detail view exercises every
+        // renderable field type with a representative value.
         Record::create([
             'template_id' => $showcaseTemplate->id,
             'data' => [
+                'address' => '742 Evergreen Terrace, Springfield, OR 97477',
+                'audio' => 'showcase/sample.mp3',
+                'bpmn' => 'showcase/sample.bpmn',
+                'city' => 'option-1',
+                'color' => '#3490DC',
+                'country' => 'US',
+                'date' => '2025-12-25',
+                'dbml' => "Table showcase {\n  id integer [pk]\n  name varchar\n}",
+                'description' => 'A fully populated showcase record used to exercise every renderable field type in the dynamic resources package.',
+                'document' => 'AB-12345678',
+                'email' => 'showcase@example.com',
+                'file' => 'showcase/sample.txt',
+                'gender' => 'option-1',
+                'hash' => 'a1b2c3d4e5f67890abcdef0123456789',
+                'image' => 'showcase/sample.png',
+                'ip' => '192.168.1.100',
+                'language' => 'option-1',
+                'maritalStatus' => 'option-2',
+                'moment' => '2025-12-25 14:30:00',
+                'money' => 1299.99,
                 'name' => 'Showcase One',
+                'options' => 'option-3',
+                'password' => null,
+                'pdf' => 'showcase/sample.pdf',
+                'phone' => '555-123-4567',
+                'postalCode' => '97477',
+                'post' => '<p>Hello <strong>world</strong> from the showcase.</p>',
+                'quantity' => 42,
+                'rating' => 4.5,
+                'region' => 'Pacific Northwest',
+                'slug' => 'showcase-one',
+                'snippet' => "<?php\n\necho 'Hello, world!';",
+                'state' => 'option-4',
+                'title' => 'Showcase Title',
+                'token' => 'tk_abcdef0123456789abcdef0123456789',
+                'ulid' => '01HZX2J0K5M8N3P6Q9R7S4T2V0',
+                'url' => 'https://example.com/showcase',
+                'username' => 'showcase_user',
+                'uuid' => '550e8400-e29b-41d4-a716-446655440000',
+                'video' => 'showcase/sample.mp4',
+                'yesNo' => true,
+
+                // Geospatial fields — all stored as GeoJSON. Coordinates are
+                // [lng, lat] per the GeoJSON spec.
+                'location' => [
+                    'type' => 'Point',
+                    'coordinates' => [-122.6765, 45.5231], // Portland, OR
+                ],
+                'place' => [
+                    'type' => 'Point',
+                    'coordinates' => [-122.4194, 37.7749], // San Francisco, CA
+                    'properties' => [
+                        'formatted' => '1 Market St, San Francisco, CA 94105, USA',
+                    ],
+                ],
+                'geofence' => [
+                    'type' => 'Polygon',
+                    'coordinates' => [[
+                        [-122.4250, 37.7700],
+                        [-122.4100, 37.7700],
+                        [-122.4100, 37.7800],
+                        [-122.4250, 37.7800],
+                        [-122.4250, 37.7700],
+                    ]],
+                ],
+                'area' => [
+                    'type' => 'Point',
+                    'coordinates' => [-122.3321, 47.6062], // Seattle, WA
+                    'properties' => [
+                        'radius' => 1500,
+                    ],
+                ],
+                'route' => [
+                    'type' => 'LineString',
+                    'coordinates' => [
+                        [-122.6765, 45.5231], // Portland
+                        [-122.4194, 37.7749], // San Francisco
+                        [-118.2437, 34.0522], // Los Angeles
+                    ],
+                    'properties' => [
+                        'waypoints' => [
+                            [-122.6765, 45.5231],
+                            [-122.4194, 37.7749],
+                            [-118.2437, 34.0522],
+                        ],
+                        'distance' => 1635000,
+                        'duration' => 60000,
+                    ],
+                ],
+            ],
+        ]);
+
+        // Composited counterpart of the Dynamic Showcase. Layers every
+        // renderable field type on top of the real Item Eloquent model so
+        // composited template rendering can be exercised end-to-end and
+        // so the Bundle TemplatedRepeater has a second Item-targeting
+        // template in its "+ Add" menu.
+        $compositedShowcaseTemplate = Template::create([
+            'label' => 'Composited Showcases',
+            'singular_label' => 'Composited Showcase',
+            'uri_key' => 'composited-showcases',
+            'title' => 'name',
+            'type' => TemplateType::Composited,
+            'related_class' => \Workbench\App\Nova\Item::class,
+        ]);
+
+        foreach ($showcaseFieldTypes as $type) {
+            $compositedShowcaseTemplate->fields()->create([
+                'type' => $type,
+                'label' => Str::headline($type),
+                'name' => $type,
+                'required' => false,
+                'display_in_index' => false,
+            ]);
+        }
+
+        Item::create([
+            'template_id' => $compositedShowcaseTemplate->id,
+            'name' => 'Composited Showcase One',
+            'description' => 'Host model attributes (name, description, price, stock) coexist with every dynamic field type.',
+            'price' => 299.99,
+            'stock' => 7,
+            'data' => [
+                'address' => '742 Evergreen Terrace, Springfield, OR 97477',
+                'audio' => 'showcase/sample.mp3',
+                'bpmn' => 'showcase/sample.bpmn',
+                'city' => 'option-1',
+                'color' => '#9F7AEA',
+                'country' => 'US',
+                'date' => '2026-05-16',
+                'dbml' => "Table composited_showcase {\n  id integer [pk]\n  name varchar\n}",
+                'description' => 'Composited record that exercises every dynamic field type alongside the host Item model.',
+                'document' => 'CS-87654321',
+                'email' => 'composited@example.com',
+                'file' => 'showcase/sample.txt',
+                'gender' => 'option-2',
+                'hash' => 'fedcba9876543210fedcba9876543210',
+                'image' => 'showcase/sample.png',
+                'ip' => '10.0.0.42',
+                'language' => 'option-2',
+                'maritalStatus' => 'option-3',
+                'moment' => '2026-05-16 09:00:00',
+                'money' => 299.99,
+                'name' => 'Composited Showcase One',
+                'options' => 'option-4',
+                'password' => null,
+                'pdf' => 'showcase/sample.pdf',
+                'phone' => '555-987-6543',
+                'postalCode' => '94105',
+                'post' => '<p>Composited <em>showcase</em> body.</p>',
+                'quantity' => 84,
+                'rating' => 3.5,
+                'region' => 'Bay Area',
+                'slug' => 'composited-showcase-one',
+                'snippet' => "<?php\n\nreturn 'composited';",
+                'state' => 'option-5',
+                'title' => 'Composited Showcase Title',
+                'token' => 'tk_composited0123456789abcdef012345',
+                'ulid' => '01HZX2J0K5M8N3P6Q9R7S4T2V1',
+                'url' => 'https://example.com/composited-showcase',
+                'username' => 'composited_user',
+                'uuid' => '650e8400-e29b-41d4-a716-446655440001',
+                'video' => 'showcase/sample.mp4',
+                'yesNo' => false,
+
+                // Geospatial fields (same GeoJSON shapes as the Dynamic Showcase).
+                'location' => [
+                    'type' => 'Point',
+                    'coordinates' => [-74.0060, 40.7128], // New York, NY
+                ],
+                'place' => [
+                    'type' => 'Point',
+                    'coordinates' => [-87.6298, 41.8781], // Chicago, IL
+                    'properties' => [
+                        'formatted' => '233 S Wacker Dr, Chicago, IL 60606, USA',
+                    ],
+                ],
+                'geofence' => [
+                    'type' => 'Polygon',
+                    'coordinates' => [[
+                        [-87.6400, 41.8700],
+                        [-87.6200, 41.8700],
+                        [-87.6200, 41.8900],
+                        [-87.6400, 41.8900],
+                        [-87.6400, 41.8700],
+                    ]],
+                ],
+                'area' => [
+                    'type' => 'Point',
+                    'coordinates' => [-71.0589, 42.3601], // Boston, MA
+                    'properties' => [
+                        'radius' => 2500,
+                    ],
+                ],
+                'route' => [
+                    'type' => 'LineString',
+                    'coordinates' => [
+                        [-74.0060, 40.7128], // New York
+                        [-75.1652, 39.9526], // Philadelphia
+                        [-77.0369, 38.9072], // Washington, DC
+                    ],
+                    'properties' => [
+                        'waypoints' => [
+                            [-74.0060, 40.7128],
+                            [-75.1652, 39.9526],
+                            [-77.0369, 38.9072],
+                        ],
+                        'distance' => 365000,
+                        'duration' => 14400,
+                    ],
+                ],
+            ],
+        ]);
+
+        // Seed a Bundle holding several child Items from both Composited
+        // templates (Products + Composited Showcases). Exercises the
+        // TemplatedRepeater field on the Bundle Nova resource — its
+        // "+ Add" menu should list one Repeatable per Composited template
+        // mapped to the Item Nova resource.
+        $bundle = Bundle::create([
+            'name' => 'Sample Bundle',
+            'description' => 'Demonstrates the TemplatedRepeater HasMany layout with mixed Inherited child rows.',
+        ]);
+
+        Item::create([
+            'bundle_id' => $bundle->id,
+            'template_id' => $productTemplate->id,
+            'name' => 'Bundled Widget',
+            'description' => 'Product row attached to the bundle.',
+            'price' => 24.99,
+            'stock' => 15,
+            'data' => [
+                'weight' => 2.1,
+                'height' => 12,
+                'width' => 6,
+            ],
+        ]);
+
+        Item::create([
+            'bundle_id' => $bundle->id,
+            'template_id' => $productTemplate->id,
+            'name' => 'Bundled Gadget',
+            'description' => 'Second product row in the bundle.',
+            'price' => 59.00,
+            'stock' => 8,
+            'data' => [
+                'weight' => 4.0,
+                'height' => 22,
+                'width' => 9,
+            ],
+        ]);
+
+        Item::create([
+            'bundle_id' => $bundle->id,
+            'template_id' => $compositedShowcaseTemplate->id,
+            'name' => 'Bundled Showcase',
+            'description' => 'Composited showcase row mixed into the same bundle.',
+            'price' => 199.99,
+            'stock' => 3,
+            'data' => [
+                'name' => 'Bundled Showcase',
+                'title' => 'Bundle Showcase Title',
+                'slug' => 'bundled-showcase',
+                'date' => '2026-06-01',
+                'moment' => '2026-06-01 10:30:00',
+                'email' => 'bundled@example.com',
+                'url' => 'https://example.com/bundled-showcase',
+                'color' => '#38B2AC',
+                'yesNo' => true,
+                'quantity' => 12,
+                'rating' => 4.0,
             ],
         ]);
 

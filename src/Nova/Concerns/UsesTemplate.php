@@ -6,9 +6,11 @@ namespace Opscale\NovaDynamicResources\Nova\Concerns;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\App;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\Hidden;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Opscale\Actions\Decorators\NovaActionDecorator;
 use Opscale\NovaDynamicResources\Models\Template;
 use Opscale\NovaDynamicResources\Services\Actions\RenderAction;
 use Opscale\NovaDynamicResources\Services\Actions\RenderField;
@@ -138,13 +140,15 @@ trait UsesTemplate
         }
 
         foreach ($templateActions as $templateAction) {
-            /** @var array{success: bool, instance: \Laravel\Nova\Actions\Action} $result */
+            /** @var array{success: bool, instance: object} $result */
             $result = RenderAction::run([
                 'class' => $templateAction->class,
                 'config' => $templateAction->config ?? [],
             ]);
 
-            $actions[] = $result['instance'];
+            $actions[] = App::make(NovaActionDecorator::class, [
+                'action' => $result['instance'],
+            ]);
         }
 
         return $actions;

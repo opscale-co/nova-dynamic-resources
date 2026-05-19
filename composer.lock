@@ -3439,16 +3439,16 @@
         },
         {
             "name": "opscale-co/nova-bpmn-field",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opscale-co/nova-bpmn-field.git",
-                "reference": "8695f5e6ee5104414144126523ce98e43f415f46"
+                "reference": "abc08d9d17aca2d62863f250e0297ea236b67f1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opscale-co/nova-bpmn-field/zipball/8695f5e6ee5104414144126523ce98e43f415f46",
-                "reference": "8695f5e6ee5104414144126523ce98e43f415f46",
+                "url": "https://api.github.com/repos/opscale-co/nova-bpmn-field/zipball/abc08d9d17aca2d62863f250e0297ea236b67f1d",
+                "reference": "abc08d9d17aca2d62863f250e0297ea236b67f1d",
                 "shasum": ""
             },
             "require": {
@@ -3457,6 +3457,7 @@
             },
             "require-dev": {
                 "larastan/larastan": "^3.9",
+                "laravel/nova-devtool": "^1.7",
                 "laravel/pint": "^1.15",
                 "mockery/mockery": "^1.6",
                 "opscale-co/strict-rules": "^1.1",
@@ -3497,7 +3498,7 @@
                 "issues": "https://github.com/opscale-co/nova-bpmn-field/issues",
                 "source": "https://github.com/opscale-co/nova-bpmn-field"
             },
-            "time": "2026-04-29T18:30:59+00:00"
+            "time": "2026-05-19T02:31:08+00:00"
         },
         {
             "name": "opscale-co/nova-catalogs",
@@ -3575,16 +3576,16 @@
         },
         {
             "name": "opscale-co/nova-dbml-field",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opscale-co/nova-dbml-field.git",
-                "reference": "05114dcb5b101f13a297df538fc04579349b9449"
+                "reference": "7139ce98f18eb98fd70e7406e8a564aad957e2f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opscale-co/nova-dbml-field/zipball/05114dcb5b101f13a297df538fc04579349b9449",
-                "reference": "05114dcb5b101f13a297df538fc04579349b9449",
+                "url": "https://api.github.com/repos/opscale-co/nova-dbml-field/zipball/7139ce98f18eb98fd70e7406e8a564aad957e2f9",
+                "reference": "7139ce98f18eb98fd70e7406e8a564aad957e2f9",
                 "shasum": ""
             },
             "require": {
@@ -3632,20 +3633,20 @@
                 "issues": "https://github.com/opscale-co/nova-dbml-field/issues",
                 "source": "https://github.com/opscale-co/nova-dbml-field"
             },
-            "time": "2026-04-24T17:23:15+00:00"
+            "time": "2026-05-19T02:02:33+00:00"
         },
         {
             "name": "opscale-co/nova-geospatial-fields",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opscale-co/nova-geospatial-fields.git",
-                "reference": "6d19d56c428453213954404e4bd74cb32d8bb21f"
+                "reference": "0990c61443cc9400fea0a9cdf1426cdba02116ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opscale-co/nova-geospatial-fields/zipball/6d19d56c428453213954404e4bd74cb32d8bb21f",
-                "reference": "6d19d56c428453213954404e4bd74cb32d8bb21f",
+                "url": "https://api.github.com/repos/opscale-co/nova-geospatial-fields/zipball/0990c61443cc9400fea0a9cdf1426cdba02116ef",
+                "reference": "0990c61443cc9400fea0a9cdf1426cdba02116ef",
                 "shasum": ""
             },
             "require": {
@@ -3700,7 +3701,7 @@
                 "issues": "https://github.com/opscale-co/nova-geospatial-fields/issues",
                 "source": "https://github.com/opscale-co/nova-geospatial-fields"
             },
-            "time": "2026-05-04T01:57:52+00:00"
+            "time": "2026-05-19T01:56:41+00:00"
         },
         {
             "name": "opscale-co/nova-package-tools",
