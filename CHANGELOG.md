@@ -2,6 +2,11 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## <small>1.11.1 (2026-06-30)</small>
+
+* fix(deps): trigger patch release for dependency bumps ([17cfc2d](https://github.com/opscale-co/nova-dynamic-resources/commit/17cfc2d))
+* chore(deps): bump all dependencies to latest major versions ([6621d1d](https://github.com/opscale-co/nova-dynamic-resources/commit/6621d1d))
+
 ## 1.11.0 (2026-05-19)
 
 * feat: add TemplatedRepeater for HasMany of Composited templates ([96755b7](https://github.com/opscale-co/nova-dynamic-resources/commit/96755b7))
