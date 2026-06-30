@@ -56,7 +56,8 @@ parameters:
 
         # Pest closures bind $this to the test case but PHPStan analyses them standalone
         -
-            identifier: variable.undefined
+            identifier: property.notFound
+            message: '#Pest\\PendingCalls\\TestCall#'
             paths:
                 - tests/*
 

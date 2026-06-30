@@ -1,4 +1,4 @@
-laravel: '@testbench'
+laravel: '@testbench-dusk'
 
 migrations:
   - workbench/database/migrations
