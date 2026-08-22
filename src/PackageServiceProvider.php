@@ -7,12 +7,14 @@ namespace Opscale\NovaDynamicResources;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Nova;
+use Laravel\Nova\Resource;
 use Opscale\NovaDynamicResources\Models\Template as TemplateModel;
 use Opscale\NovaDynamicResources\Nova\Action;
 use Opscale\NovaDynamicResources\Nova\Field;
 use Opscale\NovaDynamicResources\Nova\Record;
 use Opscale\NovaDynamicResources\Nova\Relationship;
 use Opscale\NovaDynamicResources\Nova\Template;
+use Opscale\NovaDynamicResources\Support\ClassFactory;
 use Opscale\NovaPackageTools\NovaPackage;
 use Opscale\NovaPackageTools\NovaPackageServiceProvider;
 use Override;
@@ -68,18 +70,18 @@ class PackageServiceProvider extends NovaPackageServiceProvider
         $classes = [];
         foreach ($templates as $template) {
             $baseClass = $template->related_class ?? Record::class;
-
             $templateClass = TemplateModel::class;
-            $anonymous = eval("
-                return new class extends {$baseClass} {
-                    public static {$templateClass} \$template;
-                };");
 
-            if (! is_object($anonymous)) {
+            $class = ClassFactory::extend(
+                $baseClass,
+                Resource::class,
+                "public static \\{$templateClass} \$template;",
+            );
+
+            if ($class === null) {
                 continue;
             }
 
-            $class = get_class($anonymous);
             /** @var class-string<\Laravel\Nova\Resource<Model>> $class */
             $class::$template = $template;
             $binding = 'dynamic-'.$template->uri_key;

@@ -6,12 +6,15 @@ namespace Opscale\NovaDynamicResources\Nova\Repeatables;
 
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\Hidden;
 use Laravel\Nova\Fields\Repeater\Repeatable;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
 use Opscale\NovaDynamicResources\Models\Template;
 use Opscale\NovaDynamicResources\Services\Actions\RenderField;
+use Opscale\NovaDynamicResources\Support\ClassFactory;
 use Override;
 
 /**
@@ -62,7 +65,7 @@ abstract class Record extends Repeatable
             $filter($query);
         }
 
-        /** @var \Illuminate\Database\Eloquent\Collection<int, Template> $templates */
+        /** @var Collection<int, Template> $templates */
         $templates = $query->orderBy('label')->get();
 
         $base = self::class;
@@ -71,21 +74,24 @@ abstract class Record extends Repeatable
 
         foreach ($templates as $template) {
             // Mirrors the dynamic Resource generation pattern in
-            // PackageServiceProvider — each eval call produces a
-            // distinct anonymous class so Nova's key()/label() static
-            // dispatch resolves per-template. The $template property
-            // is redeclared so each subclass owns its static slot
-            // instead of writing through to the abstract parent.
-            $anonymous = eval("return new class extends \\{$base} {
-                public static ?\\{$templateClass} \$template = null;
-            };");
+            // PackageServiceProvider — each generated class is a distinct
+            // anonymous subclass so Nova's key()/label() static dispatch
+            // resolves per-template. The $template property is redeclared so
+            // each subclass owns its static slot instead of writing through
+            // to the abstract parent. The base ($base = self::class) and
+            // interpolated type ($templateClass) are constants, so the only
+            // eval site (ClassFactory) has no untrusted input here.
+            $class = ClassFactory::extend(
+                $base,
+                $base,
+                "public static ?\\{$templateClass} \$template = null;",
+            );
 
-            if (! is_object($anonymous)) {
+            if ($class === null) {
                 continue;
             }
 
             /** @var class-string<self> $class */
-            $class = get_class($anonymous);
             $class::$model = $childModel;
             $class::$template = $template;
 
@@ -126,7 +132,7 @@ abstract class Record extends Repeatable
     }
 
     /**
-     * @return array<int, \Laravel\Nova\Fields\Field>
+     * @return array<int, Field>
      */
     #[Override]
     public function fields(NovaRequest $request): array
@@ -134,7 +140,7 @@ abstract class Record extends Repeatable
         $template = static::$template;
 
         if ($template === null) {
-            /** @var array<int, \Laravel\Nova\Fields\Field> $empty */
+            /** @var array<int, Field> $empty */
             $empty = parent::fields($request);
 
             return $empty;
@@ -147,7 +153,7 @@ abstract class Record extends Repeatable
         ];
 
         foreach ($template->fields as $templateField) {
-            /** @var array{success: bool, instance: \Laravel\Nova\Fields\Field} $result */
+            /** @var array{success: bool, instance: Field} $result */
             $result = RenderField::run([
                 'type' => $templateField->type,
                 'label' => $templateField->label,
@@ -161,7 +167,7 @@ abstract class Record extends Repeatable
             $fields[] = $result['instance'];
         }
 
-        /** @var array<int, \Laravel\Nova\Fields\Field> $merged */
+        /** @var array<int, Field> $merged */
         $merged = [
             ...parent::fields($request),
             ...$fields,

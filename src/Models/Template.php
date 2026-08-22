@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Opscale\NovaDynamicResources\Models;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
@@ -40,7 +41,7 @@ class Template extends Model
     /**
      * The validation rules for the model.
      *
-     * @var array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
+     * @var array<string, array<int, string|ValidationRule>>
      */
     public static array $validationRules = [
         'label' => [
@@ -77,6 +78,7 @@ class Template extends Model
             'nullable',
             'string',
             'max:255',
+            'regex:/^[A-Za-z_\\\\][A-Za-z0-9_\\\\]*$/',
         ],
     ];
 
