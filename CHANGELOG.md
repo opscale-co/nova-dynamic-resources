@@ -2,6 +2,10 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## <small>1.11.2 (2026-08-22)</small>
+
+* fix: centralize dynamic class generation in ClassFactory to close eval injection vector ([297d287](https://github.com/opscale-co/nova-dynamic-resources/commit/297d287))
+
 ## <small>1.11.1 (2026-06-30)</small>
 
 * fix(deps): trigger patch release for dependency bumps ([17cfc2d](https://github.com/opscale-co/nova-dynamic-resources/commit/17cfc2d))
