@@ -6,6 +6,7 @@ namespace Opscale\NovaDynamicResources\Nova;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\App;
+use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\Field;
@@ -13,6 +14,7 @@ use Laravel\Nova\Fields\Hidden;
 use Laravel\Nova\Fields\KeyValue;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Panel;
 use Laravel\Nova\Resource;
 use Laravel\Nova\Tabs\Tab;
 use Opscale\Actions\Decorators\NovaActionDecorator;
@@ -27,7 +29,7 @@ use Override;
 use Throwable;
 
 /**
- * @extends Resource<Model>
+ * @extends resource<Model>
  */
 class Record extends Resource
 {
@@ -36,7 +38,7 @@ class Record extends Resource
     /**
      * The model the resource corresponds to.
      *
-     * @var class-string<\Opscale\NovaDynamicResources\Models\Record>
+     * @var class-string<Model>
      */
     public static $model = Model::class;
 
@@ -141,7 +143,7 @@ class Record extends Resource
     /**
      * Get the fields displayed by the resource for the index.
      *
-     * @return array<int, Field|\Laravel\Nova\Panel>
+     * @return array<int, Field|Panel>
      */
     final public function fieldsForIndex(NovaRequest $request): array
     {
@@ -169,7 +171,7 @@ class Record extends Resource
     /**
      * Get the fields displayed by the resource.
      *
-     * @return array<int, Field|\Laravel\Nova\Panel>
+     * @return array<int, Field|Panel>
      */
     #[Override]
     public function fields(NovaRequest $request): array
@@ -201,7 +203,7 @@ class Record extends Resource
                     'related_uri_key' => (string) $relatedTemplate->uri_key,
                     'rules' => $templateRelationship->rules ?? [],
                     'config' => $templateRelationship->config ?? [],
-                ]);
+                ])->data();
             } catch (Throwable) {
                 continue;
             }
@@ -229,7 +231,7 @@ class Record extends Resource
                 'display_in_index' => $templateField->display_in_index,
                 'rules' => $templateField->rules ?? [],
                 'config' => $templateField->config ?? [],
-            ]);
+            ])->data();
             $templateFields[] = $result['instance'];
         }
 
@@ -258,7 +260,7 @@ class Record extends Resource
     /**
      * Get the actions available for the resource.
      *
-     * @return array<int, \Laravel\Nova\Actions\Action>
+     * @return array<int, Action>
      */
     #[Override]
     public function actions(NovaRequest $request): array
@@ -292,7 +294,7 @@ class Record extends Resource
      * decorator and `AsObject::run()` ends up invoking the decorator's
      * `handle(ActionFields, Collection)` signature with an array.
      *
-     * @return array<int, \Laravel\Nova\Actions\Action>
+     * @return array<int, Action>
      */
     private function resolveTemplateActions(TemplateModel $template): array
     {
@@ -303,7 +305,7 @@ class Record extends Resource
             $result = RenderAction::run([
                 'class' => $templateAction->class,
                 'config' => $templateAction->config ?? [],
-            ]);
+            ])->data();
 
             $actions[] = App::make(NovaActionDecorator::class, [
                 'action' => $result['instance'],

@@ -15,7 +15,7 @@ it('renders a Nova field for a configured type', function (): void {
         'display_in_index' => true,
         'rules' => [],
         'config' => [],
-    ]);
+    ])->data();
 
     expect($result)->toBeArray()
         ->toHaveKeys(['success', 'instance'])
@@ -44,7 +44,7 @@ it('hides from index when display_in_index is false', function (): void {
         'display_in_index' => false,
         'rules' => [],
         'config' => [],
-    ]);
+    ])->data();
 
     /** @var Field $field */
     $field = $result['instance'];
@@ -61,7 +61,7 @@ it('marks the field as required when required is true', function (): void {
         'display_in_index' => true,
         'rules' => [],
         'config' => [],
-    ]);
+    ])->data();
 
     /** @var Field $field */
     $field = $result['instance'];

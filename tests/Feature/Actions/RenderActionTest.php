@@ -9,7 +9,7 @@ it('instantiates an action from its class name', function (): void {
     $result = RenderAction::run([
         'class' => CreateRecord::class,
         'config' => [],
-    ]);
+    ])->data();
 
     expect($result)->toBeArray()
         ->toHaveKeys(['success', 'instance'])

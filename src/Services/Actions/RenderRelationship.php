@@ -135,6 +135,15 @@ class RenderRelationship extends Action
     }
 
     /**
+     * @return array<int, array{name: string, type: string, rules: array<int, string>}>
+     */
+    #[Override]
+    public function outputs(): array
+    {
+        return [];
+    }
+
+    /**
      * @return class-string
      */
     final protected function resolveResourceClass(string $uriKey): string

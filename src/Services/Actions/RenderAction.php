@@ -83,4 +83,13 @@ class RenderAction extends Action
             'instance' => $instance,
         ];
     }
+
+    /**
+     * @return array<int, array{name: string, type: string, rules: array<int, string>}>
+     */
+    #[Override]
+    public function outputs(): array
+    {
+        return [];
+    }
 }

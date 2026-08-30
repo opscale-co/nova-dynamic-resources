@@ -76,6 +76,15 @@ class ViewRecord extends Action
     }
 
     /**
+     * @return array<int, array{name: string, type: string, rules: array<int, string>}>
+     */
+    #[Override]
+    public function outputs(): array
+    {
+        return [];
+    }
+
+    /**
      * Execute the action as a Nova action.
      *
      * @param  Collection<int, Record>  $models

@@ -7,9 +7,11 @@ namespace Opscale\NovaDynamicResources\Nova\Concerns;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
+use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\Hidden;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Resource;
 use Opscale\Actions\Decorators\NovaActionDecorator;
 use Opscale\NovaDynamicResources\Models\Template;
 use Opscale\NovaDynamicResources\Services\Actions\RenderAction;
@@ -18,7 +20,7 @@ use Opscale\NovaDynamicResources\Services\Actions\RenderRelationship;
 use Throwable;
 
 /**
- * @mixin \Laravel\Nova\Resource<\Illuminate\Database\Eloquent\Model>
+ * @mixin \Laravel\Nova\Resource<Model>
  */
 trait UsesTemplate
 {
@@ -114,7 +116,7 @@ trait UsesTemplate
                 'display_in_index' => $templateField->display_in_index,
                 'rules' => $templateField->rules ?? [],
                 'config' => $templateField->config ?? [],
-            ]);
+            ])->data();
 
             $fields[] = $result['instance'];
         }
@@ -125,7 +127,7 @@ trait UsesTemplate
     /**
      * Render dynamic actions from the model's template.
      *
-     * @return array<int, \Laravel\Nova\Actions\Action>
+     * @return array<int, Action>
      */
     final protected function renderTemplateActions(): array
     {
@@ -144,7 +146,7 @@ trait UsesTemplate
             $result = RenderAction::run([
                 'class' => $templateAction->class,
                 'config' => $templateAction->config ?? [],
-            ]);
+            ])->data();
 
             $actions[] = App::make(NovaActionDecorator::class, [
                 'action' => $result['instance'],
@@ -187,7 +189,7 @@ trait UsesTemplate
                     'related_uri_key' => (string) $relatedTemplate->uri_key,
                     'rules' => $templateRelationship->rules ?? [],
                     'config' => $templateRelationship->config ?? [],
-                ]);
+                ])->data();
 
                 $fields[] = $result['instance'];
             } catch (Throwable) {

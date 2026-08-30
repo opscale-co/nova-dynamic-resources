@@ -38,12 +38,43 @@ class BuildDynamicRelation extends Action
     }
 
     /**
+     * Inputs are runtime objects (model, template, enum) supplied by the
+     * caller, not user-facing values. They are declared with passthrough
+     * rules so the SIPOC pipeline keeps them in the validated bag instead of
+     * stripping undeclared keys before handle(); handle() enforces its own
+     * type guards.
+     *
      * @return array<int, array{name: string, description: string, type: string, rules: array<int, string>}>
      */
     #[Override]
     public function parameters(): array
     {
-        return [];
+        return [
+            [
+                'name' => 'parent',
+                'description' => 'Parent Eloquent model',
+                'type' => 'object',
+                'rules' => [],
+            ],
+            [
+                'name' => 'target_template',
+                'description' => 'Target template (nullable)',
+                'type' => 'object',
+                'rules' => [],
+            ],
+            [
+                'name' => 'cardinality',
+                'description' => 'Relationship cardinality enum',
+                'type' => 'object',
+                'rules' => [],
+            ],
+            [
+                'name' => 'foreign_key',
+                'description' => 'Foreign key column',
+                'type' => 'string',
+                'rules' => [],
+            ],
+        ];
     }
 
     /**
@@ -89,6 +120,15 @@ class BuildDynamicRelation extends Action
             'success' => true,
             'instance' => $instance,
         ];
+    }
+
+    /**
+     * @return array<int, array{name: string, type: string, rules: array<int, string>}>
+     */
+    #[Override]
+    public function outputs(): array
+    {
+        return [];
     }
 
     /**

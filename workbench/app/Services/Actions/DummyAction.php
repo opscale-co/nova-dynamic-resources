@@ -75,4 +75,13 @@ class DummyAction extends Action
     {
         return ['success' => true];
     }
+
+    /**
+     * @return array<int, array{name: string, type: string, rules: array<int, string>}>
+     */
+    #[Override]
+    public function outputs(): array
+    {
+        return [];
+    }
 }

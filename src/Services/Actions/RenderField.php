@@ -136,11 +136,11 @@ class RenderField extends Action
             foreach ($mergedConfig as $method => $parameters) {
                 // Check if there's a hook for this method
                 if (isset($hooks[$method]) &&
-                    is_subclass_of($hooks[$method], \Opscale\Actions\Action::class)) {
-                    /** @var class-string<\Opscale\Actions\Action> $hookClass */
+                    is_subclass_of($hooks[$method], Action::class)) {
+                    /** @var class-string<Action> $hookClass */
                     $hookClass = $hooks[$method];
                     /** @var array{success: bool, value: mixed} $hookResult */
-                    $hookResult = $hookClass::run(['catalog' => $parameters]);
+                    $hookResult = $hookClass::run(['catalog' => $parameters])->data();
                     $instance->{$method}($hookResult['value'] ?? $parameters);
                 } elseif (method_exists($instance, $method)) {
                     $instance = is_array($parameters) ?
@@ -154,5 +154,14 @@ class RenderField extends Action
             'success' => true,
             'instance' => $instance,
         ];
+    }
+
+    /**
+     * @return array<int, array{name: string, type: string, rules: array<int, string>}>
+     */
+    #[Override]
+    public function outputs(): array
+    {
+        return [];
     }
 }

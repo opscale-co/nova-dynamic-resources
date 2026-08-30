@@ -6,9 +6,10 @@ use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\HasOne;
 use Opscale\NovaDynamicResources\Services\Actions\RenderRelationship;
+use Workbench\App\Nova\Item;
 
 beforeEach(function (): void {
-    app()->bind('dynamic-targets', fn () => new \Workbench\App\Nova\Item);
+    app()->bind('dynamic-targets', fn () => new Item);
 });
 
 it('renders a BelongsTo Nova field for the BelongsTo cardinality', function (): void {
@@ -19,7 +20,7 @@ it('renders a BelongsTo Nova field for the BelongsTo cardinality', function (): 
         'related_uri_key' => 'targets',
         'rules' => [],
         'config' => [],
-    ]);
+    ])->data();
 
     expect($result['instance'])->toBeInstanceOf(BelongsTo::class);
 });
@@ -32,7 +33,7 @@ it('renders a HasOne Nova field for the HasOne cardinality', function (): void {
         'related_uri_key' => 'targets',
         'rules' => [],
         'config' => [],
-    ]);
+    ])->data();
 
     expect($result['instance'])->toBeInstanceOf(HasOne::class);
 });
@@ -45,7 +46,7 @@ it('renders a HasMany Nova field for the HasMany cardinality', function (): void
         'related_uri_key' => 'targets',
         'rules' => [],
         'config' => [],
-    ]);
+    ])->data();
 
     expect($result['instance'])->toBeInstanceOf(HasMany::class);
 });

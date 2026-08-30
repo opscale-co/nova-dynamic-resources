@@ -162,7 +162,7 @@ abstract class Record extends Repeatable
                 'display_in_index' => $templateField->display_in_index,
                 'rules' => $templateField->rules ?? [],
                 'config' => $templateField->config ?? [],
-            ]);
+            ])->data();
 
             $fields[] = $result['instance'];
         }

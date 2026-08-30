@@ -36,13 +36,6 @@ parameters:
             identifier: trait.unused
             path: src/Nova/Concerns/UsesTemplate.php
 
-        # Action::run() is dynamic dispatch from lorisleiva/laravel-actions.
-        # Return type is the action's handle() return — phpstan can't infer it.
-        -
-            identifier: offsetAccess.nonOffsetAccessible
-            paths:
-                - tests/Feature/Actions/*
-
         -
             identifier: argument.type
             path: tests/Feature/Actions/RenderFieldTest.php

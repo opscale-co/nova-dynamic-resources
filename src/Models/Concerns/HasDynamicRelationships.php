@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Opscale\NovaDynamicResources\Models\Concerns;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Opscale\NovaDynamicResources\Models\Enums\RelationshipCardinality;
 use Opscale\NovaDynamicResources\Models\Relationship;
@@ -15,7 +16,7 @@ use Override;
 /**
  * Resolves dynamic relationship method calls based on the model's Template.
  *
- * @mixin \Illuminate\Database\Eloquent\Model
+ * @mixin Model
  */
 trait HasDynamicRelationships
 {
@@ -74,20 +75,20 @@ trait HasDynamicRelationships
     }
 
     /**
-     * @return Relation<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Model, mixed>
+     * @return Relation<Model, Model, mixed>
      */
     final protected function buildDynamicRelation(Relationship $relationship, bool $inverse): Relation
     {
         $cardinality = $this->effectiveCardinality($relationship, $inverse);
         $targetTemplate = $inverse ? $relationship->template : $relationship->relatedTemplate;
 
-        /** @var array{success: bool, instance: Relation<\Illuminate\Database\Eloquent\Model, \Illuminate\Database\Eloquent\Model, mixed>} $result */
+        /** @var array{success: bool, instance: Relation<Model, Model, mixed>} $result */
         $result = BuildDynamicRelation::run([
             'parent' => $this,
             'target_template' => $targetTemplate,
             'cardinality' => $cardinality,
             'foreign_key' => $relationship->foreign_key,
-        ]);
+        ])->data();
 
         return $result['instance'];
     }

@@ -63,4 +63,13 @@ class SelectOptions extends Action
             'value' => Catalog::options($catalog),
         ];
     }
+
+    /**
+     * @return array<int, array{name: string, type: string, rules: array<int, string>}>
+     */
+    #[Override]
+    public function outputs(): array
+    {
+        return [];
+    }
 }

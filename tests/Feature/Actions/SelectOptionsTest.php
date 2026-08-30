@@ -15,7 +15,7 @@ it('returns options for a given catalog', function (): void {
     $catalog->items()->create(['key' => 'usd', 'name' => 'US Dollar']);
     $catalog->items()->create(['key' => 'eur', 'name' => 'Euro']);
 
-    $result = SelectOptions::run(['catalog' => 'currencies']);
+    $result = SelectOptions::run(['catalog' => 'currencies'])->data();
 
     expect($result)->toBeArray()
         ->toHaveKeys(['success', 'value'])
@@ -30,7 +30,7 @@ it('returns an empty list when catalog has no items', function (): void {
         'description' => 'No items',
     ]);
 
-    $result = SelectOptions::run(['catalog' => 'empty']);
+    $result = SelectOptions::run(['catalog' => 'empty'])->data();
 
     expect($result['success'])->toBeTrue()
         ->and($result['value'])->toBeArray()->toBeEmpty();
