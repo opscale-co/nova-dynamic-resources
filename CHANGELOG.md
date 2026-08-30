@@ -2,6 +2,10 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## <small>1.11.4 (2026-08-30)</small>
+
+* fix(actions): adapt to opscale-co/actions 3.0 API ([90e41e3](https://github.com/opscale-co/nova-dynamic-resources/commit/90e41e3))
+
 ## <small>1.11.3 (2026-08-30)</small>
 
 * fix(deps): trigger patch release for dependency updates ([03f2567](https://github.com/opscale-co/nova-dynamic-resources/commit/03f2567))
