@@ -392,13 +392,9 @@ return [
             'hint' => 'Website URLs, links, or web references for external resources',
             'rules' => ['url', 'max:2048'],
             'config' => [
-                'displayUsing' => function ($value) {
-                    if (! is_string($value) || $value === '') {
-                        return $value;
-                    }
-
-                    return parse_url($value, PHP_URL_HOST) ?? $value;
-                },
+                // String callable (no Closure) so `php artisan config:cache` can
+                // serialize this config. See Support\FieldFormatters::urlHost().
+                'displayUsing' => \Opscale\NovaDynamicResources\Support\FieldFormatters::class.'::urlHost',
                 'clickable' => true,
             ],
         ],
