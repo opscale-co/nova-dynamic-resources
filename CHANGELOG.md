@@ -2,6 +2,10 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## <small>1.11.6 (2026-09-01)</small>
+
+* fix(migrations): use short explicit index name to avoid MySQL 64-char limit ([794523d](https://github.com/opscale-co/nova-dynamic-resources/commit/794523d))
+
 ## <small>1.11.4 (2026-08-30)</small>
 
 * fix(actions): adapt to opscale-co/actions 3.0 API ([90e41e3](https://github.com/opscale-co/nova-dynamic-resources/commit/90e41e3))
