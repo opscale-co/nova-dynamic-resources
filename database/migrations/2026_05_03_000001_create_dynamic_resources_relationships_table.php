@@ -38,7 +38,7 @@ return new class extends Migration
                 ->onUpdate('cascade');
 
             $table->index('template_id');
-            $table->index(['related_template_id', 'cardinality']);
+            $table->index(['related_template_id', 'cardinality'], 'dr_rel_related_template_cardinality_idx');
             $table->unique(['template_id', 'name']);
         });
     }
