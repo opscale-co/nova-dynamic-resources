@@ -250,6 +250,19 @@ return [
             ],
         ],
 
+        'multiselect' => [
+            'field' => \Laravel\Nova\Fields\MultiSelect::class,
+            'hint' => 'Multi-select backed by a catalog (stores an array of item keys)',
+            'rules' => ['array'],
+            'cast' => 'array',
+            'config' => [
+                'options' => 'options',
+            ],
+            'hooks' => [
+                'options' => \Opscale\NovaDynamicResources\Services\Actions\SelectOptions::class,
+            ],
+        ],
+
         'name' => [
             'field' => \Laravel\Nova\Fields\Text::class,
             'hint' => 'Full names for identification, personalization, and customer records',
