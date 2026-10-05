@@ -2,6 +2,10 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## 1.12.0 (2026-10-05)
+
+* feat(fields): add multiselect catalog-backed field ([8e7afda](https://github.com/opscale-co/nova-dynamic-resources/commit/8e7afda))
+
 ## <small>1.11.7 (2026-10-05)</small>
 
 * fix(deps): bump opscale-co/actions to ^4.0 ([aefb15b](https://github.com/opscale-co/nova-dynamic-resources/commit/aefb15b))
