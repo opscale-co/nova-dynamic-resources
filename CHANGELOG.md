@@ -2,6 +2,19 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## <small>1.11.7 (2026-10-05)</small>
+
+* fix(deps): bump opscale-co/actions to ^4.0 ([aefb15b](https://github.com/opscale-co/nova-dynamic-resources/commit/aefb15b))
+
+
+### breaking change
+
+* only affects action event listener prefixes
+(opscale.actions.*), which this package does not use. Non-browser suite
+(75 tests) passes.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
 ## <small>1.11.6 (2026-09-01)</small>
 
 * fix(migrations): use short explicit index name to avoid MySQL 64-char limit ([794523d](https://github.com/opscale-co/nova-dynamic-resources/commit/794523d))
