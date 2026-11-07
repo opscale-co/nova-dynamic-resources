@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Opscale\NovaDynamicResources\Models\Concerns;
 
+use Illuminate\Database\Eloquent\Model;
+
 /**
- * @mixin \Illuminate\Database\Eloquent\Model
+ * @mixin Model
  */
 trait CastsValidationData
 {

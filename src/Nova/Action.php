@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Opscale\NovaDynamicResources\Nova;
 
 use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\KeyValue;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
@@ -13,14 +14,14 @@ use Opscale\NovaDynamicResources\Models\Action as Model;
 use Override;
 
 /**
- * @extends Resource<Model>
+ * @extends resource<Model>
  */
 class Action extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
-     * @var class-string<\Opscale\NovaDynamicResources\Models\Action>
+     * @var class-string<Model>
      */
     public static $model = Model::class;
 
@@ -77,7 +78,7 @@ class Action extends Resource
     /**
      * Get the default fields for this resource.
      *
-     * @return array<string, \Laravel\Nova\Fields\Field>
+     * @return array<string, Field>
      */
     final public static function defaultFields(): array
     {

@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Opscale\NovaDynamicResources\Tests;
 
+use Illuminate\Foundation\Application;
+use Inertia\ServiceProvider;
+use Laravel\Fortify\FortifyServiceProvider;
+use Laravel\Nova\NovaCoreServiceProvider;
+use Laravel\Nova\NovaServiceProvider;
 use Opscale\NovaDynamicResources\PackageServiceProvider;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as BaseTestCase;
@@ -14,23 +19,23 @@ abstract class TestCase extends BaseTestCase
     use WithWorkbench;
 
     /**
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  Application  $app
      * @return list<class-string>
      */
     #[Override]
     protected function getPackageProviders($app): array
     {
         return array_merge(parent::getPackageProviders($app), [
-            \Inertia\ServiceProvider::class,
-            \Laravel\Nova\NovaCoreServiceProvider::class,
-            \Laravel\Nova\NovaServiceProvider::class,
-            \Laravel\Fortify\FortifyServiceProvider::class,
+            ServiceProvider::class,
+            NovaCoreServiceProvider::class,
+            NovaServiceProvider::class,
+            FortifyServiceProvider::class,
             PackageServiceProvider::class,
         ]);
     }
 
     /**
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  Application  $app
      */
     #[Override]
     protected function defineEnvironment($app): void

@@ -65,7 +65,7 @@ it('creates an Inherited template linked by template_id to a host model', functi
         'uri_key' => 'products-inh',
         'title' => 'name',
         'type' => TemplateType::Inherited,
-        'related_class' => \Workbench\App\Nova\Item::class,
+        'related_class' => Workbench\App\Nova\Item::class,
     ]);
 
     $template->fields()->create([
@@ -89,7 +89,7 @@ it('creates an Inherited template linked by template_id to a host model', functi
     $data = $reloaded->data ?? [];
 
     expect($template->type)->toBe(TemplateType::Inherited);
-    expect($template->related_class)->toBe(\Workbench\App\Nova\Item::class);
+    expect($template->related_class)->toBe(Workbench\App\Nova\Item::class);
     expect($reloaded->template)->not->toBeNull();
     expect($reloaded->template->id)->toBe($template->id);
     expect($reloaded->name)->toBe('Widget');
@@ -104,7 +104,7 @@ it('creates a Composited template that resolves on existing host model via class
         'uri_key' => 'users-comp',
         'title' => 'name',
         'type' => TemplateType::Composited,
-        'related_class' => \Workbench\App\Nova\User::class,
+        'related_class' => Workbench\App\Nova\User::class,
     ]);
 
     $template->fields()->create([
@@ -123,7 +123,7 @@ it('creates a Composited template that resolves on existing host model via class
     $user->forceFill(['data' => ['phone' => '+1-555-0199']])->save();
 
     expect($template->type)->toBe(TemplateType::Composited)
-        ->and($template->related_class)->toBe(\Workbench\App\Nova\User::class)
+        ->and($template->related_class)->toBe(Workbench\App\Nova\User::class)
         ->and($user->fresh()->data)->toBe(['phone' => '+1-555-0199']);
 });
 
@@ -141,7 +141,7 @@ it('excludes Composited templates from instantiables scope', function (): void {
         'uri_key' => 'inh-only',
         'title' => 'name',
         'type' => TemplateType::Inherited,
-        'related_class' => \Workbench\App\Nova\Item::class,
+        'related_class' => Workbench\App\Nova\Item::class,
     ]);
     Template::create([
         'label' => 'Comp',
@@ -149,7 +149,7 @@ it('excludes Composited templates from instantiables scope', function (): void {
         'uri_key' => 'comp-only',
         'title' => 'name',
         'type' => TemplateType::Composited,
-        'related_class' => \Workbench\App\Nova\User::class,
+        'related_class' => Workbench\App\Nova\User::class,
     ]);
 
     $types = Template::instantiables()->get()->pluck('type')->all();

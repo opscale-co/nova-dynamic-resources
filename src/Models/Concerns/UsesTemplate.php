@@ -12,7 +12,7 @@ use Laravel\Nova\Nova;
 use Opscale\NovaDynamicResources\Models\Template;
 
 /**
- * @mixin \Illuminate\Database\Eloquent\Model
+ * @mixin Model
  */
 trait UsesTemplate
 {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Opscale\NovaDynamicResources\Models;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,7 +38,7 @@ class Relationship extends Model
     use Validatable;
 
     /**
-     * @var array<string, array<int, string|\Illuminate\Contracts\Validation\ValidationRule>>
+     * @var array<string, array<int, string|ValidationRule>>
      */
     public static array $validationRules = [
         'template_id' => [

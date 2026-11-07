@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Opscale\Actions\Action;
 use Opscale\NovaDynamicResources\Services\Actions\CreateRecord;
 use Opscale\NovaDynamicResources\Services\Actions\RenderAction;
 use Opscale\NovaDynamicResources\Services\Actions\RenderField;
@@ -9,7 +10,7 @@ use Opscale\NovaDynamicResources\Services\Actions\SelectOptions;
 use Opscale\NovaDynamicResources\Services\Actions\ViewRecord;
 
 it('exposes a unique slug identifier on every Action', function (string $class, string $expected): void {
-    /** @var \Opscale\Actions\Action $action */
+    /** @var Action $action */
     $action = new $class;
 
     expect($action->identifier())->toBe($expected);
@@ -22,7 +23,7 @@ it('exposes a unique slug identifier on every Action', function (string $class, 
 ]);
 
 it('exposes a non-empty human-readable name on every Action', function (string $class): void {
-    /** @var \Opscale\Actions\Action $action */
+    /** @var Action $action */
     $action = new $class;
 
     expect($action->name())->toBeString()->not->toBeEmpty();
@@ -35,7 +36,7 @@ it('exposes a non-empty human-readable name on every Action', function (string $
 ]);
 
 it('exposes a description on every Action', function (string $class): void {
-    /** @var \Opscale\Actions\Action $action */
+    /** @var Action $action */
     $action = new $class;
 
     expect($action->description())->toBeString()->not->toBeEmpty();
@@ -48,7 +49,7 @@ it('exposes a description on every Action', function (string $class): void {
 ]);
 
 it('exposes a parameters schema on every Action', function (string $class): void {
-    /** @var \Opscale\Actions\Action $action */
+    /** @var Action $action */
     $action = new $class;
 
     expect($action->parameters())->toBeArray();

@@ -19,7 +19,7 @@ class FieldFormatters
     /**
      * Muestra solo el host de una URL (o el valor original si no aplica).
      */
-    public static function urlHost(mixed $value): mixed
+    final public static function urlHost(mixed $value): mixed
     {
         if (! is_string($value) || $value === '') {
             return $value;

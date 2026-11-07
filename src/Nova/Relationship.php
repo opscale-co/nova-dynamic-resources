@@ -6,6 +6,7 @@ namespace Opscale\NovaDynamicResources\Nova;
 
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\KeyValue;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Slug;
@@ -17,7 +18,7 @@ use Opscale\NovaDynamicResources\Models\Relationship as Model;
 use Override;
 
 /**
- * @extends Resource<Model>
+ * @extends resource<Model>
  */
 class Relationship extends Resource
 {
@@ -63,7 +64,7 @@ class Relationship extends Resource
     }
 
     /**
-     * @return array<string, \Laravel\Nova\Fields\Field>
+     * @return array<string, Field>
      */
     final public static function defaultFields(): array
     {

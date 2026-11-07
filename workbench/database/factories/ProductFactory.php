@@ -10,7 +10,7 @@ use Workbench\App\Models\Product;
 /**
  * @template TModel of \Workbench\App\Models\Product
  *
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<TModel>
+ * @extends Factory<TModel>
  */
 class ProductFactory extends Factory
 {

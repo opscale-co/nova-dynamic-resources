@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Opscale\NovaDynamicResources\Nova\Repeatables;
 
+use Laravel\Nova\Fields\Field;
 use Laravel\Nova\Fields\Repeater\Repeatable;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Opscale\NovaDynamicResources\Models\Action as Model;
@@ -22,7 +23,7 @@ class Action extends Repeatable
     /**
      * Get the fields for this repeatable.
      *
-     * @return array<int, \Laravel\Nova\Fields\Field>
+     * @return array<int, Field>
      */
     #[Override]
     final public function fields(NovaRequest $request): array
@@ -30,7 +31,7 @@ class Action extends Repeatable
         $fields = Resource::defaultFields();
         unset($fields['config'], $fields['data']);
 
-        /** @var array<int, \Laravel\Nova\Fields\Field> $merged */
+        /** @var array<int, Field> $merged */
         $merged = [
             ...parent::fields($request),
             ...array_values($fields),

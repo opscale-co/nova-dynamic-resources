@@ -16,6 +16,7 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Nova;
 use Laravel\Nova\Resource;
 use Laravel\Nova\Tabs\Tab;
+use Laravel\Nova\Tabs\TabsGroup;
 use Opscale\NovaDynamicResources\Models\Enums\TemplateType;
 use Opscale\NovaDynamicResources\Models\Template as Model;
 use Opscale\NovaDynamicResources\Nova\Repeatables\Action as ActionRepeatable;
@@ -25,14 +26,14 @@ use Opscale\NovaDynamicResources\Services\Actions\CreateRecord;
 use Override;
 
 /**
- * @extends Resource<Model>
+ * @extends resource<Model>
  */
 class Template extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
-     * @var class-string<\Opscale\NovaDynamicResources\Models\Template>
+     * @var class-string<Model>
      */
     public static $model = Model::class;
 
@@ -100,7 +101,7 @@ class Template extends Resource
     /**
      * Get the fields displayed by the resource.
      *
-     * @return array<int, \Laravel\Nova\Tabs\TabsGroup>
+     * @return array<int, TabsGroup>
      */
     #[Override]
     public function fields(NovaRequest $request): array

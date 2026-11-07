@@ -5,6 +5,7 @@
 declare(strict_types=1);
 
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
+use Rector\CodeQuality\Rector\If_\SimplifyIfReturnBoolRector;
 use Rector\Config\RectorConfig;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\Set\ValueObject\SetList;
@@ -45,7 +46,7 @@ function phpSetup(): array
             __DIR__.'/tests/fixtures',
 
             // Specific rules
-            Rector\CodeQuality\Rector\If_\SimplifyIfReturnBoolRector::class,
+            SimplifyIfReturnBoolRector::class,
         ],
     ];
 }

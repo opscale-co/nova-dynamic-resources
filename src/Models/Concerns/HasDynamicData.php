@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Opscale\NovaDynamicResources\Models\Concerns;
 
+use Illuminate\Database\Eloquent\Model;
 use Opscale\NovaDynamicResources\Casts\AsDynamicData;
 use Override;
 
 /**
- * @mixin \Illuminate\Database\Eloquent\Model
+ * @mixin Model
  */
 trait HasDynamicData
 {

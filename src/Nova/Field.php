@@ -17,14 +17,14 @@ use Opscale\NovaDynamicResources\Models\Field as Model;
 use Override;
 
 /**
- * @extends Resource<Model>
+ * @extends resource<Model>
  */
 class Field extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
-     * @var class-string<\Opscale\NovaDynamicResources\Models\Field>
+     * @var class-string<Model>
      */
     public static $model = Model::class;
 

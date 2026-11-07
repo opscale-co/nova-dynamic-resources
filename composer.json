@@ -27,13 +27,13 @@
   ],
   "require": {
     "php": "^8.3",
-    "opscale-co/actions": "^4.0",
-    "opscale-co/nova-bpmn-field": "^1.0",
-    "opscale-co/nova-catalogs": "^1.3.1",
-    "opscale-co/nova-dbml-field": "^1.0",
-    "opscale-co/nova-geospatial-fields": "^1.1",
-    "opscale-co/nova-package-tools": "^1.1",
-    "opscale-co/validations": "^1.0"
+    "opscale-co/actions": "^5.0",
+    "opscale-co/nova-bpmn-field": "^2.0",
+    "opscale-co/nova-catalogs": "^2.0",
+    "opscale-co/nova-dbml-field": "^2.0",
+    "opscale-co/nova-geospatial-fields": "^2.0",
+    "opscale-co/nova-package-tools": "^2.0",
+    "opscale-co/validations": "^2.0"
   },
   "autoload": {
     "psr-4": {
@@ -66,11 +66,11 @@
   "require-dev": {
     "driftingly/rector-laravel": "^2.5",
     "larastan/larastan": "^3.10",
-    "laravel/nova": "^5.9",
+    "laravel/nova": "^5.10",
     "laravel/nova-devtool": "^1.10",
     "mockery/mockery": "^1.6",
     "opscale-co/strict-rules": "^1.3",
-    "orchestra/testbench-dusk": "^10.10",
+    "orchestra/testbench-dusk": "^11.0",
     "pestphp/pest": "^4.7",
     "pestphp/pest-plugin-laravel": "^4.1",
     "phpunit/phpunit": "^12.5",
