@@ -2,6 +2,17 @@
 
 All notable changes to opscale-co/nova-api will be documented in this file.
 
+## 2.0.0 (2026-11-07)
+
+* feat(laravel): require Laravel 13, drop Laravel 11/12 ([7e6d432](https://github.com/opscale-co/nova-dynamic-resources/commit/7e6d432))
+
+
+### BREAKING CHANGE
+
+* requires PHP 8.3+ and the Laravel 13 toolchain; drops Laravel 11/12.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
 ## 1.12.0 (2026-10-05)
 
 * feat(fields): add multiselect catalog-backed field ([8e7afda](https://github.com/opscale-co/nova-dynamic-resources/commit/8e7afda))
